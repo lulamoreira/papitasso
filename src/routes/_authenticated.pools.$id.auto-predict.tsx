@@ -45,6 +45,7 @@ function AutoPredictPage() {
         awayScore: match.predicted_away 
       } 
     }),
+
     onSuccess: (_, variables) => {
       setConfirmed(prev => new Set(prev).add(variables.matchId));
     }
