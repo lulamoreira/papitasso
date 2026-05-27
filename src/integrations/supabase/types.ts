@@ -328,24 +328,34 @@ export type Database = {
       }
       pool_members: {
         Row: {
+          invited_by: string | null
           joined_at: string | null
           pool_id: string
           role: string | null
           user_id: string
         }
         Insert: {
+          invited_by?: string | null
           joined_at?: string | null
           pool_id: string
           role?: string | null
           user_id: string
         }
         Update: {
+          invited_by?: string | null
           joined_at?: string | null
           pool_id?: string
           role?: string | null
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "pool_members_invited_by_fkey"
+            columns: ["invited_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "pool_members_pool_id_fkey"
             columns: ["pool_id"]
@@ -1054,6 +1064,10 @@ export type Database = {
       }
       award_points_for_prop: {
         Args: { p_prop_id: string; p_resolved_value: string }
+        Returns: undefined
+      }
+      increment_xp: {
+        Args: { p_amount: number; p_user_id: string }
         Returns: undefined
       }
       initialize_survivor_rounds: {
