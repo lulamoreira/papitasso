@@ -83,7 +83,33 @@ function PredictionDetailComponent() {
     }
   });
 
+  const fetchCommentary = async () => {
+    setIsCommentaryLoading(true);
+    try {
+      const res = await (getAiCommentary as any)({ data: { matchId, mode: isLocked ? 'post' : 'pre', style: commentaryStyle } });
+      setCommentary(res.text);
+    } catch (err) {
+      toast.error("Erro ao gerar comentário");
+    } finally {
+      setIsCommentaryLoading(false);
+    }
+  };
+
+  const fetchAnalysis = async () => {
+    try {
+      const res = await (getAiPredictionAnalysis as any)({ 
+        data: { poolId: id, matchId, homeScore, awayScore } 
+      });
+      setAnalysis(res);
+    } catch (err) {}
+  };
+
+  useEffect(() => {
+    if (prediction) fetchAnalysis();
+  }, []);
+
   if (!match) return <div>Jogo não encontrado</div>;
+
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
