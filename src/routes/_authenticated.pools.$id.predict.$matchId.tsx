@@ -37,8 +37,13 @@ function PredictionDetailComponent() {
   const [homeScore, setHomeScore] = useState(prediction?.home_score ?? 0);
   const [awayScore, setAwayScore] = useState(prediction?.away_score ?? 0);
   const [timeLeft, setTimeLeft] = useState("");
+  const [commentaryStyle, setCommentaryStyle] = useState<'galvao' | 'casimiro' | 'narrator'>('galvao');
+  const [commentary, setCommentary] = useState<string | null>(null);
+  const [isCommentaryLoading, setIsCommentaryLoading] = useState(false);
+  const [analysis, setAnalysis] = useState<any>(null);
 
   const isLocked = new Date(match.kickoff_at) <= new Date();
+
 
   useEffect(() => {
     const timer = setInterval(() => {
