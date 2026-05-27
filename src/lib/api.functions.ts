@@ -182,3 +182,72 @@ export const joinPool = createServerFn({ method: "POST" })
     
     return { pool_id: pool.id };
   });
+
+export const getMatchesForPool = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase.rpc('matches_for_pool', { p_pool_id: poolId });
+    if (error) throw error;
+
+    // Fetch team flags/names too
+    const { data: matches, error: matchesError } = await supabase
+      .from("matches")
+      .select("*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*)")
+      .in("id", data.map((m: any) => m.id))
+      .order("kickoff_at", { ascending: true });
+    
+    if (matchesError) throw matchesError;
+    return matches;
+  });
+
+export const upsertPrediction = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { poolId, matchId, homeScore, awayScore } = rawData?.data || rawData;
+    const { supabase, userId } = context;
+
+    const { data, error } = await supabase
+      .from("predictions_exact")
+      .upsert({
+        user_id: userId,
+        pool_id: poolId,
+        match_id: matchId,
+        home_score: homeScore,
+        away_score: awayScore,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,pool_id,match_id' })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  });
+
+export const getPredictions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase, userId } = context;
+    const { data, error } = await supabase
+      .from("predictions_exact")
+      .select("*")
+      .eq("pool_id", poolId)
+      .eq("user_id", userId);
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const getLeaderboard = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("leaderboard_view")
+      .select("*, profile:profiles(*)")
+      .eq("pool_id", poolId)
+      .order("position", { ascending: true });
+    
+    if (error) throw error;
+    return data;
+  });
