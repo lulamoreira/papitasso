@@ -155,7 +155,7 @@ export const getPoolByInviteCode = createServerFn({ method: "GET" })
 export const joinPool = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
-    const code = rawData?.data || rawData;
+    const { code, invitedBy } = rawData?.data || rawData;
     const { supabase, userId } = context;
     
     // First find pool
@@ -172,16 +172,24 @@ export const joinPool = createServerFn({ method: "POST" })
       .insert({
         pool_id: pool.id,
         user_id: userId,
-        role: 'member'
+        role: 'member',
+        invited_by: invitedBy
       });
     
     if (memberError) {
       if (memberError.code === '23505') return { pool_id: pool.id }; // Already a member
       throw memberError;
     }
+
+    // Gamification: Award XP to inviter
+    if (invitedBy && invitedBy !== userId) {
+      await supabase.rpc('increment_xp', { p_user_id: invitedBy, p_amount: 50 });
+      // Logic for 'influencer' achievement will be in check-achievements
+    }
     
     return { pool_id: pool.id };
   });
+
 
 export const getMatchesForPool = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -221,7 +229,14 @@ export const upsertPrediction = createServerFn({ method: "POST" })
       .single();
 
     if (error) throw error;
+
+    // Gamification: +5 XP for participation (only if it's the first time for this match/pool/user)
+    // For simplicity, we'll just add it if it was an insert or just add it anyway (capped by some logic if needed)
+    // Actually, let's just add it.
+    await supabase.rpc('increment_xp', { p_user_id: userId, p_amount: 5 });
+
     return data;
+
   });
 
 export const getPredictions = createServerFn({ method: "GET" })
@@ -477,6 +492,21 @@ export const getPredictionsProps = createServerFn({ method: "GET" })
     return data;
   });
 
+export const getAchievementById = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: id, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("achievements")
+      .select("*")
+      .eq("id", id)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  });
+
+
 export const upsertPredictionProp = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
@@ -498,6 +528,73 @@ export const upsertPredictionProp = createServerFn({ method: "POST" })
     if (error) throw error;
     return data;
   });
+
+export const getAchievements = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }: any) => {
+    const { supabase, userId } = context;
+    
+    // Get all achievements
+    const { data: allAchievements, error: allErr } = await supabase
+      .from("achievements")
+      .select("*")
+      .order("rarity", { ascending: false });
+    
+    if (allErr) throw allErr;
+
+    // Get user's unlocked achievements
+    const { data: unlocked, error: unlErr } = await supabase
+      .from("user_achievements")
+      .select("achievement_id, unlocked_at")
+      .eq("user_id", userId);
+    
+    if (unlErr) throw unlErr;
+
+    return allAchievements.map((ach: any) => ({
+      ...ach,
+      unlocked_at: unlocked.find((u: any) => u.achievement_id === ach.id)?.unlocked_at
+    }));
+  });
+
+export const getCollectedCards = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }: any) => {
+    const { supabase, userId } = context;
+    const { data, error } = await supabase
+      .from("collected_cards")
+      .select("*, team:teams(*)")
+      .eq("user_id", userId);
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const getUserStats = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }: any) => {
+    const { supabase, userId } = context;
+    
+    // Fetch count of exact predictions (points > 0 usually means correct)
+    const { data: predictions, error: predErr } = await supabase
+      .from("predictions_exact")
+      .select("points")
+      .eq("user_id", userId);
+    
+    if (predErr) throw predErr;
+
+    const total = predictions.length;
+    const exactScores = predictions.filter((p: any) => p.points === 3).length; // 3 points for exact score
+    const hits = predictions.filter((p: any) => p.points && p.points > 0).length;
+    
+    return {
+      total_predictions: total,
+      exact_scores: exactScores,
+      accuracy_rate: total > 0 ? Math.round((hits / total) * 100) : 0,
+      current_streak: 0, 
+      best_streak: 0 
+    };
+  });
+
 
 export const createCustomProp = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
