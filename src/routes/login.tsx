@@ -1,12 +1,14 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Trophy } from "lucide-react";
+import { Trophy, Target, Sparkles, Brain } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
