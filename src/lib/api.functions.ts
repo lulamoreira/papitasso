@@ -210,9 +210,10 @@ export const getMatchesForPool = createServerFn({ method: "GET" })
   });
 
 export const upsertPrediction = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .validator(z.any())
+  .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
+
 
     const { poolId, matchId, homeScore, awayScore } = rawData?.data || rawData;
     const { supabase, userId } = context;
