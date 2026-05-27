@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      achievements: {
+        Row: {
+          code: string
+          description: string
+          icon_url: string | null
+          id: string
+          name: string
+          rarity: string
+          xp_reward: number
+        }
+        Insert: {
+          code: string
+          description: string
+          icon_url?: string | null
+          id?: string
+          name: string
+          rarity: string
+          xp_reward?: number
+        }
+        Update: {
+          code?: string
+          description?: string
+          icon_url?: string | null
+          id?: string
+          name?: string
+          rarity?: string
+          xp_reward?: number
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           created_at: string | null
@@ -59,6 +89,42 @@ export type Database = {
           },
           {
             foreignKeyName: "chat_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collected_cards: {
+        Row: {
+          acquired_at: string | null
+          level: number | null
+          team_id: string
+          user_id: string
+        }
+        Insert: {
+          acquired_at?: string | null
+          level?: number | null
+          team_id: string
+          user_id: string
+        }
+        Update: {
+          acquired_at?: string | null
+          level?: number | null
+          team_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collected_cards_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collected_cards_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -916,6 +982,52 @@ export type Database = {
         }
         Relationships: []
       }
+      user_achievements: {
+        Row: {
+          achievement_id: string
+          id: string
+          pool_id: string | null
+          unlocked_at: string | null
+          user_id: string
+        }
+        Insert: {
+          achievement_id: string
+          id?: string
+          pool_id?: string | null
+          unlocked_at?: string | null
+          user_id: string
+        }
+        Update: {
+          achievement_id?: string
+          id?: string
+          pool_id?: string | null
+          unlocked_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_achievements_achievement_id_fkey"
+            columns: ["achievement_id"]
+            isOneToOne: false
+            referencedRelation: "achievements"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_achievements_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_achievements_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       leaderboard_view: {
@@ -931,6 +1043,10 @@ export type Database = {
     Functions: {
       advance_survivor: { Args: { p_match_id: string }; Returns: undefined }
       award_bracket_points: { Args: { p_pool_id: string }; Returns: undefined }
+      award_card: {
+        Args: { p_team_id: string; p_user_id: string }
+        Returns: undefined
+      }
       award_pickem_points: { Args: { p_match_id: string }; Returns: undefined }
       award_points_for_match: {
         Args: { p_match_id: string }
