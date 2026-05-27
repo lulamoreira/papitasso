@@ -7,21 +7,35 @@ const supabase = createClient(
 
 Deno.serve(async (req) => {
   try {
-    const { data, error } = await supabase
-      .from('predictions_exact')
-      .update({ locked_at: new Date().toISOString() })
-      .is('locked_at', null)
-      .in('match_id', (
-        await supabase
-          .from('matches')
-          .select('id')
-          .lte('kickoff_at', new Date().toISOString())
-      ).data?.map(m => m.id) || [])
-      .select()
+    // 1. Get matches that just started (kickoff_at <= now) and aren't locked yet
+    // In a real scenario, we might want to lock a few minutes before kickoff
+    const { data: matches, error: matchesError } = await supabase
+      .from('matches')
+      .select('id')
+      .lte('kickoff_at', new Date().toISOString())
+      .is('status', 'scheduled') // Only lock scheduled matches
 
-    if (error) throw error
+    if (matchesError) throw matchesError
 
-    return new Response(JSON.stringify({ locked: data?.length || 0 }), {
+    if (!matches || matches.length === 0) {
+      return new Response(JSON.stringify({ message: 'No matches to lock' }), {
+        headers: { 'Content-Type': 'application/json' },
+      })
+    }
+
+    // 2. Lock predictions for each match
+    const lockedMatches = []
+    for (const match of matches) {
+      const { error: lockError } = await supabase.rpc('lock_predictions_for_match', { 
+        p_match_id: match.id 
+      })
+
+      if (!lockError) {
+        lockedMatches.push(match.id)
+      }
+    }
+
+    return new Response(JSON.stringify({ locked: lockedMatches }), {
       headers: { 'Content-Type': 'application/json' },
     })
   } catch (err) {
