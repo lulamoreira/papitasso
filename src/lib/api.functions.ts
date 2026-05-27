@@ -60,3 +60,123 @@ export const getNextMatch = createServerFn({ method: "GET" })
     if (error && error.code !== "PGRST116") throw error;
     return data || null;
   });
+
+export const createPool = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({
+    name: z.string().min(3),
+    type: z.enum(['simple', 'advanced']),
+    scope_type: z.string(),
+    scope_config: z.any().optional(),
+    scoring_config: z.any(),
+    modes_enabled: z.array(z.string()).optional(),
+  }).parse(data))
+  .handler(async ({ data, context }) => {
+    const { supabase, userId } = context;
+    const invite_code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    
+    const { data: pool, error: poolError } = await supabase
+      .from("pools")
+      .insert({
+        name: data.name,
+        type: data.type,
+        scope_type: data.scope_type,
+        scope_config: data.scope_config,
+        scoring_config: data.scoring_config,
+        modes_enabled: data.modes_enabled,
+        invite_code,
+        owner_id: userId
+      })
+      .select()
+      .single();
+
+    if (poolError) throw poolError;
+
+    const { error: memberError } = await supabase
+      .from("pool_members")
+      .insert({
+        pool_id: pool.id,
+        user_id: userId,
+        role: 'owner'
+      });
+
+    if (memberError) throw memberError;
+
+    return pool;
+  });
+
+export const getMyPools = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { supabase, userId } = context;
+    const { data, error } = await supabase
+      .from("pool_members")
+      .select("pool_id, pools(*)")
+      .eq("user_id", userId);
+    
+    if (error) throw error;
+    return data.map(item => item.pools);
+  });
+
+export const getPoolById = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((id) => z.string().uuid().parse(id))
+  .handler(async ({ input: id, context }) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("pools")
+      .select("*, owner:profiles(*)")
+      .eq("id", id)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const getPoolByInviteCode = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((code) => z.string().parse(code))
+  .handler(async ({ input: code, context }) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("pools")
+      .select("*, owner:profiles(*)")
+      .eq("invite_code", code.toUpperCase())
+      .single();
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const joinPool = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((code) => z.string().parse(code))
+  .handler(async ({ input: code, context }) => {
+    const { supabase, userId } = context;
+    
+    // First find pool
+    const { data: pool, error: poolError } = await supabase
+      .from("pools")
+      .select("id")
+      .eq("invite_code", code.toUpperCase())
+      .single();
+    
+    if (poolError) throw poolError;
+
+    const { data: member, error: memberError } = await supabase
+      .from("pool_members")
+      .insert({
+        pool_id: pool.id,
+        user_id: userId,
+        role: 'member'
+      })
+      .select()
+      .single();
+    
+    if (memberError) {
+      if (memberError.code === '23505') return { pool_id: pool.id }; // Already a member
+      throw memberError;
+    }
+    
+    return member;
+  });
