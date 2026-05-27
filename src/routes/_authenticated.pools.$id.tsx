@@ -137,7 +137,8 @@ function PoolDetailComponent() {
             {pool.modes_enabled?.includes('props') && (
               <TabsTrigger value="props" className="gap-1 px-3 relative">
                 <HelpCircle className="h-3 w-3" /> 
-                <span className="hidden sm:inline">Props</span>
+                <span className="hidden sm:inline">Props ({predictedProps}/{totalProps})</span>
+                <span className="sm:hidden">{propCompletionPercent}%</span>
                 {propCompletionPercent < 100 && (
                   <span className="absolute -top-1 -right-1 flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
