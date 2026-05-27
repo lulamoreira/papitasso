@@ -76,8 +76,18 @@ function LoginComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <Card className="w-full max-w-md border-none shadow-xl">
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <Trophy className="h-6 w-6" />
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 relative">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentSlide}
+                initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                exit={{ scale: 0.5, opacity: 0, rotate: 20 }}
+                className="absolute"
+              >
+                {slides[currentSlide].icon}
+              </motion.div>
+            </AnimatePresence>
           </div>
           <CardTitle className="text-3xl font-bold tracking-tight text-primary">GolPalpite</CardTitle>
           <CardDescription className="text-muted-foreground">
