@@ -5,8 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, ArrowDownRight, Minus, PencilLine, User as UserIcon, Gift, Award, HelpCircle, Target } from "lucide-react";
 import { toast } from "sonner";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
 import { format } from "date-fns";
@@ -229,30 +231,37 @@ function PoolDetailComponent() {
                     <th className="p-3 text-right font-bold text-[10px] uppercase tracking-widest text-muted-foreground">Pts</th>
                   </tr>
                 </thead>
-                <tbody>
-                  {leaderboard.map((entry: any) => (
-                    <tr key={entry.user_id} className={`border-b last:border-0 ${entry.user_id === profile?.id ? 'bg-primary/5' : ''}`}>
-                      <td className="p-3">
-                        <div className="flex items-center gap-2">
-                          <span className="font-black">{entry.position}º</span>
-                          {/* Mock variation for now */}
-                          {entry.position === 1 ? <ArrowUpRight className="h-3 w-3 text-green-500" /> : <Minus className="h-3 w-3 text-muted-foreground opacity-30" />}
-                        </div>
-                      </td>
-                      <td className="p-3">
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-8 w-8">
-                            <AvatarImage src={entry.profile?.avatar_url} />
-                            <AvatarFallback><UserIcon /></AvatarFallback>
-                          </Avatar>
-                          <span className="font-bold truncate max-w-[120px]">{entry.profile?.name || "Jogador"}</span>
-                        </div>
-                      </td>
-                      <td className="p-3 text-right font-black text-primary">
-                        {entry.points}
-                      </td>
-                    </tr>
-                  ))}
+                <tbody className="relative">
+                  <LayoutGroup>
+                    {leaderboard.map((entry: any) => (
+                      <motion.tr 
+                        layoutId={entry.user_id}
+                        key={entry.user_id} 
+                        initial={false}
+                        className={`border-b last:border-0 transition-colors ${entry.user_id === profile?.id ? 'bg-primary/5' : ''}`}
+                      >
+                        <td className="p-3">
+                          <div className="flex items-center gap-2">
+                            <span className="font-black tabular-nums">{entry.position}º</span>
+                            {/* Mock variation for now */}
+                            {entry.position === 1 ? <ArrowUpRight className="h-3 w-3 text-green-500" /> : <Minus className="h-3 w-3 text-muted-foreground opacity-30" />}
+                          </div>
+                        </td>
+                        <td className="p-3">
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-8 w-8">
+                              <AvatarImage src={entry.profile?.avatar_url} />
+                              <AvatarFallback><UserIcon /></AvatarFallback>
+                            </Avatar>
+                            <span className="font-bold truncate max-w-[120px]">{entry.profile?.name || "Jogador"}</span>
+                          </div>
+                        </td>
+                        <td className="p-3 text-right font-black text-primary tabular-nums">
+                          {entry.points}
+                        </td>
+                      </motion.tr>
+                    ))}
+                  </LayoutGroup>
                 </tbody>
               </table>
             </div>

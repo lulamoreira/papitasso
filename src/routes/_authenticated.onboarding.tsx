@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, ChevronRight, Trophy, Sparkles, Target } from "lucide-react";
+import { Search, ChevronRight, Trophy, Sparkles, Target, Share2, Award } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 
@@ -47,19 +47,47 @@ function OnboardingComponent() {
 
   const tourData = [
     {
-      title: "Crie seus bolões",
-      desc: "Chame os amigos e veja quem entende mais de futebol.",
-      icon: <Trophy className="h-12 w-12 text-primary" />
+      title: "Palpite em seus jogos favoritos",
+      desc: "Preencha os placares e mostre que você é o mestre da previsão.",
+      icon: (
+        <div className="relative h-20 w-32 bg-muted rounded-lg border-2 border-primary/20 flex items-center justify-center overflow-hidden">
+          <motion.div 
+            initial={{ y: 20 }}
+            animate={{ y: [20, 0, 0, 20] }}
+            transition={{ duration: 3, repeat: Infinity }}
+            className="flex gap-2"
+          >
+            <div className="w-8 h-10 bg-primary/10 rounded flex items-center justify-center font-black text-primary">2</div>
+            <div className="w-8 h-10 bg-primary/10 rounded flex items-center justify-center font-black text-primary">1</div>
+          </motion.div>
+          <div className="absolute top-1 right-1"><Sparkles className="w-3 h-3 text-yellow-500" /></div>
+        </div>
+      )
     },
     {
-      title: "Palpite em tempo real",
-      desc: "Acompanhe os 104 jogos da Copa do Mundo 2026.",
-      icon: <Target className="h-12 w-12 text-primary" />
+      title: "Convide a galera",
+      desc: "Crie seu bolão em segundos e compartilhe via WhatsApp ou QR Code.",
+      icon: (
+        <div className="flex gap-1 items-end h-16">
+          <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ duration: 2, repeat: Infinity }} className="p-3 bg-green-500 rounded-lg"><Share2 className="text-white w-6 h-6" /></motion.div>
+          <div className="p-2 bg-muted rounded-lg"><div className="w-6 h-6 bg-muted-foreground/20 rounded-sm" /></div>
+          <div className="p-2 bg-muted rounded-lg"><div className="w-6 h-6 bg-muted-foreground/20 rounded-sm" /></div>
+        </div>
+      )
     },
     {
-      title: "Suba no ranking",
-      desc: "Comece no Bronze e chegue até a liga de Diamante.",
-      icon: <Sparkles className="h-12 w-12 text-primary" />
+      title: "Suba no ranking, ganhe prêmios",
+      desc: "Acumule XP, colecione cards Super Trunfo e dispute prêmios físicos.",
+      icon: (
+        <motion.div 
+          animate={{ rotate: [0, -5, 5, 0], y: [0, -5, 0] }}
+          transition={{ duration: 4, repeat: Infinity }}
+          className="relative"
+        >
+          <Trophy className="h-16 w-16 text-yellow-500 fill-yellow-500/20" />
+          <Award className="absolute -top-2 -right-2 h-8 w-8 text-primary animate-bounce" />
+        </motion.div>
+      )
     }
   ];
 

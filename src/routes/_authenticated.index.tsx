@@ -4,6 +4,8 @@ import { getNextMatch, getProfile, getDailyQuiz, getQuizUserStatus } from "@/lib
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Trophy, User, Hash, Zap, ChevronRight, Brain } from "lucide-react";
+import { toast } from "sonner";
+
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
@@ -80,9 +82,13 @@ function DashboardComponent() {
     <div className="min-h-screen bg-background pb-20">
       <header className="sticky top-0 z-10 border-b bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-2">
-            <Trophy className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold text-primary">GolPalpite</span>
+          <div className="flex items-center gap-2 cursor-pointer" onClick={() => {
+            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2013/2013-preview.mp3'); // Whistle/Cheer placeholder
+            audio.play().catch(() => {});
+            toast.success("🇧🇷 É HEXA! 🇧🇷", { icon: "⚽" });
+          }}>
+            <Trophy className="h-6 w-6 text-primary transition-transform active:scale-125" />
+            <span className="text-xl font-black text-primary tracking-tighter italic">GOLPALPITE</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right hidden sm:block">

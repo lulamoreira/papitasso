@@ -215,7 +215,19 @@ function PredictionDetailComponent() {
               >
                 <Minus className="h-4 w-4" />
               </Button>
-              <span className="text-5xl font-black tabular-nums">{homeScore}</span>
+              <div className="relative flex h-20 items-center justify-center">
+                <AnimatePresence mode="popLayout">
+                  <motion.span 
+                    key={homeScore}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -20, opacity: 0 }}
+                    className="text-5xl font-black tabular-nums absolute"
+                  >
+                    {homeScore}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
               <Button 
                 variant="outline" 
                 size="icon" 
@@ -245,7 +257,19 @@ function PredictionDetailComponent() {
               >
                 <Minus className="h-4 w-4" />
               </Button>
-              <span className="text-5xl font-black tabular-nums">{awayScore}</span>
+              <div className="relative flex h-20 items-center justify-center">
+                <AnimatePresence mode="popLayout">
+                  <motion.span 
+                    key={awayScore}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: -20, opacity: 0 }}
+                    className="text-5xl font-black tabular-nums absolute"
+                  >
+                    {awayScore}
+                  </motion.span>
+                </AnimatePresence>
+              </div>
               <Button 
                 variant="outline" 
                 size="icon" 

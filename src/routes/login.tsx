@@ -1,12 +1,14 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { lovable } from "@/integrations/lovable/index";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Trophy } from "lucide-react";
+import { Trophy, Target, Sparkles, Brain } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
@@ -28,6 +30,22 @@ function LoginComponent() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    { icon: <Trophy className="h-8 w-8 text-primary" />, text: "Crie bolões com amigos" },
+    { icon: <Target className="h-8 w-8 text-primary" />, text: "Palpites em tempo real" },
+    { icon: <Sparkles className="h-8 w-8 text-primary" />, text: "Ganhe prêmios exclusivos" },
+    { icon: <Brain className="h-8 w-8 text-primary" />, text: "Quiz e Desafios de IA" }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide(s => (s + 1) % slides.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
   const handleSocialLogin = async (provider: "google" | "apple") => {
     try {
       const result = await lovable.auth.signInWithOAuth(provider, {
@@ -38,6 +56,7 @@ function LoginComponent() {
       toast.error(error.message || "Erro ao fazer login social");
     }
   };
+
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -57,13 +76,31 @@ function LoginComponent() {
     <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
       <Card className="w-full max-w-md border-none shadow-xl">
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            <Trophy className="h-6 w-6" />
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 relative">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentSlide}
+                initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
+                animate={{ scale: 1, opacity: 1, rotate: 0 }}
+                exit={{ scale: 0.5, opacity: 0, rotate: 20 }}
+                className="absolute"
+              >
+                {slides[currentSlide].icon}
+              </motion.div>
+            </AnimatePresence>
           </div>
-          <CardTitle className="text-3xl font-bold tracking-tight text-primary">GolPalpite</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Sua plataforma de bolão da Copa 2026
-          </CardDescription>
+          <CardTitle className="text-3xl font-black tracking-tighter text-primary uppercase italic">GolPalpite</CardTitle>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={currentSlide}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              className="text-sm font-bold text-muted-foreground uppercase tracking-widest"
+            >
+              {slides[currentSlide].text}
+            </motion.p>
+          </AnimatePresence>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 gap-3">
