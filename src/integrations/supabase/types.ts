@@ -1200,6 +1200,7 @@ export type Database = {
         Args: { p_emoji: string; p_message_id: string }
         Returns: undefined
       }
+      update_quiz_streak: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {
       match_phase:
