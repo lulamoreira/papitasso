@@ -89,10 +89,18 @@ function LoginComponent() {
               </motion.div>
             </AnimatePresence>
           </div>
-          <CardTitle className="text-3xl font-bold tracking-tight text-primary">GolPalpite</CardTitle>
-          <CardDescription className="text-muted-foreground">
-            Sua plataforma de bolão da Copa 2026
-          </CardDescription>
+          <CardTitle className="text-3xl font-black tracking-tighter text-primary uppercase italic">GolPalpite</CardTitle>
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={currentSlide}
+              initial={{ opacity: 0, y: 5 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -5 }}
+              className="text-sm font-bold text-muted-foreground uppercase tracking-widest"
+            >
+              {slides[currentSlide].text}
+            </motion.p>
+          </AnimatePresence>
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 gap-3">
