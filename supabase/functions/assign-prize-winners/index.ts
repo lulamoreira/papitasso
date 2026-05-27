@@ -81,6 +81,34 @@ serve(async (req) => {
             .limit(1);
           
           winnerId = topExacts?.[0]?.user_id;
+        } else if (prize.category === 'most_brazil_correct') {
+          // Find Brazil team ID
+          const { data: brazil } = await supabase.from("teams").select("id").eq("name", "Brasil").single();
+          if (brazil) {
+            const { data: topBrazil } = await supabase
+              .from("predictions_exact")
+              .select("user_id, count(id)")
+              .eq("pool_id", pool.id)
+              .gt("points_awarded", 0)
+              .or(`match_id.in.(select id from matches where home_team_id = '${brazil.id}' or away_team_id = '${brazil.id}')`)
+              .group("user_id")
+              .order("count", { ascending: false })
+              .limit(1);
+            winnerId = topBrazil?.[0]?.user_id;
+          }
+        } else if (prize.category === 'phase_leader') {
+          const phase = prize.custom_rule_jsonb?.phase;
+          if (phase) {
+            const { data: phaseLeader } = await supabase
+              .from("predictions_exact")
+              .select("user_id, sum(points_awarded)")
+              .eq("pool_id", pool.id)
+              .filter("match.phase", "eq", phase) // This requires a join or subquery, easier to use a custom view or complex query
+              .group("user_id")
+              .order("sum", { ascending: false })
+              .limit(1);
+            winnerId = phaseLeader?.[0]?.user_id;
+          }
         }
 
         if (winnerId) {
