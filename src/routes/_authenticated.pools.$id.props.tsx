@@ -31,7 +31,7 @@ export const Route = createFileRoute("/_authenticated/pools/$id/props")({
 });
 
 function PropsComponent() {
-  const { id } = useParams({ from: "/_authenticated/pools/$id/props" });
+  const { id } = useParams({ strict: false }) as any;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 

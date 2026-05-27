@@ -23,7 +23,7 @@ export const Route = createFileRoute("/_authenticated/pools/$id/props/edit")({
 });
 
 function PropsEditComponent() {
-  const { id } = useParams({ from: "/_authenticated/pools/$id/props/edit" });
+  const { id } = useParams({ strict: false }) as any;
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
