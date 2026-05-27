@@ -15,12 +15,15 @@ export const Route = createFileRoute("/join/$code")({
 
 function JoinPoolComponent() {
   const { code } = useParams({ from: "/join/$code" });
+  const search = (Route as any).useSearch();
+  const invitedBy = search?.ref;
+  
   const { data: pool } = useSuspenseQuery({ queryKey: ["invite", code], queryFn: () => getPoolByInviteCode({ data: code } as any) });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const joinMutation = useMutation({
-    mutationFn: () => joinPool({ data: code } as any),
+    mutationFn: () => joinPool({ data: { code, invitedBy } as any }),
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["myPools"] });
       toast.success("Bem-vindo ao bolão!");
@@ -30,6 +33,7 @@ function JoinPoolComponent() {
       toast.error(err.message || "Erro ao entrar no bolão");
     }
   });
+
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
