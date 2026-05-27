@@ -155,7 +155,7 @@ export const getPoolByInviteCode = createServerFn({ method: "GET" })
 export const joinPool = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
-    const code = rawData?.data || rawData;
+    const { code, invitedBy } = rawData?.data || rawData;
     const { supabase, userId } = context;
     
     // First find pool
@@ -172,16 +172,24 @@ export const joinPool = createServerFn({ method: "POST" })
       .insert({
         pool_id: pool.id,
         user_id: userId,
-        role: 'member'
+        role: 'member',
+        invited_by: invitedBy
       });
     
     if (memberError) {
       if (memberError.code === '23505') return { pool_id: pool.id }; // Already a member
       throw memberError;
     }
+
+    // Gamification: Award XP to inviter
+    if (invitedBy && invitedBy !== userId) {
+      await supabase.rpc('increment_xp', { p_user_id: invitedBy, p_amount: 50 });
+      // Logic for 'influencer' achievement will be in check-achievements
+    }
     
     return { pool_id: pool.id };
   });
+
 
 export const getMatchesForPool = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
