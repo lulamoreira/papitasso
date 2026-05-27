@@ -6,14 +6,14 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Trophy, Mail, Github, Facebook } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search: Record<string, unknown>) => ({
     redirect: (search.redirect as string) || "/",
   }),
-  beforeLoad: async ({ context, search }) => {
+  beforeLoad: async ({ search }) => {
     const { data } = await supabase.auth.getSession();
     if (data.session) {
       throw redirect({ to: search.redirect });
@@ -28,9 +28,8 @@ function LoginComponent() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSocialLogin = async (provider: "google" | "apple" | "facebook") => {
+  const handleSocialLogin = async (provider: "google" | "apple") => {
     try {
-      // @ts-ignore - lovable helper handles major providers
       const result = await lovable.auth.signInWithOAuth(provider, {
         redirect_uri: window.location.origin + search.redirect,
       });
