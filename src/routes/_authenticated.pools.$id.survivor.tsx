@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
-import { AlertCircle, Skull, Trophy, CheckCircle2 } from "lucide-react";
+import { Skull, Trophy, CheckCircle2, Calendar } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
@@ -49,12 +49,11 @@ function SurvivorComponent() {
     }
   });
 
-  const lastEliminatedRound = predictions?.find(p => p.result === 'eliminated')?.round_number;
+  const lastEliminatedRound = predictions?.find((p: any) => p.result === 'eliminated')?.round_number;
   const isAlive = !lastEliminatedRound;
-  const usedTeamIds = predictions?.map(p => p.team_id) || [];
+  const usedTeamIds = predictions?.map((p: any) => p.team_id) || [];
 
-  const currentRound = rounds?.find(r => new Date() >= new Date(r.starts_at) && new Date() <= new Date(r.ends_at)) || rounds?.[0];
-  const nextRound = rounds?.find(r => new Date() < new Date(r.starts_at));
+  const currentRound = rounds?.find((r: any) => new Date() >= new Date(r.starts_at) && new Date() <= new Date(r.ends_at)) || rounds?.[0];
 
   const handleConfirm = (roundNumber: number) => {
     if (!selectedTeam) return;
@@ -88,9 +87,8 @@ function SurvivorComponent() {
         <h2 className="font-bold flex items-center gap-2"><Calendar className="h-4 w-4" /> Rodadas</h2>
         
         {rounds?.map((round: any) => {
-          const prediction = predictions?.find(p => p.round_number === round.round_number);
+          const prediction = predictions?.find((p: any) => p.round_number === round.round_number);
           const isCurrent = currentRound?.id === round.id;
-          const isFuture = new Date(round.starts_at) > new Date();
           const isLocked = new Date() > new Date(round.starts_at);
 
           return (
@@ -165,27 +163,5 @@ function SurvivorComponent() {
         })}
       </div>
     </div>
-  );
-}
-
-function Calendar(props: any) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M8 2v4" />
-      <path d="M16 2v4" />
-      <rect width="18" height="18" x="3" y="4" rx="2" />
-      <path d="M3 10h18" />
-    </svg>
   );
 }
