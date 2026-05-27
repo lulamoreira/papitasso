@@ -14,6 +14,58 @@ export type Database = {
   }
   public: {
     Tables: {
+      chat_messages: {
+        Row: {
+          created_at: string | null
+          id: string
+          match_id: string | null
+          pool_id: string
+          reactions: Json | null
+          text: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          match_id?: string | null
+          pool_id: string
+          reactions?: Json | null
+          text: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          match_id?: string | null
+          pool_id?: string
+          reactions?: Json | null
+          text?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "chat_messages_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matches: {
         Row: {
           away_score: number | null
@@ -70,6 +122,61 @@ export type Database = {
             columns: ["home_team_id"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      mural_posts: {
+        Row: {
+          content: string
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          pool_id: string
+          target_user_id: string | null
+          type: string
+          user_id: string | null
+        }
+        Insert: {
+          content: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          pool_id: string
+          target_user_id?: string | null
+          type: string
+          user_id?: string | null
+        }
+        Update: {
+          content?: string
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          pool_id?: string
+          target_user_id?: string | null
+          type?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mural_posts_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mural_posts_target_user_id_fkey"
+            columns: ["target_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "mural_posts_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -861,6 +968,10 @@ export type Database = {
         }
       }
       refresh_leaderboard_view: { Args: never; Returns: undefined }
+      toggle_chat_reaction: {
+        Args: { p_emoji: string; p_message_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       match_phase:

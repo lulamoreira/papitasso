@@ -539,3 +539,106 @@ export const getPlayers = createServerFn({ method: "GET" })
     if (error) throw error;
     return data;
   });
+
+export const getChatMessages = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { poolId, matchId } = rawData?.data || rawData;
+    const { supabase } = context;
+    let query = supabase
+      .from("chat_messages")
+      .select("*, user:profiles(*)")
+      .eq("pool_id", poolId)
+      .order("created_at", { ascending: true });
+    
+    if (matchId) {
+      query = query.eq("match_id", matchId);
+    } else {
+      query = query.is("match_id", null);
+    }
+    
+    const { data, error } = await query;
+    if (error) throw error;
+    return data;
+  });
+
+export const sendChatMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { poolId, matchId, text } = rawData?.data || rawData;
+    const { supabase, userId } = context;
+
+    const { data, error } = await supabase
+      .from("chat_messages")
+      .insert({
+        pool_id: poolId,
+        match_id: matchId,
+        user_id: userId,
+        text
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  });
+
+export const toggleReaction = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { messageId, emoji } = rawData?.data || rawData;
+    const { supabase } = context;
+    const { error } = await supabase.rpc('toggle_chat_reaction', { 
+      p_message_id: messageId, 
+      p_emoji: emoji 
+    });
+    if (error) throw error;
+    return { success: true };
+  });
+
+export const getMuralPosts = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("mural_posts")
+      .select("*, user:profiles(*), target_user:profiles(*)")
+      .eq("pool_id", poolId)
+      .order("created_at", { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const createMuralPost = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { poolId, content, type = 'user_post' } = rawData?.data || rawData;
+    const { supabase, userId } = context;
+
+    const { data, error } = await supabase
+      .from("mural_posts")
+      .insert({
+        pool_id: poolId,
+        user_id: userId,
+        content,
+        type
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  });
+
+export const deleteMuralPost = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: postId, context }: any) => {
+    const { supabase } = context;
+    const { error } = await supabase
+      .from("mural_posts")
+      .delete()
+      .eq("id", postId);
+    if (error) throw error;
+    return { success: true };
+  });
