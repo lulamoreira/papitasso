@@ -76,4 +76,13 @@ function RootComponent() {
   );
 }
 
+function NotFoundComponent() {
+  const router = useRouter();
+  
+  // Checking if we are in a 404 state via router state is complex in TanStack Router
+  // But we can define a default NotFound component
+  return null;
+}
+
 import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
+
