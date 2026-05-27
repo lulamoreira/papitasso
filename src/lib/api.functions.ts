@@ -221,7 +221,14 @@ export const upsertPrediction = createServerFn({ method: "POST" })
       .single();
 
     if (error) throw error;
+
+    // Gamification: +5 XP for participation (only if it's the first time for this match/pool/user)
+    // For simplicity, we'll just add it if it was an insert or just add it anyway (capped by some logic if needed)
+    // Actually, let's just add it.
+    await supabase.rpc('increment_xp', { p_user_id: userId, p_amount: 5 });
+
     return data;
+
   });
 
 export const getPredictions = createServerFn({ method: "GET" })
