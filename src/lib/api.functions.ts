@@ -516,8 +516,13 @@ export const getDailyQuiz = createServerFn({ method: "GET" })
 
 export const submitQuizAnswer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ data: rawData, context }: any) => {
-    const { quizId, answerIndex } = rawData?.data || rawData;
+  .validator(z.object({
+    quizId: z.string(),
+    answerIndex: z.number()
+  }))
+  .handler(async ({ data, context }: any) => {
+    const { quizId, answerIndex } = data;
+
     const { supabase, userId } = context;
 
     const { data: quiz } = await supabase
