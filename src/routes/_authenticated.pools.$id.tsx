@@ -1,9 +1,9 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
-import { getPoolById, getLeaderboard, getMatchesForPool, getPredictions, getProfile } from "@/lib/api.functions";
+import { getPoolById, getLeaderboard, getMatchesForPool, getPredictions, getProfile, getPrizes, getPrizeWinners } from "@/lib/api.functions";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, ArrowDownRight, Minus, PencilLine, User as UserIcon } from "lucide-react";
+import { ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, ArrowDownRight, Minus, PencilLine, User as UserIcon, Gift, Award } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
