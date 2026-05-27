@@ -1,9 +1,9 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
-import { getPoolById, getLeaderboard, getMatchesForPool, getPredictions, getProfile } from "@/lib/api.functions";
+import { getPoolById, getLeaderboard, getMatchesForPool, getPredictions, getProfile, getPrizes, getPrizeWinners } from "@/lib/api.functions";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, ArrowDownRight, Minus, PencilLine, User as UserIcon } from "lucide-react";
+import { ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, ArrowDownRight, Minus, PencilLine, User as UserIcon, Gift, Award } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,6 +20,8 @@ export const Route = createFileRoute("/_authenticated/pools/$id")({
       context.queryClient.ensureQueryData({ queryKey: ["poolMatches", params.id], queryFn: () => getMatchesForPool({ data: params.id } as any) }),
       context.queryClient.ensureQueryData({ queryKey: ["predictions", params.id], queryFn: () => getPredictions({ data: params.id } as any) }),
       context.queryClient.ensureQueryData({ queryKey: ["profile"], queryFn: () => getProfile() }),
+      context.queryClient.ensureQueryData({ queryKey: ["prizes", params.id], queryFn: () => getPrizes({ data: params.id } as any) }),
+      context.queryClient.ensureQueryData({ queryKey: ["winners", params.id], queryFn: () => getPrizeWinners({ data: params.id } as any) }),
     ]);
   },
   component: PoolDetailComponent,
@@ -35,6 +37,11 @@ function PoolDetailComponent() {
   const { data: matches } = useSuspenseQuery({ queryKey: ["poolMatches", id], queryFn: () => getMatchesForPool({ data: id } as any) });
   const { data: predictions } = useSuspenseQuery({ queryKey: ["predictions", id], queryFn: () => getPredictions({ data: id } as any) });
   const { data: profile } = useSuspenseQuery({ queryKey: ["profile"], queryFn: () => getProfile() });
+  const { data: prizes } = useSuspenseQuery({ queryKey: ["prizes", id], queryFn: () => getPrizes({ data: id } as any) });
+  const { data: winners } = useSuspenseQuery({ queryKey: ["winners", id], queryFn: () => getPrizeWinners({ data: id } as any) });
+
+  const isOwner = pool?.owner_id === profile?.id;
+  const hasWinners = winners && winners.length > 0;
 
   const myEntry = leaderboard?.find((entry: any) => entry.user_id === profile?.id);
   const totalMatches = matches?.length || 0;
@@ -110,10 +117,12 @@ function PoolDetailComponent() {
         </Button>
 
         <Tabs defaultValue="matches" className="w-full">
-          <TabsList className="w-full grid grid-cols-3">
-            <TabsTrigger value="matches" className="gap-2"><Calendar className="h-4 w-4" /> Jogos</TabsTrigger>
-            <TabsTrigger value="ranking" className="gap-2"><Trophy className="h-4 w-4" /> Ranking</TabsTrigger>
-            <TabsTrigger value="members" className="gap-2"><Users className="h-4 w-4" /> Membros</TabsTrigger>
+          <TabsList className={`w-full grid ${hasWinners ? 'grid-cols-5' : 'grid-cols-4'}`}>
+            <TabsTrigger value="matches" className="gap-1 px-1"><Calendar className="h-3 w-3" /> <span className="hidden sm:inline">Jogos</span></TabsTrigger>
+            <TabsTrigger value="ranking" className="gap-1 px-1"><Trophy className="h-3 w-3" /> <span className="hidden sm:inline">Ranking</span></TabsTrigger>
+            <TabsTrigger value="prizes" className="gap-1 px-1"><Gift className="h-3 w-3" /> <span className="hidden sm:inline">Prêmios</span></TabsTrigger>
+            {hasWinners && <TabsTrigger value="winners" className="gap-1 px-1"><Award className="h-3 w-3" /> <span className="hidden sm:inline">Ganhadores</span></TabsTrigger>}
+            <TabsTrigger value="members" className="gap-1 px-1"><Users className="h-3 w-3" /> <span className="hidden sm:inline">Membros</span></TabsTrigger>
           </TabsList>
           
           <TabsContent value="matches" className="py-4 space-y-4">
@@ -216,6 +225,102 @@ function PoolDetailComponent() {
             </div>
           </TabsContent>
           
+          <TabsContent value="prizes" className="py-4 space-y-4">
+            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 text-center">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-yellow-700">🏆 Total em jogo</div>
+              <div className="text-2xl font-black text-yellow-600">
+                R$ {(prizes?.reduce((acc: number, p: any) => acc + (p.estimated_value_cents || 0), 0) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              {prizes?.map((prize: any) => (
+                <Card key={prize.id} className="overflow-hidden border-2 border-primary/5">
+                  <div className="aspect-video relative bg-muted">
+                    {prize.photo_url ? (
+                      <img src={prize.photo_url} className="w-full h-full object-cover" alt={prize.title} />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Gift className="h-12 w-12 text-muted-foreground opacity-20" />
+                      </div>
+                    )}
+                    {prize.rank && prize.rank <= 3 && (
+                      <div className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 h-8 w-8 rounded-full flex items-center justify-center font-black text-lg shadow-lg">
+                        {prize.rank === 1 ? '🥇' : prize.rank === 2 ? '🥈' : '🥉'}
+                      </div>
+                    )}
+                  </div>
+                  <CardContent className="p-4 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-bold text-lg leading-tight">{prize.title}</h3>
+                      <div className="text-right">
+                        <div className="text-[10px] font-bold text-muted-foreground uppercase">Valor Est.</div>
+                        <div className="font-black text-primary">R$ {(prize.estimated_value_cents / 100).toFixed(2)}</div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{prize.description}</p>
+                    {prize.sponsor && (
+                      <div className="text-[10px] font-bold text-muted-foreground uppercase pt-2 border-t">
+                        Oferecido por: <span className="text-primary">{prize.sponsor}</span>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {isOwner && (
+              <Button 
+                variant="outline" 
+                className="w-full h-12 border-dashed border-2 gap-2"
+                onClick={() => navigate({ to: `/pools/${id}/prizes/edit` })}
+              >
+                <Settings className="h-4 w-4" /> Editar Prêmios
+              </Button>
+            )}
+          </TabsContent>
+
+          <TabsContent value="winners" className="py-4 space-y-4">
+             {winners?.map((winner: any) => (
+               <Card key={winner.id} className="p-4 flex items-center justify-between gap-4">
+                 <div className="flex items-center gap-3">
+                   <div className="relative">
+                     <Avatar className="h-12 w-12 border-2 border-yellow-400">
+                       <AvatarImage src={winner.profile?.avatar_url} />
+                       <AvatarFallback><UserIcon /></AvatarFallback>
+                     </Avatar>
+                     <div className="absolute -bottom-1 -right-1 bg-yellow-400 rounded-full p-0.5">
+                       <Award className="h-3 w-3 text-yellow-900" />
+                     </div>
+                   </div>
+                   <div>
+                     <div className="font-bold">{winner.profile?.name}</div>
+                     <div className="text-xs text-muted-foreground">{winner.prize?.title}</div>
+                   </div>
+                 </div>
+                 <div className="text-right">
+                    <div className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                      winner.status === 'delivered' ? 'bg-green-500/10 text-green-600' : 
+                      winner.status === 'reserved' ? 'bg-blue-500/10 text-blue-600' : 
+                      'bg-yellow-500/10 text-yellow-600'
+                    }`}>
+                      {winner.status === 'delivered' ? 'Entregue' : winner.status === 'reserved' ? 'Reservado' : 'Pendente'}
+                    </div>
+                    {isOwner && winner.status !== 'delivered' && (
+                      <Button 
+                        variant="link" 
+                        size="sm" 
+                        className="text-[10px] h-auto p-0 h-6"
+                        onClick={() => navigate({ to: `/pools/${id}/winners` })}
+                      >
+                        Gerenciar
+                      </Button>
+                    )}
+                 </div>
+               </Card>
+             ))}
+          </TabsContent>
+
           <TabsContent value="members" className="py-20 text-center space-y-4">
             <Users className="h-12 w-12 text-muted-foreground mx-auto opacity-20" />
             <p className="text-muted-foreground">Em breve: Gerencie os participantes.</p>

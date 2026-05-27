@@ -300,6 +300,110 @@ export type Database = {
           },
         ]
       }
+      prize_winners: {
+        Row: {
+          created_at: string | null
+          delivered_at: string | null
+          delivery_proof_url: string | null
+          id: string
+          notes: string | null
+          prize_id: string
+          status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          delivered_at?: string | null
+          delivery_proof_url?: string | null
+          id?: string
+          notes?: string | null
+          prize_id: string
+          status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          delivered_at?: string | null
+          delivery_proof_url?: string | null
+          id?: string
+          notes?: string | null
+          prize_id?: string
+          status?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prize_winners_prize_id_fkey"
+            columns: ["prize_id"]
+            isOneToOne: false
+            referencedRelation: "prizes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prize_winners_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      prizes: {
+        Row: {
+          category: string
+          created_at: string | null
+          custom_rule_jsonb: Json | null
+          delivery_method: string | null
+          description: string | null
+          estimated_value_cents: number | null
+          id: string
+          photo_url: string | null
+          pool_id: string
+          position_order: number | null
+          rank: number | null
+          sponsor: string | null
+          title: string
+        }
+        Insert: {
+          category: string
+          created_at?: string | null
+          custom_rule_jsonb?: Json | null
+          delivery_method?: string | null
+          description?: string | null
+          estimated_value_cents?: number | null
+          id?: string
+          photo_url?: string | null
+          pool_id: string
+          position_order?: number | null
+          rank?: number | null
+          sponsor?: string | null
+          title: string
+        }
+        Update: {
+          category?: string
+          created_at?: string | null
+          custom_rule_jsonb?: Json | null
+          delivery_method?: string | null
+          description?: string | null
+          estimated_value_cents?: number | null
+          id?: string
+          photo_url?: string | null
+          pool_id?: string
+          position_order?: number | null
+          rank?: number | null
+          sponsor?: string | null
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prizes_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null

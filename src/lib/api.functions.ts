@@ -251,3 +251,79 @@ export const getLeaderboard = createServerFn({ method: "GET" })
     if (error) throw error;
     return data;
   });
+
+export const getPrizes = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("prizes")
+      .select("*")
+      .eq("pool_id", poolId)
+      .order("position_order", { ascending: true });
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const upsertPrize = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const data = rawData?.data || rawData;
+    const { supabase } = context;
+    const { data: result, error } = await supabase
+      .from("prizes")
+      .upsert(data)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return result;
+  });
+
+export const deletePrize = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: prizeId, context }: any) => {
+    const { supabase } = context;
+    const { error } = await supabase
+      .from("prizes")
+      .delete()
+      .eq("id", prizeId);
+    
+    if (error) throw error;
+    return { success: true };
+  });
+
+export const getPrizeWinners = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("prize_winners")
+      .select("*, prize:prizes(*), profile:profiles(*)")
+      .filter("prize.pool_id", "eq", poolId);
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const updateWinnerStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { winnerId, status, delivery_proof_url, notes } = rawData?.data || rawData;
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("prize_winners")
+      .update({
+        status,
+        delivery_proof_url,
+        notes,
+        delivered_at: status === 'delivered' ? new Date().toISOString() : null
+      })
+      .eq("id", winnerId)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  });
