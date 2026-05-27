@@ -25,55 +25,72 @@ const rarityColors = {
 };
 
 export function AchievementGrid({ achievements }: { achievements: Achievement[] }) {
+  const [sharingAchievement, setSharingAchievement] = useState<Achievement | null>(null);
+
   return (
-    <div className="grid grid-cols-4 gap-4">
-      {achievements.map((achievement, index) => (
-        <TooltipProvider key={achievement.id}>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <motion.div
-                initial={{ scale: 0, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ delay: index * 0.05 }}
-                className={cn(
-                  "aspect-square flex flex-col items-center justify-center rounded-xl border-2 bg-muted/30 transition-all",
-                  achievement.unlocked_at 
-                    ? cn("bg-background shadow-md", rarityColors[achievement.rarity]) 
-                    : "opacity-40 grayscale"
-                )}
-              >
-                {achievement.unlocked_at ? (
-                  <div className="relative">
-                    <Trophy className="h-8 w-8" />
-                    {achievement.rarity === 'legendary' && (
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-                        className="absolute -inset-1 border border-dashed border-yellow-500 rounded-full"
-                      />
-                    )}
+    <>
+      <div className="grid grid-cols-4 gap-4">
+        {achievements.map((achievement, index) => (
+          <TooltipProvider key={achievement.id}>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: index * 0.05 }}
+                  onClick={() => achievement.unlocked_at && setSharingAchievement(achievement)}
+                  className={cn(
+                    "aspect-square flex flex-col items-center justify-center rounded-xl border-2 bg-muted/30 transition-all cursor-pointer",
+                    achievement.unlocked_at 
+                      ? cn("bg-background shadow-md hover:border-primary", rarityColors[achievement.rarity]) 
+                      : "opacity-40 grayscale cursor-not-allowed"
+                  )}
+                >
+                  {achievement.unlocked_at ? (
+                    <div className="relative">
+                      <Trophy className="h-8 w-8" />
+                      {achievement.rarity === 'legendary' && (
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
+                          className="absolute -inset-1 border border-dashed border-yellow-500 rounded-full"
+                        />
+                      )}
+                    </div>
+                  ) : (
+                    <Lock className="h-6 w-6 text-muted-foreground" />
+                  )}
+                </motion.div>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[200px] text-center p-3">
+                <p className="font-bold text-primary">{achievement.name}</p>
+                <p className="text-xs text-muted-foreground mb-1">{achievement.description}</p>
+                <div className="flex items-center justify-between text-[10px] uppercase font-bold">
+                  <span className={rarityColors[achievement.rarity]}>{achievement.rarity}</span>
+                  <span className="text-yellow-500">+{achievement.xp_reward} XP</span>
+                </div>
+                {achievement.unlocked_at && (
+                  <div className="mt-2 border-t pt-2 border-white/10 space-y-2">
+                    <p className="text-[10px] italic">
+                      Desbloqueado em {new Date(achievement.unlocked_at).toLocaleDateString()}
+                    </p>
+                    <p className="text-[10px] font-bold text-primary">Clique para compartilhar</p>
                   </div>
-                ) : (
-                  <Lock className="h-6 w-6 text-muted-foreground" />
                 )}
-              </motion.div>
-            </TooltipTrigger>
-            <TooltipContent className="max-w-[200px] text-center p-3">
-              <p className="font-bold text-primary">{achievement.name}</p>
-              <p className="text-xs text-muted-foreground mb-1">{achievement.description}</p>
-              <div className="flex items-center justify-between text-[10px] uppercase font-bold">
-                <span className={rarityColors[achievement.rarity]}>{achievement.rarity}</span>
-                <span className="text-yellow-500">+{achievement.xp_reward} XP</span>
-              </div>
-              {achievement.unlocked_at && (
-                <p className="text-[10px] mt-2 border-t pt-1 border-white/10 italic">
-                  Desbloqueado em {new Date(achievement.unlocked_at).toLocaleDateString()}
-                </p>
-              )}
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      ))}
-    </div>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        ))}
+      </div>
+
+      <ShareModal
+        isOpen={!!sharingAchievement}
+        onClose={() => setSharingAchievement(null)}
+        title={sharingAchievement?.name || ""}
+        description={sharingAchievement?.description || ""}
+        colors={sharingAchievement?.rarity === 'legendary' ? '#eab308' : sharingAchievement?.rarity === 'epic' ? '#a855f7' : '#16a34a'}
+      />
+    </>
   );
 }
+
