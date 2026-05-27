@@ -239,6 +239,54 @@ export type Database = {
           },
         ]
       }
+      predictions_bracket: {
+        Row: {
+          bracket_json: Json
+          created_at: string | null
+          id: string
+          locked_at: string | null
+          points_awarded: number | null
+          pool_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          bracket_json: Json
+          created_at?: string | null
+          id?: string
+          locked_at?: string | null
+          points_awarded?: number | null
+          pool_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          bracket_json?: Json
+          created_at?: string | null
+          id?: string
+          locked_at?: string | null
+          points_awarded?: number | null
+          pool_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_bracket_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_bracket_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       predictions_exact: {
         Row: {
           away_score: number
@@ -293,6 +341,122 @@ export type Database = {
           },
           {
             foreignKeyName: "predictions_exact_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      predictions_pickem: {
+        Row: {
+          created_at: string | null
+          id: string
+          locked_at: string | null
+          match_id: string
+          points_awarded: number | null
+          pool_id: string
+          updated_at: string | null
+          user_id: string
+          winner: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          locked_at?: string | null
+          match_id: string
+          points_awarded?: number | null
+          pool_id: string
+          updated_at?: string | null
+          user_id: string
+          winner: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          locked_at?: string | null
+          match_id?: string
+          points_awarded?: number | null
+          pool_id?: string
+          updated_at?: string | null
+          user_id?: string
+          winner?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_pickem_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_pickem_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_pickem_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      predictions_survivor: {
+        Row: {
+          created_at: string | null
+          id: string
+          locked_at: string | null
+          pool_id: string
+          result: string | null
+          round_number: number
+          team_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          locked_at?: string | null
+          pool_id: string
+          result?: string | null
+          round_number: number
+          team_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          locked_at?: string | null
+          pool_id?: string
+          result?: string | null
+          round_number?: number
+          team_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_survivor_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_survivor_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_survivor_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -480,6 +644,47 @@ export type Database = {
           },
         ]
       }
+      survivor_rounds: {
+        Row: {
+          created_at: string | null
+          ends_at: string
+          id: string
+          match_ids: string[]
+          pool_id: string
+          round_number: number
+          starts_at: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          ends_at: string
+          id?: string
+          match_ids: string[]
+          pool_id: string
+          round_number: number
+          starts_at: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          ends_at?: string
+          id?: string
+          match_ids?: string[]
+          pool_id?: string
+          round_number?: number
+          starts_at?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "survivor_rounds_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       teams: {
         Row: {
           code: string
@@ -511,21 +716,23 @@ export type Database = {
     Views: {
       leaderboard_view: {
         Row: {
-          points: number | null
+          avatar_url: string | null
+          display_name: string | null
           pool_id: string | null
-          position: number | null
+          rank: number | null
+          total_score: number | null
           user_id: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "predictions_exact_pool_id_fkey"
+            foreignKeyName: "pool_members_pool_id_fkey"
             columns: ["pool_id"]
             isOneToOne: false
             referencedRelation: "pools"
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "predictions_exact_user_id_fkey"
+            foreignKeyName: "pool_members_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
