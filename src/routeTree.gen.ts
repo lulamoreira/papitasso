@@ -18,6 +18,7 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPoolsIndexRouteImport } from './routes/_authenticated.pools.index'
 import { Route as AuthenticatedPoolsNewRouteImport } from './routes/_authenticated.pools.new'
 import { Route as AuthenticatedPoolsIdRouteImport } from './routes/_authenticated.pools.$id'
+import { Route as AuthenticatedPoolsIdWinnersRouteImport } from './routes/_authenticated.pools.$id.winners'
 import { Route as AuthenticatedPoolsIdPredictRouteImport } from './routes/_authenticated.pools.$id.predict'
 import { Route as AuthenticatedPoolsIdPrizesEditRouteImport } from './routes/_authenticated.pools.$id.prizes.edit'
 import { Route as AuthenticatedPoolsIdPredictMatchIdRouteImport } from './routes/_authenticated.pools.$id.predict.$matchId'
@@ -66,6 +67,12 @@ const AuthenticatedPoolsIdRoute = AuthenticatedPoolsIdRouteImport.update({
   path: '/pools/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPoolsIdWinnersRoute =
+  AuthenticatedPoolsIdWinnersRouteImport.update({
+    id: '/winners',
+    path: '/winners',
+    getParentRoute: () => AuthenticatedPoolsIdRoute,
+  } as any)
 const AuthenticatedPoolsIdPredictRoute =
   AuthenticatedPoolsIdPredictRouteImport.update({
     id: '/predict',
@@ -95,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/pools/new': typeof AuthenticatedPoolsNewRoute
   '/pools/': typeof AuthenticatedPoolsIndexRoute
   '/pools/$id/predict': typeof AuthenticatedPoolsIdPredictRouteWithChildren
+  '/pools/$id/winners': typeof AuthenticatedPoolsIdWinnersRoute
   '/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
   '/pools/$id/prizes/edit': typeof AuthenticatedPoolsIdPrizesEditRoute
 }
@@ -108,6 +116,7 @@ export interface FileRoutesByTo {
   '/pools/new': typeof AuthenticatedPoolsNewRoute
   '/pools': typeof AuthenticatedPoolsIndexRoute
   '/pools/$id/predict': typeof AuthenticatedPoolsIdPredictRouteWithChildren
+  '/pools/$id/winners': typeof AuthenticatedPoolsIdWinnersRoute
   '/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
   '/pools/$id/prizes/edit': typeof AuthenticatedPoolsIdPrizesEditRoute
 }
@@ -123,6 +132,7 @@ export interface FileRoutesById {
   '/_authenticated/pools/new': typeof AuthenticatedPoolsNewRoute
   '/_authenticated/pools/': typeof AuthenticatedPoolsIndexRoute
   '/_authenticated/pools/$id/predict': typeof AuthenticatedPoolsIdPredictRouteWithChildren
+  '/_authenticated/pools/$id/winners': typeof AuthenticatedPoolsIdWinnersRoute
   '/_authenticated/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
   '/_authenticated/pools/$id/prizes/edit': typeof AuthenticatedPoolsIdPrizesEditRoute
 }
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/pools/new'
     | '/pools/'
     | '/pools/$id/predict'
+    | '/pools/$id/winners'
     | '/pools/$id/predict/$matchId'
     | '/pools/$id/prizes/edit'
   fileRoutesByTo: FileRoutesByTo
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/pools/new'
     | '/pools'
     | '/pools/$id/predict'
+    | '/pools/$id/winners'
     | '/pools/$id/predict/$matchId'
     | '/pools/$id/prizes/edit'
   id:
@@ -165,6 +177,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pools/new'
     | '/_authenticated/pools/'
     | '/_authenticated/pools/$id/predict'
+    | '/_authenticated/pools/$id/winners'
     | '/_authenticated/pools/$id/predict/$matchId'
     | '/_authenticated/pools/$id/prizes/edit'
   fileRoutesById: FileRoutesById
@@ -240,6 +253,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPoolsIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/pools/$id/winners': {
+      id: '/_authenticated/pools/$id/winners'
+      path: '/winners'
+      fullPath: '/pools/$id/winners'
+      preLoaderRoute: typeof AuthenticatedPoolsIdWinnersRouteImport
+      parentRoute: typeof AuthenticatedPoolsIdRoute
+    }
     '/_authenticated/pools/$id/predict': {
       id: '/_authenticated/pools/$id/predict'
       path: '/predict'
@@ -281,12 +301,14 @@ const AuthenticatedPoolsIdPredictRouteWithChildren =
 
 interface AuthenticatedPoolsIdRouteChildren {
   AuthenticatedPoolsIdPredictRoute: typeof AuthenticatedPoolsIdPredictRouteWithChildren
+  AuthenticatedPoolsIdWinnersRoute: typeof AuthenticatedPoolsIdWinnersRoute
   AuthenticatedPoolsIdPrizesEditRoute: typeof AuthenticatedPoolsIdPrizesEditRoute
 }
 
 const AuthenticatedPoolsIdRouteChildren: AuthenticatedPoolsIdRouteChildren = {
   AuthenticatedPoolsIdPredictRoute:
     AuthenticatedPoolsIdPredictRouteWithChildren,
+  AuthenticatedPoolsIdWinnersRoute: AuthenticatedPoolsIdWinnersRoute,
   AuthenticatedPoolsIdPrizesEditRoute: AuthenticatedPoolsIdPrizesEditRoute,
 }
 
