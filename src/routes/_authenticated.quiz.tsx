@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { getDailyQuiz, submitQuizAnswer, getQuizUserStatus, getProfile } from "@/lib/api.functions";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
@@ -10,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, CheckCircle2, XCircle, Zap, Info } from "lucide-react";
 import confetti from "canvas-confetti";
 
-export const Route = createFileRoute("/_authenticated/quiz")({
+export const Route = createFileRoute("/_authenticated/quiz" as any)({
   component: QuizPage,
 });
 
@@ -35,9 +34,8 @@ function QuizPage() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
   const submitMutation = useMutation({
-    mutationFn: (variables: { quizId: string; answerIndex: number }) => submitQuizAnswer({ data: variables }),
+    mutationFn: (variables: any) => submitQuizAnswer({ data: variables }),
     onSuccess: (data: any) => {
-
       queryClient.invalidateQueries({ queryKey: ["quiz-status"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       if (data.is_correct) {
@@ -57,13 +55,12 @@ function QuizPage() {
   const handleAnswer = (index: number) => {
     if (userStatus || submitMutation.isPending) return;
     setSelectedOption(index);
-    submitMutation.mutate(index);
+    submitMutation.mutate({ quizId: quiz.id, answerIndex: index });
   };
 
   if (!quiz) return <div className="p-8 text-center">Carregando quiz do dia...</div>;
 
   const isAnswered = !!userStatus;
-  const isCorrect = userStatus?.is_correct;
 
   return (
     <div className="container max-w-2xl mx-auto p-4 pb-20 space-y-6">
