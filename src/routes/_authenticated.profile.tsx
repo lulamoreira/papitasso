@@ -38,7 +38,9 @@ function ProfileComponent() {
 
   const [name, setName] = useState(profile?.name || "");
   const [isEditing, setIsEditing] = useState(false);
-  const [newUnlock, setNewUnlock] = useState<any>(null);
+  const [theme, setTheme] = useState(typeof document !== 'undefined' ? document.documentElement.getAttribute('data-theme') || 'default' : 'default');
+  const [soundEnabled, setSoundEnabled] = useState(true);
+
   
   const queryClient = useQueryClient();
   const navigate = useNavigate();
