@@ -492,6 +492,21 @@ export const getPredictionsProps = createServerFn({ method: "GET" })
     return data;
   });
 
+export const getAchievementById = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: id, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("achievements")
+      .select("*")
+      .eq("id", id)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  });
+
+
 export const upsertPredictionProp = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
