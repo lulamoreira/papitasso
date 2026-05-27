@@ -37,6 +37,11 @@ function PoolDetailComponent() {
   const { data: matches } = useSuspenseQuery({ queryKey: ["poolMatches", id], queryFn: () => getMatchesForPool({ data: id } as any) });
   const { data: predictions } = useSuspenseQuery({ queryKey: ["predictions", id], queryFn: () => getPredictions({ data: id } as any) });
   const { data: profile } = useSuspenseQuery({ queryKey: ["profile"], queryFn: () => getProfile() });
+  const { data: prizes } = useSuspenseQuery({ queryKey: ["prizes", id], queryFn: () => getPrizes({ data: id } as any) });
+  const { data: winners } = useSuspenseQuery({ queryKey: ["winners", id], queryFn: () => getPrizeWinners({ data: id } as any) });
+
+  const isOwner = pool?.owner_id === profile?.id;
+  const hasWinners = winners && winners.length > 0;
 
   const myEntry = leaderboard?.find((entry: any) => entry.user_id === profile?.id);
   const totalMatches = matches?.length || 0;
