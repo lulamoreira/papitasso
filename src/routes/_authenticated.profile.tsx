@@ -138,19 +138,65 @@ function ProfileComponent() {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm uppercase tracking-wider">Configurações</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               <div className="space-y-2">
                 <label className="text-xs font-bold uppercase text-muted-foreground">Nome de Exibição</label>
                 <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Seu nome" className="bg-background" />
               </div>
-              <Button className="w-full gap-2 font-bold" onClick={() => updateMutation.mutate({ name })} disabled={updateMutation.isPending}>
-                <Save className="h-4 w-4" />
-                Salvar Alterações
-              </Button>
-              <Button variant="outline" className="w-full text-destructive hover:text-destructive gap-2 font-bold" onClick={handleLogout}>
-                <LogOut className="h-4 w-4" />
-                Sair da Conta
-              </Button>
+
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <Palette className="h-4 w-4 text-muted-foreground" />
+                  <label className="text-xs font-bold uppercase text-muted-foreground">Tema Visual</label>
+                </div>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: 'default', name: 'Verde Amarela', colors: ['#009C3B', '#FFDF00'] },
+                    { id: 'night', name: 'Noite de Copa', colors: ['#000', '#0f0'] },
+                    { id: 'stadium', name: 'Estádio', colors: ['#1a8c3d', '#ff7b00'] }
+                  ].map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => {
+                        setTheme(t.id);
+                        document.documentElement.setAttribute('data-theme', t.id);
+                      }}
+                      className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 transition-all ${theme === t.id ? 'border-primary bg-primary/10' : 'border-transparent bg-background/50 hover:bg-background'}`}
+                    >
+                      <div className="flex h-4 w-full gap-1 rounded overflow-hidden">
+                        <div className="flex-1" style={{ backgroundColor: t.colors[0] }} />
+                        <div className="flex-1" style={{ backgroundColor: t.colors[1] }} />
+                      </div>
+                      <span className="text-[9px] font-bold leading-tight">{t.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between p-3 rounded-lg bg-background/50">
+                <div className="flex items-center gap-2">
+                  {soundEnabled ? <Volume2 className="h-4 w-4" /> : <VolumeX className="h-4 w-4" />}
+                  <span className="text-sm font-medium">Efeitos Sonoros</span>
+                </div>
+                <Button 
+                  variant={soundEnabled ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setSoundEnabled(!soundEnabled)}
+                >
+                  {soundEnabled ? "Ativado" : "Desativado"}
+                </Button>
+              </div>
+
+              <div className="pt-2 space-y-2">
+                <Button className="w-full gap-2 font-bold" onClick={() => updateMutation.mutate({ name })} disabled={updateMutation.isPending}>
+                  <Save className="h-4 w-4" />
+                  Salvar Alterações
+                </Button>
+                <Button variant="outline" className="w-full text-destructive hover:text-destructive gap-2 font-bold" onClick={handleLogout}>
+                  <LogOut className="h-4 w-4" />
+                  Sair da Conta
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
