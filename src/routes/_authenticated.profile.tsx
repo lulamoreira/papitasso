@@ -1,13 +1,20 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProfile, updateProfile } from "@/lib/api.functions";
+import { getProfile, updateProfile, getAchievements, getCollectedCards, getUserStats, getTeams } from "@/lib/api.functions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { User, LogOut, ChevronLeft, Save } from "lucide-react";
+import { User, LogOut, ChevronLeft, Save, Settings, Trophy, LayoutGrid, Info } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { TierBadge, TierType } from "@/components/gamification/TierBadge";
+import { XPProgressBar } from "@/components/gamification/XPProgressBar";
+import { AchievementGrid } from "@/components/gamification/AchievementGrid";
+import { TeamAlbum } from "@/components/gamification/TeamAlbum";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { UnlockOverlay } from "@/components/gamification/UnlockOverlay";
+
 
 export const Route = createFileRoute("/_authenticated/profile")({
   loader: async ({ context }) => {
