@@ -6,8 +6,9 @@ import { ChevronLeft } from "lucide-react";
 import { TeamCard } from "@/components/gamification/TeamCard";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/profile/cards/$teamId")({
-  loader: async ({ context, params }) => {
+export const Route = createFileRoute("/_authenticated/profile/cards/$teamId" as any)({
+  loader: async ({ context }: any) => {
+
     await Promise.all([
       context.queryClient.ensureQueryData({ queryKey: ["teams"], queryFn: () => getTeams() }),
       context.queryClient.ensureQueryData({ queryKey: ["collected_cards"], queryFn: () => getCollectedCards() }),
