@@ -18,6 +18,8 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPoolsIndexRouteImport } from './routes/_authenticated.pools.index'
 import { Route as AuthenticatedPoolsNewRouteImport } from './routes/_authenticated.pools.new'
 import { Route as AuthenticatedPoolsIdRouteImport } from './routes/_authenticated.pools.$id'
+import { Route as AuthenticatedPoolsIdPredictRouteImport } from './routes/_authenticated.pools.$id.predict'
+import { Route as AuthenticatedPoolsIdPredictMatchIdRouteImport } from './routes/_authenticated.pools.$id.predict.$matchId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -63,6 +65,18 @@ const AuthenticatedPoolsIdRoute = AuthenticatedPoolsIdRouteImport.update({
   path: '/pools/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPoolsIdPredictRoute =
+  AuthenticatedPoolsIdPredictRouteImport.update({
+    id: '/predict',
+    path: '/predict',
+    getParentRoute: () => AuthenticatedPoolsIdRoute,
+  } as any)
+const AuthenticatedPoolsIdPredictMatchIdRoute =
+  AuthenticatedPoolsIdPredictMatchIdRouteImport.update({
+    id: '/$matchId',
+    path: '/$matchId',
+    getParentRoute: () => AuthenticatedPoolsIdPredictRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
@@ -70,9 +84,11 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/join/$code': typeof JoinCodeRoute
-  '/pools/$id': typeof AuthenticatedPoolsIdRoute
+  '/pools/$id': typeof AuthenticatedPoolsIdRouteWithChildren
   '/pools/new': typeof AuthenticatedPoolsNewRoute
   '/pools/': typeof AuthenticatedPoolsIndexRoute
+  '/pools/$id/predict': typeof AuthenticatedPoolsIdPredictRouteWithChildren
+  '/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -80,9 +96,11 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/join/$code': typeof JoinCodeRoute
   '/': typeof AuthenticatedIndexRoute
-  '/pools/$id': typeof AuthenticatedPoolsIdRoute
+  '/pools/$id': typeof AuthenticatedPoolsIdRouteWithChildren
   '/pools/new': typeof AuthenticatedPoolsNewRoute
   '/pools': typeof AuthenticatedPoolsIndexRoute
+  '/pools/$id/predict': typeof AuthenticatedPoolsIdPredictRouteWithChildren
+  '/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -92,9 +110,11 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/join/$code': typeof JoinCodeRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
-  '/_authenticated/pools/$id': typeof AuthenticatedPoolsIdRoute
+  '/_authenticated/pools/$id': typeof AuthenticatedPoolsIdRouteWithChildren
   '/_authenticated/pools/new': typeof AuthenticatedPoolsNewRoute
   '/_authenticated/pools/': typeof AuthenticatedPoolsIndexRoute
+  '/_authenticated/pools/$id/predict': typeof AuthenticatedPoolsIdPredictRouteWithChildren
+  '/_authenticated/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,6 +127,8 @@ export interface FileRouteTypes {
     | '/pools/$id'
     | '/pools/new'
     | '/pools/'
+    | '/pools/$id/predict'
+    | '/pools/$id/predict/$matchId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -117,6 +139,8 @@ export interface FileRouteTypes {
     | '/pools/$id'
     | '/pools/new'
     | '/pools'
+    | '/pools/$id/predict'
+    | '/pools/$id/predict/$matchId'
   id:
     | '__root__'
     | '/_authenticated'
@@ -128,6 +152,8 @@ export interface FileRouteTypes {
     | '/_authenticated/pools/$id'
     | '/_authenticated/pools/new'
     | '/_authenticated/pools/'
+    | '/_authenticated/pools/$id/predict'
+    | '/_authenticated/pools/$id/predict/$matchId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -201,14 +227,55 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPoolsIdRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/pools/$id/predict': {
+      id: '/_authenticated/pools/$id/predict'
+      path: '/predict'
+      fullPath: '/pools/$id/predict'
+      preLoaderRoute: typeof AuthenticatedPoolsIdPredictRouteImport
+      parentRoute: typeof AuthenticatedPoolsIdRoute
+    }
+    '/_authenticated/pools/$id/predict/$matchId': {
+      id: '/_authenticated/pools/$id/predict/$matchId'
+      path: '/$matchId'
+      fullPath: '/pools/$id/predict/$matchId'
+      preLoaderRoute: typeof AuthenticatedPoolsIdPredictMatchIdRouteImport
+      parentRoute: typeof AuthenticatedPoolsIdPredictRoute
+    }
   }
 }
+
+interface AuthenticatedPoolsIdPredictRouteChildren {
+  AuthenticatedPoolsIdPredictMatchIdRoute: typeof AuthenticatedPoolsIdPredictMatchIdRoute
+}
+
+const AuthenticatedPoolsIdPredictRouteChildren: AuthenticatedPoolsIdPredictRouteChildren =
+  {
+    AuthenticatedPoolsIdPredictMatchIdRoute:
+      AuthenticatedPoolsIdPredictMatchIdRoute,
+  }
+
+const AuthenticatedPoolsIdPredictRouteWithChildren =
+  AuthenticatedPoolsIdPredictRoute._addFileChildren(
+    AuthenticatedPoolsIdPredictRouteChildren,
+  )
+
+interface AuthenticatedPoolsIdRouteChildren {
+  AuthenticatedPoolsIdPredictRoute: typeof AuthenticatedPoolsIdPredictRouteWithChildren
+}
+
+const AuthenticatedPoolsIdRouteChildren: AuthenticatedPoolsIdRouteChildren = {
+  AuthenticatedPoolsIdPredictRoute:
+    AuthenticatedPoolsIdPredictRouteWithChildren,
+}
+
+const AuthenticatedPoolsIdRouteWithChildren =
+  AuthenticatedPoolsIdRoute._addFileChildren(AuthenticatedPoolsIdRouteChildren)
 
 interface AuthenticatedRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
-  AuthenticatedPoolsIdRoute: typeof AuthenticatedPoolsIdRoute
+  AuthenticatedPoolsIdRoute: typeof AuthenticatedPoolsIdRouteWithChildren
   AuthenticatedPoolsNewRoute: typeof AuthenticatedPoolsNewRoute
   AuthenticatedPoolsIndexRoute: typeof AuthenticatedPoolsIndexRoute
 }
@@ -217,7 +284,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
-  AuthenticatedPoolsIdRoute: AuthenticatedPoolsIdRoute,
+  AuthenticatedPoolsIdRoute: AuthenticatedPoolsIdRouteWithChildren,
   AuthenticatedPoolsNewRoute: AuthenticatedPoolsNewRoute,
   AuthenticatedPoolsIndexRoute: AuthenticatedPoolsIndexRoute,
 }
