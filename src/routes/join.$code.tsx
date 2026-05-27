@@ -8,19 +8,19 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/join/$code")({
   loader: async ({ params, context }) => {
-    await context.queryClient.ensureQueryData({ queryKey: ["invite", params.code], queryFn: () => getPoolByInviteCode({ data: params.code }) });
+    await context.queryClient.ensureQueryData({ queryKey: ["invite", params.code], queryFn: () => getPoolByInviteCode({ data: params.code } as any) });
   },
   component: JoinPoolComponent,
 });
 
 function JoinPoolComponent() {
   const { code } = useParams({ from: "/join/$code" });
-  const { data: pool } = useSuspenseQuery({ queryKey: ["invite", code], queryFn: () => getPoolByInviteCode({ data: code }) });
+  const { data: pool } = useSuspenseQuery({ queryKey: ["invite", code], queryFn: () => getPoolByInviteCode({ data: code } as any) });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const joinMutation = useMutation({
-    mutationFn: () => joinPool({ data: code }),
+    mutationFn: () => joinPool({ data: code } as any),
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["myPools"] });
       toast.success("Bem-vindo ao bolão!");
