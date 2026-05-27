@@ -269,7 +269,30 @@ function NewPoolComponent() {
               </div>
             )}
 
-            {step === 5 && createdPool && (
+            {step === 5 && (
+              <div className="space-y-6 text-center">
+                <div className="h-16 w-16 rounded-full bg-yellow-500/10 flex items-center justify-center mx-auto">
+                  <Trophy className="h-8 w-8 text-yellow-600" />
+                </div>
+                <div className="space-y-2">
+                  <h2 className="text-xl font-bold">Quer oferecer prêmios?</h2>
+                  <p className="text-sm text-muted-foreground">Você pode adicionar prêmios físicos (camisas, eletrônicos, etc) agora ou depois.</p>
+                </div>
+                
+                <Card className="p-6 border-dashed border-2">
+                  <p className="text-sm text-muted-foreground mb-4">Adicione prêmios para engajar mais os participantes!</p>
+                  <Button variant="outline" onClick={() => toast.info("Você poderá adicionar prêmios detalhados após criar o bolão.")}>
+                    + Definir Prêmios
+                  </Button>
+                </Card>
+
+                <Button variant="link" className="text-muted-foreground" onClick={handleCreate}>
+                  Pular — adicionar depois
+                </Button>
+              </div>
+            )}
+
+            {step === 6 && createdPool && (
               <div className="space-y-8 flex flex-col items-center text-center">
                 <div className="space-y-2">
                   <div className="h-16 w-16 rounded-full bg-green-500/10 flex items-center justify-center mx-auto">
@@ -307,14 +330,14 @@ function NewPoolComponent() {
           </motion.div>
         </AnimatePresence>
 
-        {step < 5 && (
+        {step < 6 && (
           <div className="pt-8 pb-4">
             <Button 
               className="w-full h-12 text-lg font-bold gap-2"
-              onClick={step === 4 ? handleCreate : nextStep}
+              onClick={step === 5 ? handleCreate : nextStep}
               disabled={createPoolMutation.isPending}
             >
-              {createPoolMutation.isPending ? "Criando..." : step === 4 ? "Finalizar e Criar" : "Próximo"}
+              {createPoolMutation.isPending ? "Criando..." : step === 5 ? "Finalizar e Criar" : "Próximo"}
               <ChevronRight className="h-5 w-5" />
             </Button>
           </div>
