@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { FantasyPitch } from "@/components/fantasy/FantasyPitch";
 import { Trophy, Users, TrendingUp, Clock, ChevronRight, Settings, ArrowRightLeft } from "lucide-react";
 import { motion } from "framer-motion";
+import { Badge } from "@/components/ui/badge";
+
 
 export const Route = createFileRoute("/_authenticated/pools/$id/fantasy" as any)({
   loader: async ({ params, context }: any) => {
