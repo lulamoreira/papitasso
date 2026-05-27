@@ -14,7 +14,166 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      matches: {
+        Row: {
+          away_score: number | null
+          away_team_id: string | null
+          city: string | null
+          country: string | null
+          home_score: number | null
+          home_team_id: string | null
+          id: string
+          kickoff_at: string | null
+          phase: Database["public"]["Enums"]["match_phase"] | null
+          placeholder_label: string | null
+          stadium: string | null
+          status: Database["public"]["Enums"]["match_status"] | null
+        }
+        Insert: {
+          away_score?: number | null
+          away_team_id?: string | null
+          city?: string | null
+          country?: string | null
+          home_score?: number | null
+          home_team_id?: string | null
+          id?: string
+          kickoff_at?: string | null
+          phase?: Database["public"]["Enums"]["match_phase"] | null
+          placeholder_label?: string | null
+          stadium?: string | null
+          status?: Database["public"]["Enums"]["match_status"] | null
+        }
+        Update: {
+          away_score?: number | null
+          away_team_id?: string | null
+          city?: string | null
+          country?: string | null
+          home_score?: number | null
+          home_team_id?: string | null
+          id?: string
+          kickoff_at?: string | null
+          phase?: Database["public"]["Enums"]["match_phase"] | null
+          placeholder_label?: string | null
+          stadium?: string | null
+          status?: Database["public"]["Enums"]["match_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matches_away_team_id_fkey"
+            columns: ["away_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_home_team_id_fkey"
+            columns: ["home_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      players: {
+        Row: {
+          id: string
+          market_value: number | null
+          name: string
+          photo_url: string | null
+          position: string | null
+          team_id: string | null
+        }
+        Insert: {
+          id?: string
+          market_value?: number | null
+          name: string
+          photo_url?: string | null
+          position?: string | null
+          team_id?: string | null
+        }
+        Update: {
+          id?: string
+          market_value?: number | null
+          name?: string
+          photo_url?: string | null
+          position?: string | null
+          team_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "players_team_id_fkey"
+            columns: ["team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string | null
+          favorite_team_id: string | null
+          id: string
+          league_tier: string | null
+          name: string | null
+          xp: number | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string | null
+          favorite_team_id?: string | null
+          id: string
+          league_tier?: string | null
+          name?: string | null
+          xp?: number | null
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string | null
+          favorite_team_id?: string | null
+          id?: string
+          league_tier?: string | null
+          name?: string | null
+          xp?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_favorite_team_id_fkey"
+            columns: ["favorite_team_id"]
+            isOneToOne: false
+            referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      teams: {
+        Row: {
+          code: string
+          fifa_ranking: number | null
+          flag_url: string
+          group_letter: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          code: string
+          fifa_ranking?: number | null
+          flag_url: string
+          group_letter?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          code?: string
+          fifa_ranking?: number | null
+          flag_url?: string
+          group_letter?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +182,15 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      match_phase:
+        | "group"
+        | "round_of_32"
+        | "round_of_16"
+        | "quarter"
+        | "semi"
+        | "third"
+        | "final"
+      match_status: "scheduled" | "live" | "finished"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +317,17 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      match_phase: [
+        "group",
+        "round_of_32",
+        "round_of_16",
+        "quarter",
+        "semi",
+        "third",
+        "final",
+      ],
+      match_status: ["scheduled", "live", "finished"],
+    },
   },
 } as const
