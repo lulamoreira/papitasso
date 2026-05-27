@@ -742,8 +742,15 @@ export type Database = {
       }
     }
     Functions: {
+      advance_survivor: { Args: { p_match_id: string }; Returns: undefined }
+      award_bracket_points: { Args: { p_pool_id: string }; Returns: undefined }
+      award_pickem_points: { Args: { p_match_id: string }; Returns: undefined }
       award_points_for_match: {
         Args: { p_match_id: string }
+        Returns: undefined
+      }
+      initialize_survivor_rounds: {
+        Args: { p_pool_id: string }
         Returns: undefined
       }
       matches_for_pool: {
@@ -769,6 +776,7 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      refresh_leaderboard_view: { Args: never; Returns: undefined }
     }
     Enums: {
       match_phase:
