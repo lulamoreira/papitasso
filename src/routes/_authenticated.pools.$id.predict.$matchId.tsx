@@ -210,7 +210,7 @@ function PredictionDetailComponent() {
                 variant="outline" 
                 size="icon" 
                 className="h-10 w-10 rounded-full"
-                onClick={() => setHomeScore(s => Math.max(0, s - 1))}
+                onClick={() => setHomeScore((s: number) => Math.max(0, s - 1))}
                 disabled={isLocked}
               >
                 <Minus className="h-4 w-4" />
