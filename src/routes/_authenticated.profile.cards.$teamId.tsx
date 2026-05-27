@@ -24,8 +24,9 @@ function TeamCardDetailsComponent() {
   const { data: teams } = useSuspenseQuery({ queryKey: ["teams"], queryFn: () => getTeams() });
   const { data: collectedCards } = useSuspenseQuery({ queryKey: ["collected_cards"], queryFn: () => getCollectedCards() });
   
-  const team = teams?.find(t => t.id === teamId);
-  const card = collectedCards?.find(c => c.team_id === teamId);
+  const team = (teams as any[])?.find((t: any) => t.id === teamId);
+  const card = (collectedCards as any[])?.find((c: any) => c.team_id === teamId);
+
 
   if (!team || !card) {
     return (
