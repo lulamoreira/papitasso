@@ -9,9 +9,6 @@ import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
 
 export const Route = createFileRoute("/_authenticated/")({
-  beforeLoad: async ({ context }) => {
-    // profile loader check is done in layout or here
-  },
   loader: async ({ context }) => {
     await Promise.all([
       context.queryClient.ensureQueryData({ queryKey: ["profile"], queryFn: () => getProfile() }),
@@ -39,11 +36,11 @@ function DashboardComponent() {
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right hidden sm:block">
-              <p className="text-sm font-medium">{profile.name}</p>
+              <p className="text-sm font-medium">{profile.name || "Jogador"}</p>
               <p className="text-xs text-muted-foreground">{profile.xp} XP • {profile.league_tier}</p>
             </div>
             <div className="h-10 w-10 overflow-hidden rounded-full border bg-muted">
-              {profile.avatar_url ? <img src={profile.avatar_url} alt={profile.name} className="h-full w-full object-cover" /> : <User className="h-full w-full p-2 text-muted-foreground" />}
+              {profile.avatar_url ? <img src={profile.avatar_url} alt={profile.name || "User"} className="h-full w-full object-cover" /> : <User className="h-full w-full p-2 text-muted-foreground" />}
             </div>
           </div>
         </div>
@@ -51,11 +48,11 @@ function DashboardComponent() {
 
       <main className="container mx-auto space-y-6 p-4 pt-8">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }}>
-          <h1 className="text-2xl font-bold">Olá, {profile.name}! 👋</h1>
+          <h1 className="text-2xl font-bold">Olá, {profile.name || "jogador"}! 👋</h1>
           <p className="text-muted-foreground">Pronto para palpitar nos próximos jogos?</p>
         </motion.div>
 
-        {nextMatch && (
+        {nextMatch && nextMatch.home_team && nextMatch.away_team && (
           <Card className="overflow-hidden border-none bg-primary text-primary-foreground shadow-lg">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium uppercase tracking-wider opacity-80">Próximo Jogo</CardTitle>
@@ -63,17 +60,17 @@ function DashboardComponent() {
             <CardContent>
               <div className="flex items-center justify-between">
                 <div className="flex flex-col items-center gap-2 w-1/3">
-                  <img src={nextMatch.home_team.flag_url} alt={nextMatch.home_team.name} className="h-12 w-16 rounded object-cover shadow-sm" />
+                  <img src={nextMatch.home_team.flag_url || ""} alt={nextMatch.home_team.name} className="h-12 w-16 rounded object-cover shadow-sm" />
                   <span className="text-center text-sm font-bold">{nextMatch.home_team.name}</span>
                 </div>
                 <div className="flex flex-col items-center gap-1">
                   <span className="text-2xl font-black">VS</span>
                   <span className="text-[10px] opacity-80 uppercase font-medium">
-                    {format(new Date(nextMatch.kickoff_at), "dd MMM 'às' HH:mm", { locale: ptBR })}
+                    {nextMatch.kickoff_at ? format(new Date(nextMatch.kickoff_at), "dd MMM 'às' HH:mm", { locale: ptBR }) : "TBA"}
                   </span>
                 </div>
                 <div className="flex flex-col items-center gap-2 w-1/3">
-                  <img src={nextMatch.away_team.flag_url} alt={nextMatch.away_team.name} className="h-12 w-16 rounded object-cover shadow-sm" />
+                  <img src={nextMatch.away_team.flag_url || ""} alt={nextMatch.away_team.name} className="h-12 w-16 rounded object-cover shadow-sm" />
                   <span className="text-center text-sm font-bold">{nextMatch.away_team.name}</span>
                 </div>
               </div>
@@ -92,23 +89,6 @@ function DashboardComponent() {
           </Card>
         </div>
       </main>
-
-      <nav className="fixed bottom-0 left-0 right-0 border-t bg-background px-4 py-2 sm:hidden">
-        <div className="flex items-center justify-around">
-           <Button variant="ghost" className="flex flex-col items-center gap-1 h-auto py-2">
-             <Trophy className="h-6 w-6 text-primary" />
-             <span className="text-[10px]">Bolões</span>
-           </Button>
-           <Button variant="ghost" className="flex flex-col items-center gap-1 h-auto py-2 opacity-50">
-             <Plus className="h-6 w-6" />
-             <span className="text-[10px]">Criar</span>
-           </Button>
-           <Button variant="ghost" className="flex flex-col items-center gap-1 h-auto py-2" onClick={() => window.location.href='/profile'}>
-             <User className="h-6 w-6" />
-             <span className="text-[10px]">Perfil</span>
-           </Button>
-        </div>
-      </nav>
     </div>
   );
 }
