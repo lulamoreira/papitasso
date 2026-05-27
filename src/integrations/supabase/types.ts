@@ -189,6 +189,178 @@ export type Database = {
         }
         Relationships: []
       }
+      fantasy_lineup_players: {
+        Row: {
+          is_bench: boolean | null
+          lineup_id: string
+          player_id: string
+          slot: string
+        }
+        Insert: {
+          is_bench?: boolean | null
+          lineup_id: string
+          player_id: string
+          slot: string
+        }
+        Update: {
+          is_bench?: boolean | null
+          lineup_id?: string
+          player_id?: string
+          slot?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fantasy_lineup_players_lineup_id_fkey"
+            columns: ["lineup_id"]
+            isOneToOne: false
+            referencedRelation: "fantasy_lineups"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fantasy_lineup_players_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fantasy_lineups: {
+        Row: {
+          budget_used: number | null
+          captain_id: string | null
+          created_at: string | null
+          formation: string | null
+          gameweek: number
+          id: string
+          locked_at: string | null
+          pool_id: string
+          total_points: number | null
+          user_id: string
+          vice_captain_id: string | null
+        }
+        Insert: {
+          budget_used?: number | null
+          captain_id?: string | null
+          created_at?: string | null
+          formation?: string | null
+          gameweek: number
+          id?: string
+          locked_at?: string | null
+          pool_id: string
+          total_points?: number | null
+          user_id: string
+          vice_captain_id?: string | null
+        }
+        Update: {
+          budget_used?: number | null
+          captain_id?: string | null
+          created_at?: string | null
+          formation?: string | null
+          gameweek?: number
+          id?: string
+          locked_at?: string | null
+          pool_id?: string
+          total_points?: number | null
+          user_id?: string
+          vice_captain_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fantasy_lineups_captain_id_fkey"
+            columns: ["captain_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fantasy_lineups_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fantasy_lineups_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fantasy_lineups_vice_captain_id_fkey"
+            columns: ["vice_captain_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      fantasy_transfers: {
+        Row: {
+          cost_points: number | null
+          created_at: string | null
+          gameweek: number
+          id: string
+          in_player_id: string
+          out_player_id: string
+          pool_id: string
+          used_free_transfer: boolean | null
+          user_id: string
+        }
+        Insert: {
+          cost_points?: number | null
+          created_at?: string | null
+          gameweek: number
+          id?: string
+          in_player_id: string
+          out_player_id: string
+          pool_id: string
+          used_free_transfer?: boolean | null
+          user_id: string
+        }
+        Update: {
+          cost_points?: number | null
+          created_at?: string | null
+          gameweek?: number
+          id?: string
+          in_player_id?: string
+          out_player_id?: string
+          pool_id?: string
+          used_free_transfer?: boolean | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fantasy_transfers_in_player_id_fkey"
+            columns: ["in_player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fantasy_transfers_out_player_id_fkey"
+            columns: ["out_player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fantasy_transfers_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "fantasy_transfers_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matches: {
         Row: {
           away_score: number | null
@@ -348,6 +520,78 @@ export type Database = {
           },
         ]
       }
+      player_match_stats: {
+        Row: {
+          assists: number | null
+          bonus_points: number | null
+          clean_sheet: boolean | null
+          created_at: string | null
+          goals: number | null
+          id: string
+          match_id: string
+          minutes_played: number | null
+          own_goals: number | null
+          penalties_missed: number | null
+          penalties_saved: number | null
+          player_id: string
+          red_cards: number | null
+          saves: number | null
+          total_points: number | null
+          yellow_cards: number | null
+        }
+        Insert: {
+          assists?: number | null
+          bonus_points?: number | null
+          clean_sheet?: boolean | null
+          created_at?: string | null
+          goals?: number | null
+          id?: string
+          match_id: string
+          minutes_played?: number | null
+          own_goals?: number | null
+          penalties_missed?: number | null
+          penalties_saved?: number | null
+          player_id: string
+          red_cards?: number | null
+          saves?: number | null
+          total_points?: number | null
+          yellow_cards?: number | null
+        }
+        Update: {
+          assists?: number | null
+          bonus_points?: number | null
+          clean_sheet?: boolean | null
+          created_at?: string | null
+          goals?: number | null
+          id?: string
+          match_id?: string
+          minutes_played?: number | null
+          own_goals?: number | null
+          penalties_missed?: number | null
+          penalties_saved?: number | null
+          player_id?: string
+          red_cards?: number | null
+          saves?: number | null
+          total_points?: number | null
+          yellow_cards?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "player_match_stats_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "player_match_stats_player_id_fkey"
+            columns: ["player_id"]
+            isOneToOne: false
+            referencedRelation: "players"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       players: {
         Row: {
           id: string
@@ -433,6 +677,7 @@ export type Database = {
         Row: {
           cover_image_url: string | null
           created_at: string | null
+          fantasy_scoring_config: Json | null
           id: string
           invite_code: string
           modes_enabled: string[] | null
@@ -446,6 +691,7 @@ export type Database = {
         Insert: {
           cover_image_url?: string | null
           created_at?: string | null
+          fantasy_scoring_config?: Json | null
           id?: string
           invite_code: string
           modes_enabled?: string[] | null
@@ -459,6 +705,7 @@ export type Database = {
         Update: {
           cover_image_url?: string | null
           created_at?: string | null
+          fantasy_scoring_config?: Json | null
           id?: string
           invite_code?: string
           modes_enabled?: string[] | null
