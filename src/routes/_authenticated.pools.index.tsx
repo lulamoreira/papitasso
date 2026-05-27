@@ -31,7 +31,7 @@ function PoolsListComponent() {
   const [joinOpen, setJoinOpen] = useState(false);
 
   const joinMutation = useMutation({
-    mutationFn: (code: string) => joinPool({ data: code }),
+    mutationFn: (code: string) => joinPool({ data: code } as any),
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["myPools"] });
       toast.success("Você entrou no bolão!");
