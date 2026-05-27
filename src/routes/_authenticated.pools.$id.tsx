@@ -3,7 +3,7 @@ import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { getPoolById, getLeaderboard, getMatchesForPool, getPredictions, getProfile, getPrizes, getPrizeWinners, getProps, getPredictionsProps } from "@/lib/api.functions";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, ArrowDownRight, Minus, PencilLine, User as UserIcon, Gift, Award, HelpCircle } from "lucide-react";
+import { ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, ArrowDownRight, Minus, PencilLine, User as UserIcon, Gift, Award, HelpCircle, Target } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
