@@ -852,3 +852,114 @@ export const deleteMuralPost = createServerFn({ method: "POST" })
     if (error) throw error;
     return { success: true };
   });
+
+export const getFantasyLineup = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { poolId, gameweek } = rawData?.data || rawData;
+    const { supabase, userId } = context;
+    const { data: lineup, error: lineupError } = await supabase
+      .from("fantasy_lineups")
+      .select("*, players:fantasy_lineup_players(*, player:players(*))")
+      .eq("pool_id", poolId)
+      .eq("user_id", userId)
+      .eq("gameweek", gameweek)
+      .maybeSingle();
+
+    if (lineupError) throw lineupError;
+    return lineup;
+  });
+
+export const upsertFantasyLineup = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { poolId, gameweek, formation, players, captainId, viceCaptainId, budgetUsed } = rawData?.data || rawData;
+    const { supabase, userId } = context;
+
+    const { data: lineup, error: lineupError } = await supabase
+      .from("fantasy_lineups")
+      .upsert({
+        user_id: userId,
+        pool_id: poolId,
+        gameweek,
+        formation,
+        captain_id: captainId,
+        vice_captain_id: viceCaptainId,
+        budget_used: budgetUsed,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,pool_id,gameweek' })
+      .select()
+      .single();
+
+    if (lineupError) throw lineupError;
+
+    await supabase.from("fantasy_lineup_players").delete().eq("lineup_id", lineup.id);
+
+    const playersToInsert = players.map((p: any) => ({
+      lineup_id: lineup.id,
+      player_id: p.player_id,
+      slot: p.slot,
+      is_bench: p.is_bench
+    }));
+
+    const { error: playersError } = await supabase
+      .from("fantasy_lineup_players")
+      .insert(playersToInsert);
+
+    if (playersError) throw playersError;
+
+    return lineup;
+  });
+
+export const getFantasyPlayers = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("players")
+      .select("*, team:teams(*)")
+      .order("market_value", { ascending: false });
+
+    if (error) throw error;
+    return data;
+  });
+
+export const getFantasyRanking = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("fantasy_lineups")
+      .select("user_id, total_points, profile:profiles(*)")
+      .eq("pool_id", poolId)
+      .order("total_points", { ascending: false });
+
+    if (error) throw error;
+    
+    const rankingMap = new Map();
+    data.forEach((row: any) => {
+      if (!rankingMap.has(row.user_id)) {
+        rankingMap.set(row.user_id, {
+          profile: row.profile,
+          total_points: 0
+        });
+      }
+      rankingMap.get(row.user_id).total_points += row.total_points;
+    });
+
+    return Array.from(rankingMap.values()).sort((a, b) => b.total_points - a.total_points);
+  });
+
+export const getPlayerMatchStats = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: matchId, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("player_match_stats")
+      .select("*, player:players(*)")
+      .eq("match_id", matchId);
+    
+    if (error) throw error;
+    return data;
+  });
+
