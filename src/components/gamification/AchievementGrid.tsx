@@ -1,7 +1,11 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Trophy, Star, Shield, Zap, Diamond, Lock } from "lucide-react";
+import { Trophy, Star, Shield, Zap, Diamond, Lock, Share2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ShareModal } from "./ShareModal";
+import { Button } from "@/components/ui/button";
+
 
 interface Achievement {
   id: string;
