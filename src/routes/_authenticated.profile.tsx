@@ -60,6 +60,32 @@ function ProfileComponent() {
     navigate({ to: "/login" });
   };
 
+  useEffect(() => {
+    const channel = supabase
+      .channel('achievements-unlocks')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'user_achievements',
+          filter: `user_id=eq.${profile.id}`
+        },
+        async (payload) => {
+          const ach = await getAchievementById({ data: payload.new.achievement_id });
+          setNewUnlock(ach);
+          queryClient.invalidateQueries({ queryKey: ["achievements"] });
+          queryClient.invalidateQueries({ queryKey: ["profile"] });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [profile.id, queryClient]);
+
+
   return (
     <div className="min-h-screen bg-background pb-20">
       <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
