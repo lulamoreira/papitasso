@@ -498,13 +498,123 @@ export const getAchievementById = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("achievements")
-      .select("*")
       .eq("id", id)
       .single();
+    if (error) throw error;
+    return data;
+  });
+
+export const getDailyQuiz = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }: any) => {
+    const { supabase } = context;
+    // Trigger the edge function to ensure a quiz exists for today
+    const { data, error } = await supabase.functions.invoke('ai-daily-quiz');
+    if (error) throw error;
+    return data;
+  });
+
+export const submitQuizAnswer = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { quizId, answerIndex } = rawData?.data || rawData;
+    const { supabase, userId } = context;
+
+    const { data: quiz } = await supabase
+      .from("daily_quiz")
+      .select("*")
+      .eq("id", quizId)
+      .single();
+
+    const isCorrect = quiz.correct_index === answerIndex;
+
+    const { data, error } = await supabase
+      .from("quiz_answers")
+      .insert({
+        user_id: userId,
+        quiz_id: quizId,
+        answer_index: answerIndex,
+        is_correct: isCorrect
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+
+    // Award XP
+    const xpAmount = isCorrect ? 10 : 5;
+    await supabase.rpc('increment_xp', { p_user_id: userId, p_amount: xpAmount });
+
+    // Update streak (simplified logic)
+    if (isCorrect) {
+       await supabase.rpc('update_quiz_streak', { p_user_id: userId });
+    }
+
+    return { ...data, fact: quiz.fact, correct_index: quiz.correct_index };
+  });
+
+export const getQuizUserStatus = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: quizId, context }: any) => {
+    const { supabase, userId } = context;
+    const { data, error } = await supabase
+      .from("quiz_answers")
+      .select("*")
+      .eq("user_id", userId)
+      .eq("quiz_id", quizId)
+      .maybeSingle();
     
     if (error) throw error;
     return data;
   });
+
+export const getAiCommentary = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { matchId, mode, style } = rawData?.data || rawData;
+    const { supabase } = context;
+    const { data, error } = await supabase.functions.invoke('ai-commentator', {
+      body: { match_id: matchId, mode, style }
+    });
+    if (error) throw error;
+    return data;
+  });
+
+export const getAiPredictionAnalysis = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { poolId, matchId, homeScore, awayScore } = rawData?.data || rawData;
+    const { supabase } = context;
+    const { data, error } = await supabase.functions.invoke('ai-prediction-analyzer', {
+      body: { pool_id: poolId, match_id: matchId, predicted_home: homeScore, predicted_away: awayScore }
+    });
+    if (error) throw error;
+    return data;
+  });
+
+export const getAiAutoPredictions = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase, userId } = context;
+    const { data, error } = await supabase.functions.invoke('ai-auto-predict', {
+      body: { pool_id: poolId, user_id: userId }
+    });
+    if (error) throw error;
+    return data;
+  });
+
+export const generateShareCard = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { title, description, colors } = rawData?.data || rawData;
+    const { supabase } = context;
+    const { data, error } = await supabase.functions.invoke('ai-share-card', {
+      body: { title, description, team_colors: colors }
+    });
+    if (error) throw error;
+    return data;
+  });
+
 
 
 export const upsertPredictionProp = createServerFn({ method: "POST" })
