@@ -17,13 +17,14 @@ export const getProfile = createServerFn({ method: "GET" })
   });
 
 export const updateProfile = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
   .middleware([requireSupabaseAuth])
   .handler(async ({ data, context }: any) => {
     const validated = z.object({
       name: z.string().min(1).optional(),
       favorite_team_id: z.string().uuid().optional(),
       avatar_url: z.string().url().optional(),
-    }).parse(data?.data);
+    }).parse(data);
 
     const { supabase, userId } = context;
     const { data: updated, error } = await supabase
@@ -63,6 +64,7 @@ export const getNextMatch = createServerFn({ method: "GET" })
   });
 
 export const createPool = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
   .middleware([requireSupabaseAuth])
   .handler(async ({ data, context }: any) => {
     const validated = z.object({
@@ -72,7 +74,7 @@ export const createPool = createServerFn({ method: "POST" })
       scope_config: z.any().optional(),
       scoring_config: z.any(),
       modes_enabled: z.array(z.string()).optional(),
-    }).parse(data?.data);
+    }).parse(data);
 
     const { supabase, userId } = context;
     const invite_code = Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -121,46 +123,46 @@ export const getMyPools = createServerFn({ method: "GET" })
   });
 
 export const getPoolById = createServerFn({ method: "GET" })
+  .validator((d: any) => d)
   .middleware([requireSupabaseAuth])
-  .handler(async ({ data, context }: any) => {
-    const id = data?.data || data;
+  .handler(async ({ data: id, context }: any) => {
     const { supabase } = context;
-    const { data: pool, error } = await supabase
+    const { data, error } = await supabase
       .from("pools")
       .select("*, owner:profiles(*)")
       .eq("id", id)
       .single();
     
     if (error) throw error;
-    return pool;
+    return data;
   });
 
 export const getPoolByInviteCode = createServerFn({ method: "GET" })
+  .validator((d: any) => d)
   .middleware([requireSupabaseAuth])
-  .handler(async ({ data, context }: any) => {
-    const code = data?.data || data;
+  .handler(async ({ data: code, context }: any) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { data: pool, error } = await supabaseAdmin
+    const { data, error } = await supabaseAdmin
       .from("pools")
       .select("*, owner:profiles(*)")
-      .eq("invite_code", code?.toUpperCase() || "")
+      .eq("invite_code", code.toUpperCase())
       .single();
     
     if (error) throw error;
-    return pool;
+    return data;
   });
 
 export const joinPool = createServerFn({ method: "POST" })
+  .validator((d: any) => d)
   .middleware([requireSupabaseAuth])
-  .handler(async ({ data, context }: any) => {
-    const code = data?.data || data;
+  .handler(async ({ data: code, context }: any) => {
     const { supabase, userId } = context;
     
     // First find pool
     const { data: pool, error: poolError } = await supabase
       .from("pools")
       .select("id")
-      .eq("invite_code", code?.toUpperCase() || "")
+      .eq("invite_code", code.toUpperCase())
       .single();
     
     if (poolError) throw poolError;
