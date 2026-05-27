@@ -4,6 +4,8 @@ import { getNextMatch, getProfile, getDailyQuiz, getQuizUserStatus } from "@/lib
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Trophy, User, Hash, Zap, ChevronRight, Brain } from "lucide-react";
+import { toast } from "sonner";
+
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
