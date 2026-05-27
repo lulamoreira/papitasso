@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
+import { Route as AuthenticatedPoolsIndexRouteImport } from './routes/_authenticated.pools.index'
 import { Route as AuthenticatedPoolsNewRouteImport } from './routes/_authenticated.pools.new'
 
 const LoginRoute = LoginRouteImport.update({
@@ -40,6 +41,11 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPoolsIndexRoute = AuthenticatedPoolsIndexRouteImport.update({
+  id: '/pools/',
+  path: '/pools/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedPoolsNewRoute = AuthenticatedPoolsNewRouteImport.update({
   id: '/pools/new',
   path: '/pools/new',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/pools/new': typeof AuthenticatedPoolsNewRoute
+  '/pools/': typeof AuthenticatedPoolsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/profile': typeof AuthenticatedProfileRoute
   '/': typeof AuthenticatedIndexRoute
   '/pools/new': typeof AuthenticatedPoolsNewRoute
+  '/pools': typeof AuthenticatedPoolsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -68,12 +76,19 @@ export interface FileRoutesById {
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/pools/new': typeof AuthenticatedPoolsNewRoute
+  '/_authenticated/pools/': typeof AuthenticatedPoolsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/onboarding' | '/profile' | '/pools/new'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/onboarding'
+    | '/profile'
+    | '/pools/new'
+    | '/pools/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/onboarding' | '/profile' | '/' | '/pools/new'
+  to: '/login' | '/onboarding' | '/profile' | '/' | '/pools/new' | '/pools'
   id:
     | '__root__'
     | '/_authenticated'
@@ -82,6 +97,7 @@ export interface FileRouteTypes {
     | '/_authenticated/profile'
     | '/_authenticated/'
     | '/_authenticated/pools/new'
+    | '/_authenticated/pools/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -126,6 +142,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/pools/': {
+      id: '/_authenticated/pools/'
+      path: '/pools'
+      fullPath: '/pools/'
+      preLoaderRoute: typeof AuthenticatedPoolsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/pools/new': {
       id: '/_authenticated/pools/new'
       path: '/pools/new'
@@ -141,6 +164,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedPoolsNewRoute: typeof AuthenticatedPoolsNewRoute
+  AuthenticatedPoolsIndexRoute: typeof AuthenticatedPoolsIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
@@ -148,6 +172,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedPoolsNewRoute: AuthenticatedPoolsNewRoute,
+  AuthenticatedPoolsIndexRoute: AuthenticatedPoolsIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -161,3 +186,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
