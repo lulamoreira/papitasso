@@ -59,72 +59,104 @@ function PredictListComponent() {
       </header>
 
       <main className="container mx-auto p-4 space-y-4 pb-24">
-        {matches.map((match: any) => {
+        {matches.map((match: any, index: any) => {
           const prediction = getMatchPrediction(match.id);
           const locked = isMatchLocked(match.kickoff_at);
           const isFinished = match.status === 'finished';
 
           return (
-            <Card 
+            <motion.div
               key={match.id}
-              className={`overflow-hidden transition-all active:scale-[0.98] ${locked ? 'opacity-70' : 'cursor-pointer hover:border-primary'}`}
-              onClick={() => navigate({ to: `/pools/${id}/predict/${match.id}` })}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.05 }}
+              whileHover={{ scale: locked ? 1 : 1.01 }}
+              whileTap={{ scale: locked ? 1 : 0.98 }}
             >
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between mb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
-                    {format(new Date(match.kickoff_at), "dd 'de' MMM, HH:mm", { locale: ptBR })}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {prediction ? (
-                      <span className="flex items-center gap-1 text-green-500">
-                        <CheckCircle2 className="h-3 w-3" /> Palpitado
-                      </span>
-                    ) : (
-                      <span className="text-amber-500">Pendente</span>
-                    )}
-                    {locked && <Lock className="h-3 w-3 text-red-500" />}
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-7 items-center gap-2">
-                  <div className="col-span-3 flex flex-col items-center gap-2">
-                    <img src={match.home_team.flag_url} alt={match.home_team.name} className="h-8 w-12 object-cover rounded shadow-sm" />
-                    <span className="text-sm font-bold text-center line-clamp-1">{match.home_team.name}</span>
-                  </div>
-
-                  <div className="col-span-1 flex flex-col items-center justify-center">
-                    {isFinished || locked ? (
-                      <div className="text-lg font-black bg-muted rounded px-2 py-1">
-                        {match.home_score ?? 0} x {match.away_score ?? 0}
-                      </div>
-                    ) : (
-                      <div className="text-xs font-bold text-primary italic">VS</div>
-                    )}
-                  </div>
-
-                  <div className="col-span-3 flex flex-col items-center gap-2">
-                    <img src={match.away_team.flag_url} alt={match.away_team.name} className="h-8 w-12 object-cover rounded shadow-sm" />
-                    <span className="text-sm font-bold text-center line-clamp-1">{match.away_team.name}</span>
-                  </div>
-                </div>
-
-                {prediction && (
-                  <div className="mt-4 pt-3 border-t flex items-center justify-center gap-4">
-                    <div className="text-[10px] font-bold uppercase text-muted-foreground">Seu palpite:</div>
-                    <div className="text-xl font-black text-primary">
-                      {prediction.home_score} - {prediction.away_score}
+              <Card 
+                className={`overflow-hidden transition-all relative ${locked ? 'opacity-70' : 'cursor-pointer hover:border-primary border-2 border-transparent shadow-sm'}`}
+                onClick={() => !locked && navigate({ to: `/pools/${id}/predict/${match.id}` })}
+              >
+                <CardContent className="p-4">
+                  <div className="flex items-center justify-between mb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                    <div className="flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {format(new Date(match.kickoff_at), "dd 'de' MMM, HH:mm", { locale: ptBR })}
                     </div>
-                    {prediction.points_awarded !== null && (
-                      <div className="bg-green-100 text-green-700 text-[10px] font-black px-2 py-0.5 rounded-full">
-                        +{prediction.points_awarded} pts
-                      </div>
-                    )}
+                    <div className="flex items-center gap-2">
+                      {prediction ? (
+                        <span className="flex items-center gap-1 text-green-500">
+                          <CheckCircle2 className="h-3 w-3" /> Palpitado
+                        </span>
+                      ) : (
+                        <span className="text-amber-500 animate-pulse">Pendente</span>
+                      )}
+                      {locked && <Lock className="h-3 w-3 text-red-500" />}
+                    </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
+
+                  <div className="grid grid-cols-7 items-center gap-2">
+                    <div className="col-span-3 flex flex-col items-center gap-2">
+                      <div className="relative">
+                        <img 
+                          src={match.home_team.flag_url} 
+                          alt={match.home_team.name} 
+                          className="h-10 w-14 object-cover rounded shadow-sm border border-muted" 
+                        />
+                        <div className="absolute -inset-0.5 rounded border border-white/20 pointer-events-none" />
+                      </div>
+                      <span className="text-sm font-bold text-center line-clamp-1">{match.home_team.name}</span>
+                    </div>
+
+                    <div className="col-span-1 flex flex-col items-center justify-center">
+                      {isFinished || (locked && match.home_score !== null) ? (
+                        <div className="text-lg font-black bg-muted/50 rounded-lg px-2.5 py-1 tabular-nums border">
+                          {match.home_score ?? 0}
+                          <span className="mx-1 text-muted-foreground font-medium">×</span>
+                          {match.away_score ?? 0}
+                        </div>
+                      ) : (
+                        <div className="text-xs font-black text-primary/40 italic tracking-tighter">VS</div>
+                      )}
+                    </div>
+
+                    <div className="col-span-3 flex flex-col items-center gap-2">
+                      <div className="relative">
+                        <img 
+                          src={match.away_team.flag_url} 
+                          alt={match.away_team.name} 
+                          className="h-10 w-14 object-cover rounded shadow-sm border border-muted" 
+                        />
+                        <div className="absolute -inset-0.5 rounded border border-white/20 pointer-events-none" />
+                      </div>
+                      <span className="text-sm font-bold text-center line-clamp-1">{match.away_team.name}</span>
+                    </div>
+                  </div>
+
+                  {prediction && (
+                    <div className="mt-4 pt-4 border-t border-dashed flex items-center justify-between">
+                      <div className="text-[10px] font-black uppercase text-muted-foreground tracking-widest">Seu Palpite</div>
+                      <div className="flex items-center gap-3">
+                        <div className="text-xl font-black text-primary tabular-nums tracking-tighter">
+                          {prediction.home_score}
+                          <span className="mx-1.5 text-muted-foreground/30 font-light">—</span>
+                          {prediction.away_score}
+                        </div>
+                        {prediction.points_awarded !== null && (
+                          <motion.div 
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            className="bg-green-500 text-white text-[10px] font-black px-2.5 py-1 rounded-full shadow-sm"
+                          >
+                            +{prediction.points_awarded} PTS
+                          </motion.div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
           );
         })}
       </main>
