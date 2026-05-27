@@ -25,7 +25,8 @@ const STEPS = [
   { id: 2, title: "Configurações" },
   { id: 3, title: "Identidade" },
   { id: 4, title: "Pontuação" },
-  { id: 5, title: "Convite" },
+  { id: 5, title: "Prêmios" },
+  { id: 6, title: "Convite" },
 ];
 
 function NewPoolComponent() {
