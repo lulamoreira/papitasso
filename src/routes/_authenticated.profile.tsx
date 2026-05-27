@@ -1,6 +1,6 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { getProfile, updateProfile, getAchievements, getCollectedCards, getUserStats, getTeams } from "@/lib/api.functions";
+import { getProfile, updateProfile, getAchievements, getCollectedCards, getUserStats, getTeams, getAchievementById } from "@/lib/api.functions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
