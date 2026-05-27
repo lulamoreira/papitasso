@@ -406,6 +406,64 @@ export type Database = {
           },
         ]
       }
+      predictions_props: {
+        Row: {
+          answer: string
+          created_at: string | null
+          id: string
+          locked_at: string | null
+          points_awarded: number | null
+          pool_id: string
+          prop_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          created_at?: string | null
+          id?: string
+          locked_at?: string | null
+          points_awarded?: number | null
+          pool_id: string
+          prop_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          created_at?: string | null
+          id?: string
+          locked_at?: string | null
+          points_awarded?: number | null
+          pool_id?: string
+          prop_id?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_props_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_props_prop_id_fkey"
+            columns: ["prop_id"]
+            isOneToOne: false
+            referencedRelation: "props"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_props_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       predictions_survivor: {
         Row: {
           created_at: string | null
@@ -606,6 +664,45 @@ export type Database = {
           },
         ]
       }
+      props: {
+        Row: {
+          code: string | null
+          created_at: string | null
+          id: string
+          options_jsonb: Json | null
+          points: number | null
+          question: string
+          resolved_at: string | null
+          resolved_value: string | null
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          code?: string | null
+          created_at?: string | null
+          id?: string
+          options_jsonb?: Json | null
+          points?: number | null
+          question: string
+          resolved_at?: string | null
+          resolved_value?: string | null
+          type: string
+          updated_at?: string | null
+        }
+        Update: {
+          code?: string | null
+          created_at?: string | null
+          id?: string
+          options_jsonb?: Json | null
+          points?: number | null
+          question?: string
+          resolved_at?: string | null
+          resolved_value?: string | null
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       push_subscriptions: {
         Row: {
           auth: string
@@ -716,29 +813,12 @@ export type Database = {
     Views: {
       leaderboard_view: {
         Row: {
-          avatar_url: string | null
-          display_name: string | null
+          points: number | null
           pool_id: string | null
-          rank: number | null
-          total_score: number | null
+          position: number | null
           user_id: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "pool_members_pool_id_fkey"
-            columns: ["pool_id"]
-            isOneToOne: false
-            referencedRelation: "pools"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "pool_members_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Functions: {
@@ -747,6 +827,10 @@ export type Database = {
       award_pickem_points: { Args: { p_match_id: string }; Returns: undefined }
       award_points_for_match: {
         Args: { p_match_id: string }
+        Returns: undefined
+      }
+      award_points_for_prop: {
+        Args: { p_prop_id: string; p_resolved_value: string }
         Returns: undefined
       }
       initialize_survivor_rounds: {
