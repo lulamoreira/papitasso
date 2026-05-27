@@ -1,9 +1,9 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
-import { getPoolById, getLeaderboard, getMatchesForPool, getPredictions, getProfile, getPrizes, getPrizeWinners } from "@/lib/api.functions";
+import { getPoolById, getLeaderboard, getMatchesForPool, getPredictions, getProfile, getPrizes, getPrizeWinners, getProps, getPredictionsProps } from "@/lib/api.functions";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, ArrowDownRight, Minus, PencilLine, User as UserIcon, Gift, Award } from "lucide-react";
+import { ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, ArrowDownRight, Minus, PencilLine, User as UserIcon, Gift, Award, HelpCircle } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -22,6 +22,8 @@ export const Route = createFileRoute("/_authenticated/pools/$id")({
       context.queryClient.ensureQueryData({ queryKey: ["profile"], queryFn: () => getProfile() }),
       context.queryClient.ensureQueryData({ queryKey: ["prizes", params.id], queryFn: () => getPrizes({ data: params.id } as any) }),
       context.queryClient.ensureQueryData({ queryKey: ["winners", params.id], queryFn: () => getPrizeWinners({ data: params.id } as any) }),
+      context.queryClient.ensureQueryData({ queryKey: ["props"], queryFn: () => getProps() }),
+      context.queryClient.ensureQueryData({ queryKey: ["predictionsProps", params.id], queryFn: () => getPredictionsProps({ data: params.id } as any) }),
     ]);
   },
   component: PoolDetailComponent,
@@ -39,6 +41,8 @@ function PoolDetailComponent() {
   const { data: profile } = useSuspenseQuery({ queryKey: ["profile"], queryFn: () => getProfile() });
   const { data: prizes } = useSuspenseQuery({ queryKey: ["prizes", id], queryFn: () => getPrizes({ data: id } as any) });
   const { data: winners } = useSuspenseQuery({ queryKey: ["winners", id], queryFn: () => getPrizeWinners({ data: id } as any) });
+  const { data: allProps } = useSuspenseQuery({ queryKey: ["props"], queryFn: () => getProps() });
+  const { data: predictionsProps } = useSuspenseQuery({ queryKey: ["predictionsProps", id], queryFn: () => getPredictionsProps({ data: id } as any) });
 
   const isOwner = pool?.owner_id === profile?.id;
   const hasWinners = winners && winners.length > 0;
@@ -46,6 +50,10 @@ function PoolDetailComponent() {
   const myEntry = leaderboard?.find((entry: any) => entry.user_id === profile?.id);
   const totalMatches = matches?.length || 0;
   const predictedMatches = predictions?.length || 0;
+  
+  const totalProps = allProps?.length || 0;
+  const predictedProps = predictionsProps?.length || 0;
+  const propCompletionPercent = totalProps > 0 ? Math.round((predictedProps / totalProps) * 100) : 0;
 
   useEffect(() => {
     const channel = supabase
@@ -117,15 +125,27 @@ function PoolDetailComponent() {
         </Button>
 
         <Tabs defaultValue="matches" className="w-full" onValueChange={(val) => {
-          if (['pickem', 'survivor', 'bracket'].includes(val)) {
+          if (['pickem', 'survivor', 'bracket', 'props'].includes(val)) {
             navigate({ to: `/pools/${id}/${val}` });
           }
         }}>
-          <TabsList className={`w-full grid overflow-x-auto ${hasWinners ? 'grid-cols-7' : 'grid-cols-6'} min-w-max`}>
+          <TabsList className={`w-full grid overflow-x-auto ${hasWinners ? 'grid-cols-8' : 'grid-cols-7'} min-w-max`}>
             <TabsTrigger value="matches" className="gap-1 px-3"><Calendar className="h-3 w-3" /> <span className="hidden sm:inline">Jogos</span></TabsTrigger>
             {pool.modes_enabled?.includes('pickem') && <TabsTrigger value="pickem" className="gap-1 px-3"><Trophy className="h-3 w-3" /> <span className="hidden sm:inline">Pick'em</span></TabsTrigger>}
             {pool.modes_enabled?.includes('survivor') && <TabsTrigger value="survivor" className="gap-1 px-3"><Award className="h-3 w-3" /> <span className="hidden sm:inline">Survivor</span></TabsTrigger>}
             {pool.modes_enabled?.includes('bracket') && <TabsTrigger value="bracket" className="gap-1 px-3"><Settings className="h-3 w-3" /> <span className="hidden sm:inline">Chaveamento</span></TabsTrigger>}
+            {pool.modes_enabled?.includes('props') && (
+              <TabsTrigger value="props" className="gap-1 px-3 relative">
+                <HelpCircle className="h-3 w-3" /> 
+                <span className="hidden sm:inline">Props</span>
+                {propCompletionPercent < 100 && (
+                  <span className="absolute -top-1 -right-1 flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+                  </span>
+                )}
+              </TabsTrigger>
+            )}
             <TabsTrigger value="ranking" className="gap-1 px-3"><Trophy className="h-3 w-3" /> <span className="hidden sm:inline">Ranking</span></TabsTrigger>
             <TabsTrigger value="prizes" className="gap-1 px-3"><Gift className="h-3 w-3" /> <span className="hidden sm:inline">Prêmios</span></TabsTrigger>
             {hasWinners && <TabsTrigger value="winners" className="gap-1 px-3"><Award className="h-3 w-3" /> <span className="hidden sm:inline">Ganhadores</span></TabsTrigger>}
