@@ -499,6 +499,73 @@ export const upsertPredictionProp = createServerFn({ method: "POST" })
     return data;
   });
 
+export const getAchievements = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }: any) => {
+    const { supabase, userId } = context;
+    
+    // Get all achievements
+    const { data: allAchievements, error: allErr } = await supabase
+      .from("achievements")
+      .select("*")
+      .order("rarity", { ascending: false });
+    
+    if (allErr) throw allErr;
+
+    // Get user's unlocked achievements
+    const { data: unlocked, error: unlErr } = await supabase
+      .from("user_achievements")
+      .select("achievement_id, unlocked_at")
+      .eq("user_id", userId);
+    
+    if (unlErr) throw unlErr;
+
+    return allAchievements.map((ach: any) => ({
+      ...ach,
+      unlocked_at: unlocked.find((u: any) => u.achievement_id === ach.id)?.unlocked_at
+    }));
+  });
+
+export const getCollectedCards = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }: any) => {
+    const { supabase, userId } = context;
+    const { data, error } = await supabase
+      .from("collected_cards")
+      .select("*, team:teams(*)")
+      .eq("user_id", userId);
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const getUserStats = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }: any) => {
+    const { supabase, userId } = context;
+    
+    // Fetch count of exact predictions (points > 0 usually means correct)
+    const { data: predictions, error: predErr } = await supabase
+      .from("predictions_exact")
+      .select("points")
+      .eq("user_id", userId);
+    
+    if (predErr) throw predErr;
+
+    const total = predictions.length;
+    const exactScores = predictions.filter((p: any) => p.points === 3).length; // 3 points for exact score
+    const hits = predictions.filter((p: any) => p.points && p.points > 0).length;
+    
+    return {
+      total_predictions: total,
+      exact_scores: exactScores,
+      accuracy_rate: total > 0 ? Math.round((hits / total) * 100) : 0,
+      current_streak: 0, 
+      best_streak: 0 
+    };
+  });
+
+
 export const createCustomProp = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
