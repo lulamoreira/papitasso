@@ -109,6 +109,92 @@ export type Database = {
           },
         ]
       }
+      pool_members: {
+        Row: {
+          joined_at: string | null
+          pool_id: string
+          role: string | null
+          user_id: string
+        }
+        Insert: {
+          joined_at?: string | null
+          pool_id: string
+          role?: string | null
+          user_id: string
+        }
+        Update: {
+          joined_at?: string | null
+          pool_id?: string
+          role?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pool_members_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pool_members_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pools: {
+        Row: {
+          cover_image_url: string | null
+          created_at: string | null
+          id: string
+          invite_code: string
+          modes_enabled: string[] | null
+          name: string
+          owner_id: string
+          scope_config: Json | null
+          scope_type: string
+          scoring_config: Json
+          type: string
+        }
+        Insert: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          id?: string
+          invite_code: string
+          modes_enabled?: string[] | null
+          name: string
+          owner_id: string
+          scope_config?: Json | null
+          scope_type?: string
+          scoring_config?: Json
+          type?: string
+        }
+        Update: {
+          cover_image_url?: string | null
+          created_at?: string | null
+          id?: string
+          invite_code?: string
+          modes_enabled?: string[] | null
+          name?: string
+          owner_id?: string
+          scope_config?: Json | null
+          scope_type?: string
+          scoring_config?: Json
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pools_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
