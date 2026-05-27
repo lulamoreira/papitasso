@@ -1,9 +1,9 @@
-import { createFileRoute, redirect } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getNextMatch, getProfile } from "@/lib/api.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trophy, User } from "lucide-react";
+import { Plus, Trophy, User, Hash } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
@@ -21,6 +21,7 @@ export const Route = createFileRoute("/_authenticated/")({
 function DashboardComponent() {
   const { data: profile } = useSuspenseQuery({ queryKey: ["profile"], queryFn: () => getProfile() });
   const { data: nextMatch } = useSuspenseQuery({ queryKey: ["nextMatch"], queryFn: () => getNextMatch() });
+  const navigate = useNavigate();
 
   if (!profile?.favorite_team_id) {
     throw redirect({ to: "/onboarding" });
@@ -79,13 +80,19 @@ function DashboardComponent() {
         )}
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Card className="flex h-32 cursor-pointer flex-col items-center justify-center gap-2 border-dashed transition-colors hover:bg-muted/50">
+          <Card 
+            className="flex h-32 cursor-pointer flex-col items-center justify-center gap-2 border-dashed transition-colors hover:bg-muted/50"
+            onClick={() => navigate({ to: "/pools/new" })}
+          >
             <Plus className="h-8 w-8 text-muted-foreground" />
             <span className="font-medium text-muted-foreground">Criar novo bolão</span>
           </Card>
-          <Card className="flex h-32 cursor-pointer flex-col items-center justify-center gap-2 border-dashed transition-colors hover:bg-muted/50 opacity-50">
-            <Trophy className="h-8 w-8 text-muted-foreground" />
-            <span className="font-medium text-muted-foreground">Entrar em bolão público</span>
+          <Card 
+            className="flex h-32 cursor-pointer flex-col items-center justify-center gap-2 border-dashed transition-colors hover:bg-muted/50"
+            onClick={() => navigate({ to: "/pools" })}
+          >
+            <Hash className="h-8 w-8 text-muted-foreground" />
+            <span className="font-medium text-muted-foreground">Meus bolões</span>
           </Card>
         </div>
       </main>

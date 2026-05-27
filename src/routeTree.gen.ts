@@ -12,8 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated.index'
+import { Route as JoinCodeRouteImport } from './routes/join.$code'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
+import { Route as AuthenticatedPoolsIndexRouteImport } from './routes/_authenticated.pools.index'
+import { Route as AuthenticatedPoolsNewRouteImport } from './routes/_authenticated.pools.new'
+import { Route as AuthenticatedPoolsIdRouteImport } from './routes/_authenticated.pools.$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -29,6 +33,11 @@ const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const JoinCodeRoute = JoinCodeRouteImport.update({
+  id: '/join/$code',
+  path: '/join/$code',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -39,18 +48,41 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPoolsIndexRoute = AuthenticatedPoolsIndexRouteImport.update({
+  id: '/pools/',
+  path: '/pools/',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPoolsNewRoute = AuthenticatedPoolsNewRouteImport.update({
+  id: '/pools/new',
+  path: '/pools/new',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedPoolsIdRoute = AuthenticatedPoolsIdRouteImport.update({
+  id: '/pools/$id',
+  path: '/pools/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/join/$code': typeof JoinCodeRoute
+  '/pools/$id': typeof AuthenticatedPoolsIdRoute
+  '/pools/new': typeof AuthenticatedPoolsNewRoute
+  '/pools/': typeof AuthenticatedPoolsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/join/$code': typeof JoinCodeRoute
   '/': typeof AuthenticatedIndexRoute
+  '/pools/$id': typeof AuthenticatedPoolsIdRoute
+  '/pools/new': typeof AuthenticatedPoolsNewRoute
+  '/pools': typeof AuthenticatedPoolsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -58,25 +90,50 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
+  '/join/$code': typeof JoinCodeRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/pools/$id': typeof AuthenticatedPoolsIdRoute
+  '/_authenticated/pools/new': typeof AuthenticatedPoolsNewRoute
+  '/_authenticated/pools/': typeof AuthenticatedPoolsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/onboarding' | '/profile'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/onboarding'
+    | '/profile'
+    | '/join/$code'
+    | '/pools/$id'
+    | '/pools/new'
+    | '/pools/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/onboarding' | '/profile' | '/'
+  to:
+    | '/login'
+    | '/onboarding'
+    | '/profile'
+    | '/join/$code'
+    | '/'
+    | '/pools/$id'
+    | '/pools/new'
+    | '/pools'
   id:
     | '__root__'
     | '/_authenticated'
     | '/login'
     | '/_authenticated/onboarding'
     | '/_authenticated/profile'
+    | '/join/$code'
     | '/_authenticated/'
+    | '/_authenticated/pools/$id'
+    | '/_authenticated/pools/new'
+    | '/_authenticated/pools/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   LoginRoute: typeof LoginRoute
+  JoinCodeRoute: typeof JoinCodeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -102,6 +159,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/join/$code': {
+      id: '/join/$code'
+      path: '/join/$code'
+      fullPath: '/join/$code'
+      preLoaderRoute: typeof JoinCodeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/profile': {
       id: '/_authenticated/profile'
       path: '/profile'
@@ -116,6 +180,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/pools/': {
+      id: '/_authenticated/pools/'
+      path: '/pools'
+      fullPath: '/pools/'
+      preLoaderRoute: typeof AuthenticatedPoolsIndexRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/pools/new': {
+      id: '/_authenticated/pools/new'
+      path: '/pools/new'
+      fullPath: '/pools/new'
+      preLoaderRoute: typeof AuthenticatedPoolsNewRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/pools/$id': {
+      id: '/_authenticated/pools/$id'
+      path: '/pools/$id'
+      fullPath: '/pools/$id'
+      preLoaderRoute: typeof AuthenticatedPoolsIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -123,12 +208,18 @@ interface AuthenticatedRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedPoolsIdRoute: typeof AuthenticatedPoolsIdRoute
+  AuthenticatedPoolsNewRoute: typeof AuthenticatedPoolsNewRoute
+  AuthenticatedPoolsIndexRoute: typeof AuthenticatedPoolsIndexRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedPoolsIdRoute: AuthenticatedPoolsIdRoute,
+  AuthenticatedPoolsNewRoute: AuthenticatedPoolsNewRoute,
+  AuthenticatedPoolsIndexRoute: AuthenticatedPoolsIndexRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
@@ -138,17 +229,8 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   LoginRoute: LoginRoute,
+  JoinCodeRoute: JoinCodeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

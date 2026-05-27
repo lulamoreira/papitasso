@@ -31,7 +31,7 @@ function OnboardingComponent() {
   const navigate = useNavigate();
   
   const updateProfileMutation = useMutation({
-    mutationFn: (data: { favorite_team_id?: string; name?: string; avatar_url?: string }) => updateProfile({ data }),
+    mutationFn: (data: { favorite_team_id?: string; name?: string; avatar_url?: string }) => updateProfile({ data: data as any }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       setStep(2);
@@ -98,7 +98,7 @@ function OnboardingComponent() {
                 >
                   <CardContent className="p-3 flex flex-col items-center gap-2">
                     <img src={team.flag_url} alt={team.name} className="h-10 w-14 object-cover rounded shadow-sm" />
-                    <span className="text-xs font-bold text-center line-clamp-1">{team.name}</span>
+                    <span className="text-sm font-medium text-center line-clamp-1">{team.name}</span>
                   </CardContent>
                 </Card>
               ))}
@@ -113,12 +113,12 @@ function OnboardingComponent() {
             animate={{ opacity: 1, scale: 1 }}
             className="w-full max-w-md"
           >
-            <Card className="border-none shadow-2xl overflow-hidden">
+            <Card className="border-2 border-primary/20">
               <CardHeader className="text-center pb-2">
                 <div className="flex justify-center mb-4">
                   {tourData[tourStep].icon}
                 </div>
-                <CardTitle className="text-2xl font-bold">{tourData[tourStep].title}</CardTitle>
+                <CardTitle className="text-2xl">{tourData[tourStep].title}</CardTitle>
                 <CardDescription className="text-base">{tourData[tourStep].desc}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6 pt-4">
@@ -126,13 +126,13 @@ function OnboardingComponent() {
                   {tourData.map((_, i) => (
                     <div 
                       key={i} 
-                      className={`h-1.5 rounded-full transition-all ${i === tourStep ? 'w-6 bg-primary' : 'w-2 bg-muted'}`} 
+                      className={`h-1.5 rounded-full transition-all ${i === tourStep ? "w-8 bg-primary" : "w-2 bg-muted"}`}
                     />
                   ))}
                 </div>
                 
                 <Button 
-                  className="w-full h-14 text-lg font-bold group" 
+                  className="w-full h-12 text-lg font-bold"
                   onClick={() => {
                     if (tourStep < tourData.length - 1) {
                       setTourStep(s => s + 1);
@@ -141,8 +141,8 @@ function OnboardingComponent() {
                     }
                   }}
                 >
-                  {tourStep < tourData.length - 1 ? "Próximo" : "Começar Agora"}
-                  <ChevronRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
+                  {tourStep < tourData.length - 1 ? "Próximo" : "Começar Agora!"}
+                  <ChevronRight className="ml-2 h-5 w-5" />
                 </Button>
               </CardContent>
             </Card>
