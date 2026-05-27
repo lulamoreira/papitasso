@@ -14,12 +14,13 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from 
 import { MessageSquare } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/pools/$id/predict/$matchId" as any)({
-  loader: async ({ params, context }) => {
+  loader: async ({ params, context }: any) => {
     await Promise.all([
       context.queryClient.ensureQueryData({ queryKey: ["poolMatches", params.id], queryFn: () => getMatchesForPool({ data: params.id } as any) }),
       context.queryClient.ensureQueryData({ queryKey: ["predictions", params.id], queryFn: () => getPredictions({ data: params.id } as any) }),
     ]);
   },
+
   component: PredictionDetailComponent,
 });
 
