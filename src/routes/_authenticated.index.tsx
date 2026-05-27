@@ -1,9 +1,10 @@
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { getNextMatch, getProfile } from "@/lib/api.functions";
+import { getNextMatch, getProfile, getDailyQuiz, getQuizUserStatus } from "@/lib/api.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Trophy, User, Hash } from "lucide-react";
+import { Plus, Trophy, User, Hash, Zap, HelpCircle, ChevronRight } from "lucide-react";
+
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion } from "framer-motion";
