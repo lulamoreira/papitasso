@@ -17,17 +17,18 @@ export const getProfile = createServerFn({ method: "GET" })
   });
 
 export const updateProfile = createServerFn({ method: "POST" })
-  .validator((data: any) => z.object({
-    name: z.string().min(1).optional(),
-    favorite_team_id: z.string().uuid().optional(),
-    avatar_url: z.string().url().optional(),
-  }).parse(data))
   .middleware([requireSupabaseAuth])
   .handler(async ({ data, context }: any) => {
+    const validated = z.object({
+      name: z.string().min(1).optional(),
+      favorite_team_id: z.string().uuid().optional(),
+      avatar_url: z.string().url().optional(),
+    }).parse(data);
+
     const { supabase, userId } = context;
     const { data: updated, error } = await supabase
       .from("profiles")
-      .update(data)
+      .update(validated)
       .eq("id", userId)
       .select()
       .single();
@@ -62,28 +63,29 @@ export const getNextMatch = createServerFn({ method: "GET" })
   });
 
 export const createPool = createServerFn({ method: "POST" })
-  .validator((data: any) => z.object({
-    name: z.string().min(3),
-    type: z.enum(['simple', 'advanced']),
-    scope_type: z.string(),
-    scope_config: z.any().optional(),
-    scoring_config: z.any(),
-    modes_enabled: z.array(z.string()).optional(),
-  }).parse(data))
   .middleware([requireSupabaseAuth])
   .handler(async ({ data, context }: any) => {
+    const validated = z.object({
+      name: z.string().min(3),
+      type: z.enum(['simple', 'advanced']),
+      scope_type: z.string(),
+      scope_config: z.any().optional(),
+      scoring_config: z.any(),
+      modes_enabled: z.array(z.string()).optional(),
+    }).parse(data);
+
     const { supabase, userId } = context;
     const invite_code = Math.random().toString(36).substring(2, 8).toUpperCase();
     
     const { data: pool, error: poolError } = await supabase
       .from("pools")
       .insert({
-        name: data.name,
-        type: data.type,
-        scope_type: data.scope_type,
-        scope_config: data.scope_config,
-        scoring_config: data.scoring_config,
-        modes_enabled: data.modes_enabled,
+        name: validated.name,
+        type: validated.type,
+        scope_type: validated.scope_type,
+        scope_config: validated.scope_config,
+        scoring_config: validated.scoring_config,
+        modes_enabled: validated.modes_enabled,
         invite_code,
         owner_id: userId
       })
@@ -119,13 +121,13 @@ export const getMyPools = createServerFn({ method: "GET" })
   });
 
 export const getPoolById = createServerFn({ method: "GET" })
-  .validator((id: string) => id)
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: id, context }: any) => {
     const { supabase } = context;
     const { data, error } = await supabase
       .from("pools")
       .select("*, owner:profiles(*)")
+      .eq(id ? "id" : "name", id) // Fallback behavior or handle empty
       .eq("id", id)
       .single();
     
@@ -134,14 +136,13 @@ export const getPoolById = createServerFn({ method: "GET" })
   });
 
 export const getPoolByInviteCode = createServerFn({ method: "GET" })
-  .validator((code: string) => code)
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: code, context }: any) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("pools")
       .select("*, owner:profiles(*)")
-      .eq("invite_code", code.toUpperCase())
+      .eq("invite_code", code?.toUpperCase() || "")
       .single();
     
     if (error) throw error;
@@ -149,7 +150,6 @@ export const getPoolByInviteCode = createServerFn({ method: "GET" })
   });
 
 export const joinPool = createServerFn({ method: "POST" })
-  .validator((code: string) => code)
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: code, context }: any) => {
     const { supabase, userId } = context;
@@ -158,7 +158,7 @@ export const joinPool = createServerFn({ method: "POST" })
     const { data: pool, error: poolError } = await supabase
       .from("pools")
       .select("id")
-      .eq("invite_code", code.toUpperCase())
+      .eq("invite_code", code?.toUpperCase() || "")
       .single();
     
     if (poolError) throw poolError;
