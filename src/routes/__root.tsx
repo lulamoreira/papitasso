@@ -65,11 +65,12 @@ function RootComponent() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
-          className="min-h-screen"
+          className="min-h-screen relative"
         >
           <Outlet />
         </motion.div>
       </AnimatePresence>
+      <NotFoundComponent />
       <Toaster position="top-center" expand={false} richColors />
     </QueryClientProvider>
   );
