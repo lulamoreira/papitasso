@@ -225,6 +225,102 @@ function PoolDetailComponent() {
             </div>
           </TabsContent>
           
+          <TabsContent value="prizes" className="py-4 space-y-4">
+            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-4 text-center">
+              <div className="text-[10px] font-bold uppercase tracking-widest text-yellow-700">🏆 Total em jogo</div>
+              <div className="text-2xl font-black text-yellow-600">
+                R$ {(prizes?.reduce((acc: number, p: any) => acc + (p.estimated_value_cents || 0), 0) / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4">
+              {prizes?.map((prize: any) => (
+                <Card key={prize.id} className="overflow-hidden border-2 border-primary/5">
+                  <div className="aspect-video relative bg-muted">
+                    {prize.photo_url ? (
+                      <img src={prize.photo_url} className="w-full h-full object-cover" alt={prize.title} />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Gift className="h-12 w-12 text-muted-foreground opacity-20" />
+                      </div>
+                    )}
+                    {prize.rank && prize.rank <= 3 && (
+                      <div className="absolute top-2 left-2 bg-yellow-400 text-yellow-900 h-8 w-8 rounded-full flex items-center justify-center font-black text-lg shadow-lg">
+                        {prize.rank === 1 ? '🥇' : prize.rank === 2 ? '🥈' : '🥉'}
+                      </div>
+                    )}
+                  </div>
+                  <CardContent className="p-4 space-y-2">
+                    <div className="flex justify-between items-start">
+                      <h3 className="font-bold text-lg leading-tight">{prize.title}</h3>
+                      <div className="text-right">
+                        <div className="text-[10px] font-bold text-muted-foreground uppercase">Valor Est.</div>
+                        <div className="font-black text-primary">R$ {(prize.estimated_value_cents / 100).toFixed(2)}</div>
+                      </div>
+                    </div>
+                    <p className="text-sm text-muted-foreground line-clamp-2">{prize.description}</p>
+                    {prize.sponsor && (
+                      <div className="text-[10px] font-bold text-muted-foreground uppercase pt-2 border-t">
+                        Oferecido por: <span className="text-primary">{prize.sponsor}</span>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {isOwner && (
+              <Button 
+                variant="outline" 
+                className="w-full h-12 border-dashed border-2 gap-2"
+                onClick={() => navigate({ to: `/pools/${id}/prizes/edit` })}
+              >
+                <Settings className="h-4 w-4" /> Editar Prêmios
+              </Button>
+            )}
+          </TabsContent>
+
+          <TabsContent value="winners" className="py-4 space-y-4">
+             {winners?.map((winner: any) => (
+               <Card key={winner.id} className="p-4 flex items-center justify-between gap-4">
+                 <div className="flex items-center gap-3">
+                   <div className="relative">
+                     <Avatar className="h-12 w-12 border-2 border-yellow-400">
+                       <AvatarImage src={winner.profile?.avatar_url} />
+                       <AvatarFallback><UserIcon /></AvatarFallback>
+                     </Avatar>
+                     <div className="absolute -bottom-1 -right-1 bg-yellow-400 rounded-full p-0.5">
+                       <Award className="h-3 w-3 text-yellow-900" />
+                     </div>
+                   </div>
+                   <div>
+                     <div className="font-bold">{winner.profile?.name}</div>
+                     <div className="text-xs text-muted-foreground">{winner.prize?.title}</div>
+                   </div>
+                 </div>
+                 <div className="text-right">
+                    <div className={`px-2 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                      winner.status === 'delivered' ? 'bg-green-500/10 text-green-600' : 
+                      winner.status === 'reserved' ? 'bg-blue-500/10 text-blue-600' : 
+                      'bg-yellow-500/10 text-yellow-600'
+                    }`}>
+                      {winner.status === 'delivered' ? 'Entregue' : winner.status === 'reserved' ? 'Reservado' : 'Pendente'}
+                    </div>
+                    {isOwner && winner.status !== 'delivered' && (
+                      <Button 
+                        variant="link" 
+                        size="sm" 
+                        className="text-[10px] h-auto p-0 h-6"
+                        onClick={() => navigate({ to: `/pools/${id}/winners` })}
+                      >
+                        Gerenciar
+                      </Button>
+                    )}
+                 </div>
+               </Card>
+             ))}
+          </TabsContent>
+
           <TabsContent value="members" className="py-20 text-center space-y-4">
             <Users className="h-12 w-12 text-muted-foreground mx-auto opacity-20" />
             <p className="text-muted-foreground">Em breve: Gerencie os participantes.</p>
