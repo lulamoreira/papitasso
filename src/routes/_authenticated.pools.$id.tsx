@@ -116,7 +116,11 @@ function PoolDetailComponent() {
           Dar Meus Palpites
         </Button>
 
-        <Tabs defaultValue="matches" className="w-full">
+        <Tabs defaultValue="matches" className="w-full" onValueChange={(val) => {
+          if (['pickem', 'survivor', 'bracket'].includes(val)) {
+            navigate({ to: `/pools/${id}/${val}` });
+          }
+        }}>
           <TabsList className={`w-full grid overflow-x-auto ${hasWinners ? 'grid-cols-7' : 'grid-cols-6'} min-w-max`}>
             <TabsTrigger value="matches" className="gap-1 px-3"><Calendar className="h-3 w-3" /> <span className="hidden sm:inline">Jogos</span></TabsTrigger>
             {pool.modes_enabled?.includes('pickem') && <TabsTrigger value="pickem" className="gap-1 px-3"><Trophy className="h-3 w-3" /> <span className="hidden sm:inline">Pick'em</span></TabsTrigger>}
