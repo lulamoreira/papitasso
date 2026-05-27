@@ -14,12 +14,13 @@ import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/pools/$id/fantasy/build" as any)({
-  loader: async ({ params, context }) => {
+  loader: async ({ params, context }: any) => {
     await Promise.all([
       context.queryClient.ensureQueryData({ queryKey: ["fantasyPlayers"], queryFn: () => getFantasyPlayers() }),
       context.queryClient.ensureQueryData({ queryKey: ["pool", params.id], queryFn: () => getPoolById({ data: params.id } as any) }),
     ]);
   },
+
   component: FantasyBuildComponent,
 });
 
