@@ -13,10 +13,10 @@ export const Route = createRootRouteWithContext<{ queryClient: any }>()({
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Palpitasso da Copa 2026" },
+      { title: "GolPalpite | Copa 2026" },
       { name: "description", content: "Sua plataforma de bolão da Copa do Mundo 2026" },
-      { property: "og:title", content: "Palpitasso da Copa 2026" },
-      { name: "twitter:title", content: "Palpitasso da Copa 2026" },
+      { property: "og:title", content: "GolPalpite | Copa 2026" },
+      { name: "twitter:title", content: "GolPalpite | Copa 2026" },
       { property: "og:description", content: "Sua plataforma de bolão da Copa do Mundo 2026" },
       { name: "twitter:description", content: "Sua plataforma de bolão da Copa do Mundo 2026" },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/51c6ac36-9a10-42ea-acb3-b2a29c5322a1/id-preview-94b2c48f--267ed4fe-2c33-49a8-87e2-f2a2248b855c.lovable.app-1779913580336.png" },
@@ -28,6 +28,7 @@ export const Route = createRootRouteWithContext<{ queryClient: any }>()({
   }),
   shellComponent: RootShell,
   component: RootComponent,
+  notFoundComponent: NotFoundComponent,
 });
 
 function RootShell({ children }: { children: React.ReactNode }) {
