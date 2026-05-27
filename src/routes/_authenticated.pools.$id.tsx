@@ -116,13 +116,20 @@ function PoolDetailComponent() {
           Dar Meus Palpites
         </Button>
 
-        <Tabs defaultValue="matches" className="w-full">
-          <TabsList className={`w-full grid ${hasWinners ? 'grid-cols-5' : 'grid-cols-4'}`}>
-            <TabsTrigger value="matches" className="gap-1 px-1"><Calendar className="h-3 w-3" /> <span className="hidden sm:inline">Jogos</span></TabsTrigger>
-            <TabsTrigger value="ranking" className="gap-1 px-1"><Trophy className="h-3 w-3" /> <span className="hidden sm:inline">Ranking</span></TabsTrigger>
-            <TabsTrigger value="prizes" className="gap-1 px-1"><Gift className="h-3 w-3" /> <span className="hidden sm:inline">Prêmios</span></TabsTrigger>
-            {hasWinners && <TabsTrigger value="winners" className="gap-1 px-1"><Award className="h-3 w-3" /> <span className="hidden sm:inline">Ganhadores</span></TabsTrigger>}
-            <TabsTrigger value="members" className="gap-1 px-1"><Users className="h-3 w-3" /> <span className="hidden sm:inline">Membros</span></TabsTrigger>
+        <Tabs defaultValue="matches" className="w-full" onValueChange={(val) => {
+          if (['pickem', 'survivor', 'bracket'].includes(val)) {
+            navigate({ to: `/pools/${id}/${val}` });
+          }
+        }}>
+          <TabsList className={`w-full grid overflow-x-auto ${hasWinners ? 'grid-cols-7' : 'grid-cols-6'} min-w-max`}>
+            <TabsTrigger value="matches" className="gap-1 px-3"><Calendar className="h-3 w-3" /> <span className="hidden sm:inline">Jogos</span></TabsTrigger>
+            {pool.modes_enabled?.includes('pickem') && <TabsTrigger value="pickem" className="gap-1 px-3"><Trophy className="h-3 w-3" /> <span className="hidden sm:inline">Pick'em</span></TabsTrigger>}
+            {pool.modes_enabled?.includes('survivor') && <TabsTrigger value="survivor" className="gap-1 px-3"><Award className="h-3 w-3" /> <span className="hidden sm:inline">Survivor</span></TabsTrigger>}
+            {pool.modes_enabled?.includes('bracket') && <TabsTrigger value="bracket" className="gap-1 px-3"><Settings className="h-3 w-3" /> <span className="hidden sm:inline">Chaveamento</span></TabsTrigger>}
+            <TabsTrigger value="ranking" className="gap-1 px-3"><Trophy className="h-3 w-3" /> <span className="hidden sm:inline">Ranking</span></TabsTrigger>
+            <TabsTrigger value="prizes" className="gap-1 px-3"><Gift className="h-3 w-3" /> <span className="hidden sm:inline">Prêmios</span></TabsTrigger>
+            {hasWinners && <TabsTrigger value="winners" className="gap-1 px-3"><Award className="h-3 w-3" /> <span className="hidden sm:inline">Ganhadores</span></TabsTrigger>}
+            <TabsTrigger value="members" className="gap-1 px-3"><Users className="h-3 w-3" /> <span className="hidden sm:inline">Membros</span></TabsTrigger>
           </TabsList>
           
           <TabsContent value="matches" className="py-4 space-y-4">

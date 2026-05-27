@@ -327,3 +327,125 @@ export const updateWinnerStatus = createServerFn({ method: "POST" })
     if (error) throw error;
     return data;
   });
+
+export const upsertPickemPrediction = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { poolId, matchId, winner } = rawData?.data || rawData;
+    const { supabase, userId } = context;
+
+    const { data, error } = await supabase
+      .from("predictions_pickem")
+      .upsert({
+        user_id: userId,
+        pool_id: poolId,
+        match_id: matchId,
+        winner,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,pool_id,match_id' })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  });
+
+export const getPickemPredictions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase, userId } = context;
+    const { data, error } = await supabase
+      .from("predictions_pickem")
+      .select("*")
+      .eq("pool_id", poolId)
+      .eq("user_id", userId);
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const getSurvivorRounds = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("survivor_rounds")
+      .select("*")
+      .eq("pool_id", poolId)
+      .order("round_number", { ascending: true });
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const upsertSurvivorPrediction = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { poolId, roundNumber, teamId } = rawData?.data || rawData;
+    const { supabase, userId } = context;
+
+    const { data, error } = await supabase
+      .from("predictions_survivor")
+      .upsert({
+        user_id: userId,
+        pool_id: poolId,
+        round_number: roundNumber,
+        team_id: teamId,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,pool_id,round_number' })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  });
+
+export const getSurvivorPredictions = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase, userId } = context;
+    const { data, error } = await supabase
+      .from("predictions_survivor")
+      .select("*, team:teams(*)")
+      .eq("pool_id", poolId)
+      .eq("user_id", userId);
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const upsertBracketPrediction = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { poolId, bracketJson } = rawData?.data || rawData;
+    const { supabase, userId } = context;
+
+    const { data, error } = await supabase
+      .from("predictions_bracket")
+      .upsert({
+        user_id: userId,
+        pool_id: poolId,
+        bracket_json: bracketJson,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,pool_id' })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  });
+
+export const getBracketPrediction = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase, userId } = context;
+    const { data, error } = await supabase
+      .from("predictions_bracket")
+      .select("*")
+      .eq("pool_id", poolId)
+      .eq("user_id", userId)
+      .maybeSingle();
+    
+    if (error) throw error;
+    return data;
+  });
