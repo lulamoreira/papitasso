@@ -23,7 +23,7 @@ function ProfileComponent() {
   const navigate = useNavigate();
 
   const updateMutation = useMutation({
-    mutationFn: (data: { name: string }) => updateProfile({ data }),
+    mutationFn: (data: { name: string }) => updateProfile({ data: data as any }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       toast.success("Perfil atualizado!");
