@@ -195,6 +195,67 @@ export type Database = {
           },
         ]
       }
+      predictions_exact: {
+        Row: {
+          away_score: number
+          created_at: string
+          home_score: number
+          id: string
+          locked_at: string | null
+          match_id: string
+          points_awarded: number | null
+          pool_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          away_score: number
+          created_at?: string
+          home_score: number
+          id?: string
+          locked_at?: string | null
+          match_id: string
+          points_awarded?: number | null
+          pool_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          away_score?: number
+          created_at?: string
+          home_score?: number
+          id?: string
+          locked_at?: string | null
+          match_id?: string
+          points_awarded?: number | null
+          pool_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_exact_match_id_fkey"
+            columns: ["match_id"]
+            isOneToOne: false
+            referencedRelation: "matches"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_exact_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_exact_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -262,10 +323,59 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      leaderboard_view: {
+        Row: {
+          points: number | null
+          pool_id: string | null
+          position: number | null
+          user_id: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "predictions_exact_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "pools"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "predictions_exact_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Functions: {
-      [_ in never]: never
+      award_points_for_match: {
+        Args: { p_match_id: string }
+        Returns: undefined
+      }
+      matches_for_pool: {
+        Args: { p_pool_id: string }
+        Returns: {
+          away_score: number | null
+          away_team_id: string | null
+          city: string | null
+          country: string | null
+          home_score: number | null
+          home_team_id: string | null
+          id: string
+          kickoff_at: string | null
+          phase: Database["public"]["Enums"]["match_phase"] | null
+          placeholder_label: string | null
+          stadium: string | null
+          status: Database["public"]["Enums"]["match_status"] | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "matches"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
     }
     Enums: {
       match_phase:
