@@ -30,6 +30,22 @@ function LoginComponent() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const slides = [
+    { icon: <Trophy className="h-8 w-8 text-primary" />, text: "Crie bolões com amigos" },
+    { icon: <Target className="h-8 w-8 text-primary" />, text: "Palpites em tempo real" },
+    { icon: <Sparkles className="h-8 w-8 text-primary" />, text: "Ganhe prêmios exclusivos" },
+    { icon: <Brain className="h-8 w-8 text-primary" />, text: "Quiz e Desafios de IA" }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide(s => (s + 1) % slides.length);
+    }, 3000);
+    return () => clearInterval(timer);
+  }, []);
+
   const handleSocialLogin = async (provider: "google" | "apple") => {
     try {
       const result = await lovable.auth.signInWithOAuth(provider, {
@@ -40,6 +56,7 @@ function LoginComponent() {
       toast.error(error.message || "Erro ao fazer login social");
     }
   };
+
 
   const handleEmailLogin = async (e: React.FormEvent) => {
     e.preventDefault();
