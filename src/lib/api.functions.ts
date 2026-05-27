@@ -516,13 +516,8 @@ export const getDailyQuiz = createServerFn({ method: "GET" })
 
 export const submitQuizAnswer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator(z.object({
-    quizId: z.string(),
-    answerIndex: z.number()
-  }))
-  .handler(async ({ data, context }: any) => {
-    const { quizId, answerIndex } = data;
-
+  .handler(async ({ data: rawData, context }: any) => {
+    const { quizId, answerIndex } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
     const { data: quiz } = await supabase
@@ -533,7 +528,7 @@ export const submitQuizAnswer = createServerFn({ method: "POST" })
 
     const isCorrect = quiz.correct_index === answerIndex;
 
-    const { data, error } = await supabase
+    const { data: answer, error } = await supabase
       .from("quiz_answers")
       .insert({
         user_id: userId,
@@ -555,7 +550,7 @@ export const submitQuizAnswer = createServerFn({ method: "POST" })
        await supabase.rpc('update_quiz_streak', { p_user_id: userId });
     }
 
-    return { ...data, fact: quiz.fact, correct_index: quiz.correct_index };
+    return { ...answer, fact: quiz.fact, correct_index: quiz.correct_index };
   });
 
 export const getQuizUserStatus = createServerFn({ method: "GET" })
