@@ -37,9 +37,10 @@ function AutoPredictPage() {
   });
 
   const saveMutation = useMutation({
-    mutationFn: (match: any) => upsertPrediction({ 
+    mutationFn: (match: any) => (upsertPrediction as any)({ 
       data: { 
         poolId: id, 
+
         matchId: match.match_id, 
         homeScore: match.predicted_home, 
         awayScore: match.predicted_away 
