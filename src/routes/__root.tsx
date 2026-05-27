@@ -1,9 +1,11 @@
 import { createFileRoute, redirect, Outlet, useRouter } from "@tanstack/react-router";
 import { useQueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "sonner";
+import { AnimatePresence, motion } from "framer-motion";
 import appCss from "../styles.css?url";
+
 
 export const Route = createRootRouteWithContext<{ queryClient: any }>()({
   head: () => ({
