@@ -249,6 +249,8 @@ export const getLeaderboard = createServerFn({ method: "GET" })
       .order("position", { ascending: true });
     
     if (error) throw error;
+    return data;
+  });
 
 export const getPrizes = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
