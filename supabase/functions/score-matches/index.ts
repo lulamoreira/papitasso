@@ -67,6 +67,30 @@ Deno.serve(async (req) => {
           if (status === 'finished') {
             // Trigger point awarding
             await supabase.rpc('award_points_for_match', { p_match_id: match.id })
+
+            // Trigger achievement checks for all participants in this match
+            const { data: participants } = await supabase
+              .from('predictions_exact')
+              .select('user_id')
+              .eq('match_id', match.id)
+
+            if (participants) {
+              for (const p of participants) {
+                // Call check-achievements for each user
+                // Using fetch to call the local/deployed edge function
+                // Note: In production use the external URL or use internal function call if possible
+                const functionUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/check-achievements`
+                fetch(functionUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ user_id: p.user_id })
+                }).catch(err => console.error('Error calling check-achievements:', err))
+              }
+            }
+
           }
         }
       }
