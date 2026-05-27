@@ -57,8 +57,19 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Outlet />
-      <Toaster position="top-center" />
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={router.state.location.pathname}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: -20 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="min-h-screen"
+        >
+          <Outlet />
+        </motion.div>
+      </AnimatePresence>
+      <Toaster position="top-center" expand={false} richColors />
     </QueryClientProvider>
   );
 }
