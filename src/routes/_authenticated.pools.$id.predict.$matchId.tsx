@@ -250,7 +250,7 @@ function PredictionDetailComponent() {
                 variant="outline" 
                 size="icon" 
                 className="h-10 w-10 rounded-full"
-                onClick={() => setAwayScore(s => s + 1)}
+                onClick={() => setAwayScore((s: number) => s + 1)}
                 disabled={isLocked}
               >
                 <Plus className="h-4 w-4" />
