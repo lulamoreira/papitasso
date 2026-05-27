@@ -8,14 +8,14 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/_authenticated/pools/$id")({
   loader: async ({ params, context }) => {
-    await context.queryClient.ensureQueryData({ queryKey: ["pool", params.id], queryFn: () => getPoolById({ data: params.id }) });
+    await context.queryClient.ensureQueryData({ queryKey: ["pool", params.id], queryFn: () => getPoolById({ data: params.id } as any) });
   },
   component: PoolDetailComponent,
 });
 
 function PoolDetailComponent() {
   const { id } = useParams({ from: "/_authenticated/pools/$id" });
-  const { data: pool } = useSuspenseQuery({ queryKey: ["pool", id], queryFn: () => getPoolById({ data: id }) });
+  const { data: pool } = useSuspenseQuery({ queryKey: ["pool", id], queryFn: () => getPoolById({ data: id } as any) });
   const navigate = useNavigate();
 
   const handleShare = () => {
