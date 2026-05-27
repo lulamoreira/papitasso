@@ -9,6 +9,9 @@ import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { motion, AnimatePresence } from "framer-motion";
+import { PoolChat } from "@/components/PoolChat";
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { MessageSquare } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/pools/$id/predict/$matchId")({
   loader: async ({ params, context }) => {
@@ -187,6 +190,23 @@ function PredictionDetailComponent() {
             {!isLocked && <Save className="h-5 w-5" />}
           </Button>
         </div>
+
+        {/* Live Chat Drawer */}
+        <Drawer>
+          <DrawerTrigger asChild>
+            <Button variant="secondary" className="fixed bottom-24 right-4 h-14 w-14 rounded-full shadow-2xl gap-2 z-50">
+              <MessageSquare className="h-6 w-6" />
+            </Button>
+          </DrawerTrigger>
+          <DrawerContent className="h-[80vh]">
+            <DrawerHeader>
+              <DrawerTitle>Chat da Partida ⚽</DrawerTitle>
+            </DrawerHeader>
+            <div className="flex-1 overflow-hidden px-4 pb-4">
+              <PoolChat poolId={id} matchId={matchId} className="h-full border-none shadow-none" />
+            </div>
+          </DrawerContent>
+        </Drawer>
       </main>
 
       <footer className="p-4 border-t bg-muted/30">
