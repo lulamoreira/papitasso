@@ -117,10 +117,12 @@ function PoolDetailComponent() {
         </Button>
 
         <Tabs defaultValue="matches" className="w-full">
-          <TabsList className="w-full grid grid-cols-3">
-            <TabsTrigger value="matches" className="gap-2"><Calendar className="h-4 w-4" /> Jogos</TabsTrigger>
-            <TabsTrigger value="ranking" className="gap-2"><Trophy className="h-4 w-4" /> Ranking</TabsTrigger>
-            <TabsTrigger value="members" className="gap-2"><Users className="h-4 w-4" /> Membros</TabsTrigger>
+          <TabsList className={`w-full grid ${hasWinners ? 'grid-cols-5' : 'grid-cols-4'}`}>
+            <TabsTrigger value="matches" className="gap-1 px-1"><Calendar className="h-3 w-3" /> <span className="hidden sm:inline">Jogos</span></TabsTrigger>
+            <TabsTrigger value="ranking" className="gap-1 px-1"><Trophy className="h-3 w-3" /> <span className="hidden sm:inline">Ranking</span></TabsTrigger>
+            <TabsTrigger value="prizes" className="gap-1 px-1"><Gift className="h-3 w-3" /> <span className="hidden sm:inline">Prêmios</span></TabsTrigger>
+            {hasWinners && <TabsTrigger value="winners" className="gap-1 px-1"><Award className="h-3 w-3" /> <span className="hidden sm:inline">Ganhadores</span></TabsTrigger>}
+            <TabsTrigger value="members" className="gap-1 px-1"><Users className="h-3 w-3" /> <span className="hidden sm:inline">Membros</span></TabsTrigger>
           </TabsList>
           
           <TabsContent value="matches" className="py-4 space-y-4">
