@@ -6,6 +6,8 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Lock, CheckCircle2, Clock, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { motion } from "framer-motion";
+
 
 export const Route = createFileRoute("/_authenticated/pools/$id/predict")({
   loader: async ({ params, context }) => {
