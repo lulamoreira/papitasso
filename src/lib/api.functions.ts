@@ -449,3 +449,93 @@ export const getBracketPrediction = createServerFn({ method: "GET" })
     if (error) throw error;
     return data;
   });
+
+export const getProps = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("props")
+      .select("*")
+      .order("created_at", { ascending: true });
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const getPredictionsProps = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase, userId } = context;
+    const { data, error } = await supabase
+      .from("predictions_props")
+      .select("*")
+      .eq("pool_id", poolId)
+      .eq("user_id", userId);
+    
+    if (error) throw error;
+    return data;
+  });
+
+export const upsertPredictionProp = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { poolId, propId, answer } = rawData?.data || rawData;
+    const { supabase, userId } = context;
+
+    const { data, error } = await supabase
+      .from("predictions_props")
+      .upsert({
+        user_id: userId,
+        pool_id: poolId,
+        prop_id: propId,
+        answer,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id,pool_id,prop_id' })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  });
+
+export const createCustomProp = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const data = rawData?.data || rawData;
+    const { supabase } = context;
+    const { data: prop, error } = await supabase
+      .from("props")
+      .insert(data)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return prop;
+  });
+
+export const resolveProp = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { propId, resolvedValue } = rawData?.data || rawData;
+    const { supabase } = context;
+    const { error } = await supabase.rpc('award_points_for_prop', { 
+      p_prop_id: propId, 
+      p_resolved_value: resolvedValue 
+    });
+    
+    if (error) throw error;
+    return { success: true };
+  });
+
+export const getPlayers = createServerFn({ method: "GET" })
+  .handler(async () => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("players")
+      .select("*, team:teams(*)")
+      .order("name");
+    
+    if (error) throw error;
+    return data;
+  });
