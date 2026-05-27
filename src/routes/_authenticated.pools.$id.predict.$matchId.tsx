@@ -3,7 +3,7 @@ import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-q
 import { getMatchesForPool, getPredictions, upsertPrediction, getAiCommentary, getAiPredictionAnalysis } from "@/lib/api.functions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, ChevronRight, Minus, Plus, Save, Clock, Lock } from "lucide-react";
+import { ChevronLeft, ChevronRight, Minus, Plus, Save, Clock, Lock, Mic2, Brain, Sparkles } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
