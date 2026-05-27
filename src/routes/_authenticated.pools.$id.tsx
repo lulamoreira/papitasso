@@ -125,12 +125,14 @@ function PoolDetailComponent() {
         </Button>
 
         <Tabs defaultValue="matches" className="w-full" onValueChange={(val) => {
-          if (['pickem', 'survivor', 'bracket', 'props'].includes(val)) {
+          if (['pickem', 'survivor', 'bracket', 'props', 'chat', 'mural'].includes(val)) {
             navigate({ to: `/pools/${id}/${val}` });
           }
         }}>
-          <TabsList className={`w-full grid overflow-x-auto ${hasWinners ? 'grid-cols-8' : 'grid-cols-7'} min-w-max`}>
+          <TabsList className={`w-full grid overflow-x-auto ${hasWinners ? 'grid-cols-10' : 'grid-cols-9'} min-w-max`}>
             <TabsTrigger value="matches" className="gap-1 px-3"><Calendar className="h-3 w-3" /> <span className="hidden sm:inline">Jogos</span></TabsTrigger>
+            <TabsTrigger value="chat" className="gap-1 px-3"><Users className="h-3 w-3" /> <span className="hidden sm:inline">Chat</span></TabsTrigger>
+            <TabsTrigger value="mural" className="gap-1 px-3"><Trophy className="h-3 w-3" /> <span className="hidden sm:inline">Mural</span></TabsTrigger>
             {pool.modes_enabled?.includes('pickem') && <TabsTrigger value="pickem" className="gap-1 px-3"><Trophy className="h-3 w-3" /> <span className="hidden sm:inline">Pick'em</span></TabsTrigger>}
             {pool.modes_enabled?.includes('survivor') && <TabsTrigger value="survivor" className="gap-1 px-3"><Award className="h-3 w-3" /> <span className="hidden sm:inline">Survivor</span></TabsTrigger>}
             {pool.modes_enabled?.includes('bracket') && <TabsTrigger value="bracket" className="gap-1 px-3"><Settings className="h-3 w-3" /> <span className="hidden sm:inline">Chaveamento</span></TabsTrigger>}
