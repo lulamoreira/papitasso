@@ -4,7 +4,7 @@ import { z } from "zod";
 
 export const getProfile = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }: { context: any }) => {
+  .handler(async ({ context }: any) => {
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("profiles")
@@ -18,7 +18,7 @@ export const getProfile = createServerFn({ method: "GET" })
 
 export const updateProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ data, context }: { data: any, context: any }) => {
+  .handler(async ({ data, context }: any) => {
     const validated = z.object({
       name: z.string().min(1).optional(),
       favorite_team_id: z.string().uuid().optional(),
@@ -64,7 +64,7 @@ export const getNextMatch = createServerFn({ method: "GET" })
 
 export const createPool = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ data, context }: { data: any, context: any }) => {
+  .handler(async ({ data, context }: any) => {
     const validated = z.object({
       name: z.string().min(3),
       type: z.enum(['simple', 'advanced']),
@@ -109,7 +109,7 @@ export const createPool = createServerFn({ method: "POST" })
 
 export const getMyPools = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ context }: { context: any }) => {
+  .handler(async ({ context }: any) => {
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("pool_members")
@@ -122,7 +122,7 @@ export const getMyPools = createServerFn({ method: "GET" })
 
 export const getPoolById = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ data: id, context }: { data: string, context: any }) => {
+  .handler(async ({ data: id, context }: any) => {
     const { supabase } = context;
     const { data, error } = await supabase
       .from("pools")
@@ -136,7 +136,7 @@ export const getPoolById = createServerFn({ method: "GET" })
 
 export const getPoolByInviteCode = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ data: code, context }: { data: string, context: any }) => {
+  .handler(async ({ data: code, context }: any) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("pools")
@@ -150,7 +150,7 @@ export const getPoolByInviteCode = createServerFn({ method: "GET" })
 
 export const joinPool = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ data: code, context }: { data: string, context: any }) => {
+  .handler(async ({ data: code, context }: any) => {
     const { supabase, userId } = context;
     
     // First find pool
