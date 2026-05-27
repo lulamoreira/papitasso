@@ -20,6 +20,8 @@ export const Route = createFileRoute("/_authenticated/pools/$id")({
       context.queryClient.ensureQueryData({ queryKey: ["poolMatches", params.id], queryFn: () => getMatchesForPool({ data: params.id } as any) }),
       context.queryClient.ensureQueryData({ queryKey: ["predictions", params.id], queryFn: () => getPredictions({ data: params.id } as any) }),
       context.queryClient.ensureQueryData({ queryKey: ["profile"], queryFn: () => getProfile() }),
+      context.queryClient.ensureQueryData({ queryKey: ["prizes", params.id], queryFn: () => getPrizes({ data: params.id } as any) }),
+      context.queryClient.ensureQueryData({ queryKey: ["winners", params.id], queryFn: () => getPrizeWinners({ data: params.id } as any) }),
     ]);
   },
   component: PoolDetailComponent,
