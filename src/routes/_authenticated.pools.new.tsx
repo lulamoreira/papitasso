@@ -48,12 +48,12 @@ function NewPoolComponent() {
     mutationFn: (data: any) => createPool({ data }),
     onSuccess: (data: any) => {
       setCreatedPool(data);
-      setStep(5);
+      setStep(6);
     },
     onError: (err: any) => toast.error(err.message || "Erro ao criar bolão"),
   });
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, 5));
+  const nextStep = () => setStep((s) => Math.min(s + 1, 6));
   const prevStep = () => setStep((s) => Math.max(s - 1, 1));
 
   const progress = (step / STEPS.length) * 100;
