@@ -3,7 +3,7 @@ import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
 import { getPoolById, getLeaderboard, getMatchesForPool, getPredictions, getProfile, getPrizes, getPrizeWinners, getProps, getPredictionsProps } from "@/lib/api.functions";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, ArrowDownRight, Minus, PencilLine, User as UserIcon, Gift, Award, HelpCircle } from "lucide-react";
+import { ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, ArrowDownRight, Minus, PencilLine, User as UserIcon, Gift, Award, HelpCircle, Target } from "lucide-react";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -125,14 +125,16 @@ function PoolDetailComponent() {
         </Button>
 
         <Tabs defaultValue="matches" className="w-full" onValueChange={(val) => {
-          if (['pickem', 'survivor', 'bracket', 'props', 'chat', 'mural'].includes(val)) {
+          if (['pickem', 'survivor', 'bracket', 'props', 'fantasy', 'chat', 'mural'].includes(val)) {
             navigate({ to: `/pools/${id}/${val}` });
           }
+
         }}>
-          <TabsList className={`w-full grid overflow-x-auto ${hasWinners ? 'grid-cols-10' : 'grid-cols-9'} min-w-max`}>
+          <TabsList className={`w-full grid overflow-x-auto ${hasWinners ? 'grid-cols-11' : 'grid-cols-10'} min-w-max`}>
             <TabsTrigger value="matches" className="gap-1 px-3"><Calendar className="h-3 w-3" /> <span className="hidden sm:inline">Jogos</span></TabsTrigger>
             <TabsTrigger value="chat" className="gap-1 px-3"><Users className="h-3 w-3" /> <span className="hidden sm:inline">Chat</span></TabsTrigger>
             <TabsTrigger value="mural" className="gap-1 px-3"><Trophy className="h-3 w-3" /> <span className="hidden sm:inline">Mural</span></TabsTrigger>
+            {pool.modes_enabled?.includes('fantasy') && pool.type === 'advanced' && <TabsTrigger value="fantasy" className="gap-1 px-3"><Target className="h-3 w-3 text-primary" /> <span className="hidden sm:inline">Fantasy</span></TabsTrigger>}
             {pool.modes_enabled?.includes('pickem') && <TabsTrigger value="pickem" className="gap-1 px-3"><Trophy className="h-3 w-3" /> <span className="hidden sm:inline">Pick'em</span></TabsTrigger>}
             {pool.modes_enabled?.includes('survivor') && <TabsTrigger value="survivor" className="gap-1 px-3"><Award className="h-3 w-3" /> <span className="hidden sm:inline">Survivor</span></TabsTrigger>}
             {pool.modes_enabled?.includes('bracket') && <TabsTrigger value="bracket" className="gap-1 px-3"><Settings className="h-3 w-3" /> <span className="hidden sm:inline">Chaveamento</span></TabsTrigger>}
@@ -154,6 +156,7 @@ function PoolDetailComponent() {
             {hasWinners && <TabsTrigger value="winners" className="gap-1 px-3"><Award className="h-3 w-3" /> <span className="hidden sm:inline">Ganhadores</span></TabsTrigger>}
             <TabsTrigger value="members" className="gap-1 px-3"><Users className="h-3 w-3" /> <span className="hidden sm:inline">Membros</span></TabsTrigger>
           </TabsList>
+
           
           <TabsContent value="matches" className="py-4 space-y-4">
             {matches.map((match: any) => {
