@@ -31,7 +31,7 @@ function OnboardingComponent() {
   const navigate = useNavigate();
   
   const updateProfileMutation = useMutation({
-    mutationFn: updateProfile,
+    mutationFn: (data: { favorite_team_id?: string; name?: string; avatar_url?: string }) => updateProfile({ data }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       setStep(2);
