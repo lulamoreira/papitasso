@@ -26,7 +26,7 @@ function QuizPage() {
     queryFn: () => getDailyQuiz(),
   });
 
-  const { data: userStatus } = useSuspenseQuery({
+  const { data: userStatus } = useQuery({
     queryKey: ["quiz-status", quiz?.id],
     queryFn: () => quiz?.id ? getQuizUserStatus({ data: quiz.id }) : Promise.resolve(null),
     enabled: !!quiz?.id,
@@ -35,8 +35,9 @@ function QuizPage() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
   const submitMutation = useMutation({
-    mutationFn: (index: number) => submitQuizAnswer({ data: { quizId: quiz.id, answerIndex: index } }),
-    onSuccess: (data) => {
+    mutationFn: (variables: { quizId: string; answerIndex: number }) => submitQuizAnswer({ data: variables }),
+    onSuccess: (data: any) => {
+
       queryClient.invalidateQueries({ queryKey: ["quiz-status"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
       if (data.is_correct) {
