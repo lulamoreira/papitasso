@@ -16,6 +16,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
 import { Route as AuthenticatedPoolsIndexRouteImport } from './routes/_authenticated.pools.index'
 import { Route as AuthenticatedPoolsNewRouteImport } from './routes/_authenticated.pools.new'
+import { Route as AuthenticatedPoolsIdRouteImport } from './routes/_authenticated.pools.$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -51,12 +52,18 @@ const AuthenticatedPoolsNewRoute = AuthenticatedPoolsNewRouteImport.update({
   path: '/pools/new',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPoolsIdRoute = AuthenticatedPoolsIdRouteImport.update({
+  id: '/pools/$id',
+  path: '/pools/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profile': typeof AuthenticatedProfileRoute
+  '/pools/$id': typeof AuthenticatedPoolsIdRoute
   '/pools/new': typeof AuthenticatedPoolsNewRoute
   '/pools/': typeof AuthenticatedPoolsIndexRoute
 }
@@ -65,6 +72,7 @@ export interface FileRoutesByTo {
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profile': typeof AuthenticatedProfileRoute
   '/': typeof AuthenticatedIndexRoute
+  '/pools/$id': typeof AuthenticatedPoolsIdRoute
   '/pools/new': typeof AuthenticatedPoolsNewRoute
   '/pools': typeof AuthenticatedPoolsIndexRoute
 }
@@ -75,6 +83,7 @@ export interface FileRoutesById {
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/pools/$id': typeof AuthenticatedPoolsIdRoute
   '/_authenticated/pools/new': typeof AuthenticatedPoolsNewRoute
   '/_authenticated/pools/': typeof AuthenticatedPoolsIndexRoute
 }
@@ -85,10 +94,18 @@ export interface FileRouteTypes {
     | '/login'
     | '/onboarding'
     | '/profile'
+    | '/pools/$id'
     | '/pools/new'
     | '/pools/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/login' | '/onboarding' | '/profile' | '/' | '/pools/new' | '/pools'
+  to:
+    | '/login'
+    | '/onboarding'
+    | '/profile'
+    | '/'
+    | '/pools/$id'
+    | '/pools/new'
+    | '/pools'
   id:
     | '__root__'
     | '/_authenticated'
@@ -96,6 +113,7 @@ export interface FileRouteTypes {
     | '/_authenticated/onboarding'
     | '/_authenticated/profile'
     | '/_authenticated/'
+    | '/_authenticated/pools/$id'
     | '/_authenticated/pools/new'
     | '/_authenticated/pools/'
   fileRoutesById: FileRoutesById
@@ -156,6 +174,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPoolsNewRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/pools/$id': {
+      id: '/_authenticated/pools/$id'
+      path: '/pools/$id'
+      fullPath: '/pools/$id'
+      preLoaderRoute: typeof AuthenticatedPoolsIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
@@ -163,6 +188,7 @@ interface AuthenticatedRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
+  AuthenticatedPoolsIdRoute: typeof AuthenticatedPoolsIdRoute
   AuthenticatedPoolsNewRoute: typeof AuthenticatedPoolsNewRoute
   AuthenticatedPoolsIndexRoute: typeof AuthenticatedPoolsIndexRoute
 }
@@ -171,6 +197,7 @@ const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRoute,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
+  AuthenticatedPoolsIdRoute: AuthenticatedPoolsIdRoute,
   AuthenticatedPoolsNewRoute: AuthenticatedPoolsNewRoute,
   AuthenticatedPoolsIndexRoute: AuthenticatedPoolsIndexRoute,
 }
