@@ -4,6 +4,8 @@ import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
+
 
 import appCss from "../styles.css?url";
 
