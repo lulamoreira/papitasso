@@ -18,7 +18,7 @@ export const getProfile = createServerFn({ method: "GET" })
 
 export const updateProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: unknown) => z.object({
+  .validator((data: any) => z.object({
     name: z.string().min(1).optional(),
     favorite_team_id: z.string().uuid().optional(),
     avatar_url: z.string().url().optional(),
@@ -63,7 +63,7 @@ export const getNextMatch = createServerFn({ method: "GET" })
 
 export const createPool = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: unknown) => z.object({
+  .validator((data: any) => z.object({
     name: z.string().min(3),
     type: z.enum(['simple', 'advanced']),
     scope_type: z.string(),
@@ -115,7 +115,7 @@ export const getMyPools = createServerFn({ method: "GET" })
       .eq("user_id", userId);
     
     if (error) throw error;
-    return data.map(item => item.pools);
+    return data.map((item: any) => item.pools);
   });
 
 export const getPoolById = createServerFn({ method: "GET" })
