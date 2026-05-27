@@ -44,6 +44,30 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_usage_log: {
+        Row: {
+          created_at: string | null
+          function_name: string
+          id: string
+          tokens_estimated: number | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          function_name: string
+          id?: string
+          tokens_estimated?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          function_name?: string
+          id?: string
+          tokens_estimated?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           created_at: string | null
@@ -131,6 +155,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      daily_quiz: {
+        Row: {
+          correct_index: number
+          created_at: string | null
+          date: string
+          difficulty: string | null
+          fact: string | null
+          id: string
+          options: Json
+          question: string
+        }
+        Insert: {
+          correct_index: number
+          created_at?: string | null
+          date?: string
+          difficulty?: string | null
+          fact?: string | null
+          id?: string
+          options: Json
+          question: string
+        }
+        Update: {
+          correct_index?: number
+          created_at?: string | null
+          date?: string
+          difficulty?: string | null
+          fact?: string | null
+          id?: string
+          options?: Json
+          question?: string
+        }
+        Relationships: []
       }
       matches: {
         Row: {
@@ -815,8 +872,10 @@ export type Database = {
           created_at: string | null
           favorite_team_id: string | null
           id: string
+          last_quiz_date: string | null
           league_tier: string | null
           name: string | null
+          quiz_streak: number | null
           xp: number | null
         }
         Insert: {
@@ -824,8 +883,10 @@ export type Database = {
           created_at?: string | null
           favorite_team_id?: string | null
           id: string
+          last_quiz_date?: string | null
           league_tier?: string | null
           name?: string | null
+          quiz_streak?: number | null
           xp?: number | null
         }
         Update: {
@@ -833,8 +894,10 @@ export type Database = {
           created_at?: string | null
           favorite_team_id?: string | null
           id?: string
+          last_quiz_date?: string | null
           league_tier?: string | null
           name?: string | null
+          quiz_streak?: number | null
           xp?: number | null
         }
         Relationships: [
@@ -920,6 +983,41 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      quiz_answers: {
+        Row: {
+          answer_index: number
+          answered_at: string | null
+          id: string
+          is_correct: boolean
+          quiz_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          answer_index: number
+          answered_at?: string | null
+          id?: string
+          is_correct: boolean
+          quiz_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          answer_index?: number
+          answered_at?: string | null
+          id?: string
+          is_correct?: boolean
+          quiz_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "quiz_answers_quiz_id_fkey"
+            columns: ["quiz_id"]
+            isOneToOne: false
+            referencedRelation: "daily_quiz"
             referencedColumns: ["id"]
           },
         ]
@@ -1102,6 +1200,7 @@ export type Database = {
         Args: { p_emoji: string; p_message_id: string }
         Returns: undefined
       }
+      update_quiz_streak: { Args: { p_user_id: string }; Returns: undefined }
     }
     Enums: {
       match_phase:

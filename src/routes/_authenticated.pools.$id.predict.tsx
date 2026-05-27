@@ -3,7 +3,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { getMatchesForPool, getPredictions, getPoolById } from "@/lib/api.functions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ChevronLeft, Lock, CheckCircle2, Clock } from "lucide-react";
+import { ChevronLeft, Lock, CheckCircle2, Clock, Sparkles } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -45,7 +45,17 @@ function PredictListComponent() {
             <h1 className="text-lg font-bold">Palpitar</h1>
             <p className="text-xs text-muted-foreground truncate">{pool.name}</p>
           </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="gap-2 text-xs border-primary/20 hover:border-primary hover:bg-primary/5"
+            onClick={() => navigate({ to: `/pools/${id}/auto-predict` })}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-yellow-500" />
+            <span className="hidden sm:inline">Palpita pra mim</span>
+          </Button>
         </div>
+
       </header>
 
       <main className="container mx-auto p-4 space-y-4 pb-24">
