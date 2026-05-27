@@ -78,12 +78,27 @@ function RootComponent() {
 }
 
 function NotFoundComponent() {
-  const router = useRouter();
-  
-  // Checking if we are in a 404 state via router state is complex in TanStack Router
-  // But we can define a default NotFound component
-  return null;
+  const navigate = useNavigate();
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-6">
+      <motion.div 
+        initial={{ scale: 0.8, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        className="text-8xl"
+      >
+        😢
+      </motion.div>
+      <div className="space-y-2">
+        <h1 className="text-4xl font-black text-primary uppercase italic tracking-tighter">404 - Fora de Jogo!</h1>
+        <p className="text-muted-foreground">O mascote está chorando porque não encontrou essa página.</p>
+      </div>
+      <Button size="lg" className="font-bold gap-2" onClick={() => navigate({ to: "/" })}>
+        Voltar para a Home
+      </Button>
+    </div>
+  );
 }
 
-import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
+import { createRootRouteWithContext, HeadContent, Scripts, useNavigate } from "@tanstack/react-router";
+
 
