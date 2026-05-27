@@ -18,7 +18,7 @@ export const getProfile = createServerFn({ method: "GET" })
 
 export const updateProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data) => z.object({
+  .validator((data: unknown) => z.object({
     name: z.string().min(1).optional(),
     favorite_team_id: z.string().uuid().optional(),
     avatar_url: z.string().url().optional(),
@@ -63,7 +63,7 @@ export const getNextMatch = createServerFn({ method: "GET" })
 
 export const createPool = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data) => z.object({
+  .validator((data: unknown) => z.object({
     name: z.string().min(3),
     type: z.enum(['simple', 'advanced']),
     scope_type: z.string(),
@@ -120,8 +120,8 @@ export const getMyPools = createServerFn({ method: "GET" })
 
 export const getPoolById = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((id) => z.string().uuid().parse(id))
-  .handler(async ({ input: id, context }) => {
+  .validator((id: string) => id)
+  .handler(async ({ data: id, context }) => {
     const { supabase } = context;
     const { data, error } = await supabase
       .from("pools")
@@ -135,8 +135,8 @@ export const getPoolById = createServerFn({ method: "GET" })
 
 export const getPoolByInviteCode = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((code) => z.string().parse(code))
-  .handler(async ({ input: code, context }) => {
+  .validator((code: string) => code)
+  .handler(async ({ data: code, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("pools")
@@ -150,8 +150,8 @@ export const getPoolByInviteCode = createServerFn({ method: "GET" })
 
 export const joinPool = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((code) => z.string().parse(code))
-  .handler(async ({ input: code, context }) => {
+  .validator((code: string) => code)
+  .handler(async ({ data: code, context }) => {
     const { supabase, userId } = context;
     
     // First find pool
@@ -163,20 +163,18 @@ export const joinPool = createServerFn({ method: "POST" })
     
     if (poolError) throw poolError;
 
-    const { data: member, error: memberError } = await supabase
+    const { error: memberError } = await supabase
       .from("pool_members")
       .insert({
         pool_id: pool.id,
         user_id: userId,
         role: 'member'
-      })
-      .select()
-      .single();
+      });
     
     if (memberError) {
       if (memberError.code === '23505') return { pool_id: pool.id }; // Already a member
       throw memberError;
     }
     
-    return member;
+    return { pool_id: pool.id };
   });
