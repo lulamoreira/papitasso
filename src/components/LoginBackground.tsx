@@ -62,6 +62,10 @@ import ai57 from "@/assets/login-bg/ai-57.jpg";
 import ai58 from "@/assets/login-bg/ai-58.jpg";
 import ai59 from "@/assets/login-bg/ai-59.jpg";
 import ai60 from "@/assets/login-bg/ai-60.jpg";
+import ai61 from "@/assets/login-bg/ai-61.jpg";
+import ai62 from "@/assets/login-bg/ai-62.jpg";
+import ai63 from "@/assets/login-bg/ai-63.jpg";
+import ai64 from "@/assets/login-bg/ai-64.jpg";
 
 const FLAMENGO_IMAGES = [ai49, ai50, ai51, ai52, ai53, ai54];
 const BRAZIL_IMAGES = [ai55, ai56, ai57, ai58, ai59, ai60];
@@ -70,13 +74,15 @@ const OTHER_IMAGES = [
   ai11, ai12, ai13, ai14, ai15, ai16, ai17, ai18, ai19, ai20,
   ai21, ai22, ai23, ai24, ai25, ai26, ai27, ai28, ai29, ai30,
   ai31, ai32, ai33, ai34, ai35, ai36, ai37, ai38, ai39, ai40,
-  ai41, ai42, ai43, ai44, ai45, ai46, ai47, ai48
+  ai41, ai42, ai43, ai44, ai45, ai46, ai47, ai48, ai61, ai62,
+  ai63, ai64
 ];
 
 const ALL_IMAGES = [...OTHER_IMAGES, ...FLAMENGO_IMAGES, ...BRAZIL_IMAGES];
 
 const GRID_SIZE = 12; // 2 lines x 6 columns
 const COOLDOWN_MS = 60000; // 1 minute minimum between showing the same image
+
 
 
 export function LoginBackground() {
