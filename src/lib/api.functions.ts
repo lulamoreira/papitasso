@@ -116,7 +116,7 @@ export const getMyPools = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("pool_members")
-      .select("pool_id, pools(*)")
+      .select("pool_id, pools!pool_members_pool_id_fkey(*)")
       .eq("user_id", userId);
     
     if (error) throw error;
