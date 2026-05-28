@@ -121,10 +121,10 @@ function BracketComponent() {
           {[...Array(2)].map((_, i) => (
             <div key={`sf-${i}`} className="space-y-1">
               <div 
-                className={`p-4 border rounded font-black text-lg cursor-pointer transition-all ${bracket.semi_finals[i] === bracket.final.winner_team_id ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
-                onClick={() => setBracket({...bracket, final: {...bracket.final, winner_team_id: bracket.semi_finals[i]}})}
+                className={`p-4 border rounded font-black text-lg cursor-pointer transition-all ${bracket.sf?.[i] === bracket.final?.winner_team_id ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
+                onClick={() => setBracket({...bracket, final: {...bracket.final, winner_team_id: bracket.sf?.[i]}})}
               >
-                {bracket.semi_finals[i] ? teams.find((t: any) => t.id === bracket.semi_finals[i])?.name : 'Vencedor SF'}
+                {bracket.sf?.[i] ? teams?.find((t: any) => t.id === bracket.sf[i])?.name : 'Vencedor SF'}
               </div>
             </div>
           ))}
