@@ -78,6 +78,17 @@ serve(async (req) => {
             .limit(1);
           
           winnerId = topExacts?.[0]?.user_id;
+        } else if (prize.category === 'quiz_champion') {
+           const { data: quizWinner } = await supabase
+            .from("quiz_answers")
+            .select("user_id")
+            .eq("is_correct", true)
+            .in("user_id", supabase.from("pool_members").select("user_id").eq("pool_id", pool.id))
+            .group("user_id")
+            .order("count", { ascending: false })
+            .limit(1);
+          
+          winnerId = quizWinner?.[0]?.user_id;
         }
 
         if (winnerId) {

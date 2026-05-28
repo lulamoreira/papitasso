@@ -1143,8 +1143,18 @@ export const getPoolMembers = createServerFn({ method: "GET" })
       .from("pool_members")
       .select("*, profile:profiles(*)")
       .eq("pool_id", poolId);
-    
+
     if (error) throw error;
     return data;
   });
 
+export const getQuizLeaderboard = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase.rpc('quiz_leaderboard', { 
+      p_pool_id: poolId || null 
+    });
+    if (error) throw error;
+    return data;
+  });
