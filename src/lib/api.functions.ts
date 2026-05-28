@@ -75,6 +75,17 @@ export const createPool = createServerFn({ method: "POST" })
       scope_config: z.any().optional(),
       scoring_config: z.any(),
       modes_enabled: z.array(z.string()).optional(),
+      prizes: z.array(z.object({
+        rank: z.number().optional(),
+        category: z.string().optional(),
+        title: z.string(),
+        description: z.string().optional(),
+        photo_url: z.string().optional(),
+        estimated_value_cents: z.number().optional(),
+        sponsor: z.string().optional(),
+        delivery_method: z.string().optional(),
+        position_order: z.number().optional(),
+      })).optional(),
     }).parse(data);
 
     const { supabase, userId } = context;
