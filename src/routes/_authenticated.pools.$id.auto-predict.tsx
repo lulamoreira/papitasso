@@ -22,20 +22,31 @@ function AutoPredictPage() {
     queryFn: () => getPoolById({ data: id }),
   });
 
-  const { data: suggestions, isLoading } = useSuspenseQuery({
+  const { data: suggestions, isLoading, error: aiError } = useQuery({
     queryKey: ["ai-auto-predictions", id],
-    queryFn: () => getAiAutoPredictions({ data: id }),
+    queryFn: async () => {
+      try {
+        const result = await getAiAutoPredictions({ data: id });
+        return result;
+      } catch (err: any) {
+        console.error('[DEBUG] Palpita pra mim error:', err);
+        toast.error(err.message || "Erro ao gerar palpites automáticos");
+        throw err;
+      }
+    },
+    retry: false
   });
 
   const [matches, setMatches] = useState<any[]>([]);
   const [confirmed, setConfirmed] = useState<Set<string>>(new Set());
 
   // Initialize matches when data is loaded
-  useState(() => {
+  useEffect(() => {
     if (suggestions?.predictions) {
       setMatches(suggestions.predictions);
     }
-  });
+  }, [suggestions]);
+
 
   const saveMutation = useMutation({
     mutationFn: (match: any) => (upsertPrediction as any)({ 
