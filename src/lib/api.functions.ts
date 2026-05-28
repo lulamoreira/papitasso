@@ -1015,7 +1015,7 @@ export const getPlayerMatchStats = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("player_match_stats")
-      .select("*, player:players(*)")
+      .select("*, player:players!player_match_stats_player_id_fkey(*)")
       .eq("match_id", matchId);
     
     if (error) throw error;
