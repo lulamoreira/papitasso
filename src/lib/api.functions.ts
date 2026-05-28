@@ -122,20 +122,10 @@ export const createPool = createServerFn({ method: "POST" })
     if (validated.prizes && validated.prizes.length > 0) {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       
-      const prizesToInsert = await Promise.all(validated.prizes.map(async (p, idx) => {
-        let finalPhotoUrl = p.photo_url;
-
-        // Se for um blob/base64 temporário, fazemos o upload real (simplificado para este exemplo)
-        // No mundo real, receberíamos o File ou Base64 aqui.
-        // Para simplificar o fluxo conforme pedido, vamos assumir que photo_url já pode ser o link final 
-        // ou processado aqui via storage se necessário.
-        
-        return {
-          ...p,
-          pool_id: pool.id,
-          position_order: p.position_order ?? idx,
-          photo_url: finalPhotoUrl
-        };
+      const prizesToInsert = validated.prizes.map((p, idx) => ({
+        ...p,
+        pool_id: pool.id,
+        position_order: p.position_order ?? idx,
       }));
 
       const { error: prizesError } = await supabaseAdmin
