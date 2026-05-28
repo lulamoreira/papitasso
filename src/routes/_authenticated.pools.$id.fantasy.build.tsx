@@ -142,18 +142,18 @@ function FantasyBuildComponent() {
             <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest leading-none">Copa 2026</p>
           </div>
         </header>
-          <div className="flex gap-2">
-            <select 
-              className="bg-muted border-none rounded-full px-4 py-2 text-xs font-black uppercase"
-              value={formation}
-              onChange={(e) => {
-                setFormation(e.target.value);
-                setSelectedSlots({});
-              }}
-            >
-              {Object.keys(FORMATIONS).map(f => <option key={f} value={f}>{f}</option>)}
-            </select>
-          </div>
+
+        <div className="flex justify-end gap-2">
+          <select 
+            className="bg-muted border-none rounded-full px-4 py-2 text-xs font-black uppercase"
+            value={formation}
+            onChange={(e) => {
+              setFormation(e.target.value);
+              setSelectedSlots({});
+            }}
+          >
+            {Object.keys(FORMATIONS).map(f => <option key={f} value={f}>{f}</option>)}
+          </select>
         </div>
 
         <div className="max-w-xl mx-auto">
