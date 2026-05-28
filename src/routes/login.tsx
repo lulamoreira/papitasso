@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Trophy, Target, Sparkles, Brain } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { LoginBackground } from "@/components/LoginBackground";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
