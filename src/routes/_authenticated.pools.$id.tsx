@@ -57,6 +57,21 @@ function PoolDetailComponent() {
   const predictedProps = predictionsProps?.length || 0;
   const propCompletionPercent = totalProps > 0 ? Math.round((predictedProps / totalProps) * 100) : 0;
 
+  if (!pool) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 text-center space-y-4">
+        <div className="h-20 w-20 bg-muted rounded-full flex items-center justify-center text-muted-foreground">
+          <Trophy className="h-10 w-10 opacity-20" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold">Bolão não encontrado</h2>
+          <p className="text-muted-foreground">Você não tem permissão para ver este bolão ou ele não existe.</p>
+        </div>
+        <Button onClick={() => navigate({ to: "/pools" })}>Ver Meus Bolões</Button>
+      </div>
+    );
+  }
+
   useEffect(() => {
     const channel = supabase
       .channel(`pool-${id}`)
