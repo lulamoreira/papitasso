@@ -1,3 +1,4 @@
+TRUNCATE TABLE matches CASCADE;
 INSERT INTO matches (home_team_id, away_team_id, kickoff_at, status, phase, stadium, city) VALUES
 ('d87335f9-ac8f-41c8-b338-e584c9a87158', '54c81b5a-51fc-4130-958f-355ddb75008e', TIMESTAMP '2026-06-11 17:00:00' - INTERVAL '3 hours', 'scheduled', 'group', 'Estadio Azteca', 'Mexico City'),
 ('286f58a3-3f01-4a8d-bb33-080e7e96abab', 'ba12bba8-0904-4851-ba55-b5f66abe9ab1', TIMESTAMP '2026-06-11 20:00:00' - INTERVAL '3 hours', 'scheduled', 'group', 'Estadio Akron', 'Guadalajara'),
