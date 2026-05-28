@@ -85,16 +85,16 @@ function BracketComponent() {
           {[...Array(8)].map((_, i) => (
             <div key={`r16-${i}`} className="space-y-1">
               <div 
-                className={`p-2 border rounded text-xs font-bold cursor-pointer transition-all ${bracket.round_of_16[i*2] ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
-                onClick={() => handlePickWinner('quarter_finals', i, bracket.round_of_16[i*2])}
+                className={`p-2 border rounded text-xs font-bold cursor-pointer transition-all ${bracket.r16?.[i*2] ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
+                onClick={() => handlePickWinner('qf', i, bracket.r16?.[i*2])}
               >
-                {bracket.round_of_16[i*2] ? teams.find((t: any) => t.id === bracket.round_of_16[i*2])?.name : 'Time A'}
+                {bracket.r16?.[i*2] ? teams?.find((t: any) => t.id === bracket.r16[i*2])?.name : 'Time A'}
               </div>
               <div 
-                className={`p-2 border rounded text-xs font-bold cursor-pointer transition-all ${bracket.round_of_16[i*2+1] ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
-                onClick={() => handlePickWinner('quarter_finals', i, bracket.round_of_16[i*2+1])}
+                className={`p-2 border rounded text-xs font-bold cursor-pointer transition-all ${bracket.r16?.[i*2+1] ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
+                onClick={() => handlePickWinner('qf', i, bracket.r16?.[i*2+1])}
               >
-                {bracket.round_of_16[i*2+1] ? teams.find((t: any) => t.id === bracket.round_of_16[i*2+1])?.name : 'Time B'}
+                {bracket.r16?.[i*2+1] ? teams?.find((t: any) => t.id === bracket.r16[i*2+1])?.name : 'Time B'}
               </div>
             </div>
           ))}
