@@ -92,6 +92,7 @@ function MuralComponent() {
       <main className="container mx-auto p-4 space-y-6 pb-24">
 
 
+
       <Card className="border-2 border-primary/20 shadow-xl shadow-primary/5">
         <CardContent className="p-4">
           <form onSubmit={handleSubmit} className="flex gap-3">

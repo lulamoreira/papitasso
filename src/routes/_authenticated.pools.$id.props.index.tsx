@@ -124,6 +124,7 @@ function PropsComponent() {
       />
       <main className="container mx-auto p-4 space-y-4 pb-24">
 
+
         <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 flex items-center justify-between">
           <div>
             <div className="text-xs text-muted-foreground font-bold uppercase">Progresso</div>

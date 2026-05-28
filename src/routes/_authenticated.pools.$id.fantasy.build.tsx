@@ -126,22 +126,8 @@ function FantasyBuildComponent() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col md:flex-row">
-      <div className="flex-1 p-4 md:p-8 space-y-8 overflow-y-auto">
-        <header className="flex items-center gap-2 pb-3 mb-3 border-b">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-1"
-            onClick={() => navigate({ to: "/pools/$id/fantasy", params: { id } })}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Voltar ao Fantasy
-          </Button>
-          <div className="ml-auto text-right">
-            <h1 className="text-lg font-black uppercase italic tracking-tighter">Escalar Time</h1>
-            <p className="text-muted-foreground text-[10px] uppercase font-bold tracking-widest leading-none">Copa 2026</p>
-          </div>
-        </header>
+      <main className="flex-1 p-4 md:p-8 space-y-8 overflow-y-auto pb-24">
+
 
         <div className="flex justify-end gap-2">
           <select 

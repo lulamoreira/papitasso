@@ -15,9 +15,10 @@ function PoolChatRoute() {
     <div className="min-h-screen bg-background flex flex-col">
       <PageHeader title="Chat" backTo="/pools/$id" backToParams={{ id }} />
       <div className="flex-1 container mx-auto p-4 overflow-hidden">
-
-      <PoolChat poolId={id} className="flex-1 shadow-2xl" />
+        <PoolChat poolId={id} className="flex-1 shadow-2xl" />
+      </div>
     </div>
   );
+
 }
 

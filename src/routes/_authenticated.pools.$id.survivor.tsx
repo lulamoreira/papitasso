@@ -77,6 +77,7 @@ function SurvivorComponent() {
       <main className="container mx-auto p-4 space-y-6 pb-24">
 
 
+
       {!isAlive && (
         <Alert variant="destructive">
           <Skull className="h-4 w-4" />

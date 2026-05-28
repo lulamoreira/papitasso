@@ -28,8 +28,6 @@ function FantasyRankingComponent() {
       <PageHeader title="Ranking Fantasy" backTo="/pools/$id/fantasy" backToParams={{ id }} />
       <main className="flex-1 container max-w-lg mx-auto p-4 space-y-6">
 
-
-      <main className="flex-1 container max-w-lg mx-auto p-4 space-y-6">
         <div className="flex justify-center gap-4 py-8">
            {ranking.slice(0, 3).map((player: any, i: number) => (
              <div key={player.profile.id} className="flex flex-col items-center gap-2 first:scale-110">

@@ -83,6 +83,7 @@ function BracketComponent() {
       <main className="container mx-auto p-4 space-y-6 pb-24 overflow-x-auto">
 
 
+
       <div className="flex gap-8 min-w-[1000px] pb-8">
         {/* Round of 16 (Simplified for 2026 example) */}
         <div className="flex-1 space-y-8">

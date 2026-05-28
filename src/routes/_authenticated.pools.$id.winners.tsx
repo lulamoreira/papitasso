@@ -93,8 +93,6 @@ function WinnersManagementComponent() {
       <PageHeader title="Entrega de Prêmios" backTo="/pools/$id" backToParams={{ id }} />
       <main className="container mx-auto p-4 space-y-4">
 
-
-      <main className="container mx-auto p-4 space-y-4">
         {winners?.map((winner: any) => (
           <Card key={winner.id} className="overflow-hidden">
             <CardContent className="p-0">

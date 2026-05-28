@@ -47,8 +47,6 @@ function TeamCardDetailsComponent() {
       <PageHeader title="Card da Seleção" backTo="/profile" />
       <main className="container mx-auto max-w-lg p-8">
 
-
-      <main className="container mx-auto max-w-lg p-8">
         <TeamCard 
           team={team as any} 
           level={card.level} 
