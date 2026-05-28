@@ -212,11 +212,20 @@ export const getMatchesForPool = createServerFn({ method: "GET" })
 export const upsertPrediction = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
-
-
-
     const { poolId, matchId, homeScore, awayScore } = rawData?.data || rawData;
     const { supabase, userId } = context;
+
+    // Security check: Verify match is not locked
+    const { data: match, error: matchError } = await supabase
+      .from("matches")
+      .select("kickoff_at")
+      .eq("id", matchId)
+      .single();
+    
+    if (matchError) throw matchError;
+    if (new Date(match.kickoff_at) <= new Date()) {
+      throw new Error("Match already started. Predictions are locked.");
+    }
 
     const { data, error } = await supabase
       .from("predictions_exact")
@@ -233,13 +242,10 @@ export const upsertPrediction = createServerFn({ method: "POST" })
 
     if (error) throw error;
 
-    // Gamification: +5 XP for participation (only if it's the first time for this match/pool/user)
-    // For simplicity, we'll just add it if it was an insert or just add it anyway (capped by some logic if needed)
-    // Actually, let's just add it.
+    // Gamification: +5 XP for participation
     await supabase.rpc('increment_xp', { p_user_id: userId, p_amount: 5 });
 
     return data;
-
   });
 
 export const getPredictions = createServerFn({ method: "GET" })
