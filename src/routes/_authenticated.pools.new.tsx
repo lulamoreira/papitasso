@@ -287,7 +287,10 @@ function NewPoolComponent() {
                 />
 
                 <div className="pt-4">
-                  <Button variant="link" className="w-full text-muted-foreground" onClick={handleCreate}>
+                  <Button variant="link" className="w-full text-muted-foreground" onClick={() => {
+                    setFormData({ ...formData, prizes: [] });
+                    handleCreate();
+                  }}>
                     Pular — adicionar depois
                   </Button>
                 </div>
