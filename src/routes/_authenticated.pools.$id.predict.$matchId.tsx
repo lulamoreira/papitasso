@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMatchesForPool, getPredictions, upsertPrediction, getAiCommentary, getAiPredictionAnalysis } from "@/lib/api.functions";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, ChevronRight, Minus, Plus, Save, Clock, Lock, Mic2, Brain, Sparkles, TrendingUp, Info } from "lucide-react";
 import { useState, useEffect } from "react";

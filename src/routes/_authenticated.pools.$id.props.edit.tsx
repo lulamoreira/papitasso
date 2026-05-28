@@ -1,7 +1,9 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProps, createCustomProp, getPoolById, resolveProp } from "@/lib/api.functions";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, Plus, Save, Trash2, CheckCircle, AlertTriangle } from "lucide-react";
 import { useState } from "react";

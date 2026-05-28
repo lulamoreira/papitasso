@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getMatchesForPool, getPredictions, getPoolById } from "@/lib/api.functions";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Lock, CheckCircle2, Clock, Sparkles } from "lucide-react";
 import { format } from "date-fns";

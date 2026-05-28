@@ -1,6 +1,8 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { PoolChat } from "@/components/PoolChat";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+
 import { ChevronLeft } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/pools/$id/chat")({

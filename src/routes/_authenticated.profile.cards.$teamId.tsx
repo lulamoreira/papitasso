@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getTeams, getCollectedCards } from "@/lib/api.functions";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+
 import { ChevronLeft } from "lucide-react";
 import { TeamCard } from "@/components/gamification/TeamCard";
 import { toast } from "sonner";
