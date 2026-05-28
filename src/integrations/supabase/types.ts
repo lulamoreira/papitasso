@@ -1449,6 +1449,7 @@ export type Database = {
           owner_id: string
         }[]
       }
+      get_cron_headers: { Args: never; Returns: Json }
       increment_xp: {
         Args: { p_amount: number; p_user_id: string }
         Returns: undefined
