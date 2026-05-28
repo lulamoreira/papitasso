@@ -1,68 +1,36 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Import all 53 high-quality images
-import img01 from "@/assets/login-bg/01.jpg";
-import img02 from "@/assets/login-bg/02.jpg";
-import img03 from "@/assets/login-bg/03.jpg";
-import img04 from "@/assets/login-bg/04.jpg";
-import img05 from "@/assets/login-bg/05.jpg";
-import img06 from "@/assets/login-bg/06.jpg";
-import img07 from "@/assets/login-bg/07.jpg";
-import img08 from "@/assets/login-bg/08.jpg";
-import img09 from "@/assets/login-bg/09.jpg";
-import img10 from "@/assets/login-bg/10.jpg";
-import img11 from "@/assets/login-bg/11.jpg";
-import img12 from "@/assets/login-bg/12.jpg";
-import img13 from "@/assets/login-bg/13.jpg";
-import img14 from "@/assets/login-bg/14.jpg";
-import img15 from "@/assets/login-bg/15.jpg";
-import img16 from "@/assets/login-bg/16.jpg";
-import img17 from "@/assets/login-bg/17.jpg";
-import img18 from "@/assets/login-bg/18.jpg";
-import img19 from "@/assets/login-bg/19.jpg";
-import img20 from "@/assets/login-bg/20.jpg";
-import img21 from "@/assets/login-bg/21.jpg";
-import img22 from "@/assets/login-bg/22.jpg";
-import img23 from "@/assets/login-bg/23.jpg";
-import img24 from "@/assets/login-bg/24.jpg";
-import img25 from "@/assets/login-bg/25.jpg";
-import img26 from "@/assets/login-bg/26.jpg";
-import img27 from "@/assets/login-bg/27.jpg";
-import img28 from "@/assets/login-bg/28.jpg";
-import img29 from "@/assets/login-bg/29.jpg";
-import img30 from "@/assets/login-bg/30.jpg";
-import img31 from "@/assets/login-bg/31.jpg";
-import img32 from "@/assets/login-bg/32.jpg";
-import img33 from "@/assets/login-bg/33.jpg";
-import img34 from "@/assets/login-bg/34.jpg";
-import img35 from "@/assets/login-bg/35.jpg";
-import img36 from "@/assets/login-bg/36.jpg";
-import img37 from "@/assets/login-bg/37.jpg";
-import img38 from "@/assets/login-bg/38.jpg";
-import img39 from "@/assets/login-bg/39.jpg";
-import img40 from "@/assets/login-bg/40.jpg";
-import img41 from "@/assets/login-bg/41.jpg";
-import img42 from "@/assets/login-bg/42.jpg";
-import img43 from "@/assets/login-bg/43.jpg";
-import img44 from "@/assets/login-bg/44.jpg";
-import img45 from "@/assets/login-bg/45.jpg";
-import img46 from "@/assets/login-bg/46.jpg";
-import img47 from "@/assets/login-bg/47.jpg";
-import img48 from "@/assets/login-bg/48.jpg";
-import img49 from "@/assets/login-bg/49.jpg";
-import img50 from "@/assets/login-bg/50.jpg";
-import img51 from "@/assets/login-bg/51.jpg";
-import img52 from "@/assets/login-bg/52.jpg";
-import img53 from "@/assets/login-bg/53.jpg";
+// Import AI-generated football images
+import ai01 from "@/assets/login-bg/ai-01.jpg";
+import ai02 from "@/assets/login-bg/ai-02.jpg";
+import ai03 from "@/assets/login-bg/ai-03.jpg";
+import ai04 from "@/assets/login-bg/ai-04.jpg";
+import ai05 from "@/assets/login-bg/ai-05.jpg";
+import ai06 from "@/assets/login-bg/ai-06.jpg";
+import ai07 from "@/assets/login-bg/ai-07.jpg";
+import ai08 from "@/assets/login-bg/ai-08.jpg";
+import ai09 from "@/assets/login-bg/ai-09.jpg";
+import ai10 from "@/assets/login-bg/ai-10.jpg";
+import ai11 from "@/assets/login-bg/ai-11.jpg";
+import ai12 from "@/assets/login-bg/ai-12.jpg";
+import ai13 from "@/assets/login-bg/ai-13.jpg";
+import ai14 from "@/assets/login-bg/ai-14.jpg";
+import ai15 from "@/assets/login-bg/ai-15.jpg";
+import ai16 from "@/assets/login-bg/ai-16.jpg";
+import ai17 from "@/assets/login-bg/ai-17.jpg";
+import ai18 from "@/assets/login-bg/ai-18.jpg";
+import ai19 from "@/assets/login-bg/ai-19.jpg";
+import ai20 from "@/assets/login-bg/ai-20.jpg";
+import ai21 from "@/assets/login-bg/ai-21.jpg";
+import ai22 from "@/assets/login-bg/ai-22.jpg";
+import ai23 from "@/assets/login-bg/ai-23.jpg";
+import ai24 from "@/assets/login-bg/ai-24.jpg";
 
 const ALL_IMAGES = [
-  img01, img02, img03, img04, img05, img06, img07, img08, img09, img10,
-  img11, img12, img13, img14, img15, img16, img17, img18, img19, img20,
-  img21, img22, img23, img24, img25, img26, img27, img28, img29, img30,
-  img31, img32, img33, img34, img35, img36, img37, img38, img39, img40,
-  img41, img42, img43, img44, img45, img46, img47, img48, img49, img50,
-  img51, img52, img53,
+  ai01, ai02, ai03, ai04, ai05, ai06, ai07, ai08, ai09, ai10,
+  ai11, ai12, ai13, ai14, ai15, ai16, ai17, ai18, ai19, ai20,
+  ai21, ai22, ai23, ai24
 ];
 
 const GRID_SIZE = 12; // 2 lines x 6 columns
@@ -117,7 +85,7 @@ export function LoginBackground() {
         
         return next;
       });
-    }, 3000); // Change one image every 3 seconds
+    }, 2000); // Change one image every 2 seconds
 
     return () => clearInterval(interval);
   }, []);
@@ -133,17 +101,17 @@ export function LoginBackground() {
                 src={img}
                 alt=""
                 loading="lazy"
-                initial={{ opacity: 0, filter: "brightness(0.5) scale(1.15)" }}
-                animate={{ opacity: 0.65, filter: "brightness(0.8) scale(1)" }}
-                exit={{ opacity: 0, filter: "brightness(0.5) scale(0.9)" }}
-                transition={{ duration: 1.8, ease: "easeInOut" }}
+                initial={{ opacity: 0, filter: "brightness(0.4) scale(1.2)" }}
+                animate={{ opacity: 0.7, filter: "brightness(0.9) scale(1)" }}
+                exit={{ opacity: 0, filter: "brightness(0.4) scale(0.8)" }}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
                 className="absolute inset-0 h-full w-full object-cover"
               />
             </AnimatePresence>
           </div>
         ))}
       </div>
-      <div className="absolute inset-0 bg-gradient-to-br from-black/60 via-black/30 to-black/60" />
+      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/40 to-black/70" />
     </div>
   );
 }
