@@ -4,16 +4,23 @@ import { verifyUser } from '../_shared/auth.ts'
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-)
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+}
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
   try {
     let userId: string;
     try { 
       userId = await verifyUser(req); 
     } catch (resp) { 
       if (resp instanceof Response) return resp;
-      return new Response(JSON.stringify({ error: 'Auth failed' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+      return new Response(JSON.stringify({ error: 'Auth failed' }), { status: 401, headers: corsHeaders });
     }
     const { pool_id } = await req.json()
 
