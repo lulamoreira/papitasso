@@ -123,8 +123,14 @@ function PredictionDetailComponent() {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
         <div className="container mx-auto flex h-16 items-center px-4 gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate({ to: "/pools/$id/predict", params: { id } })}>
-            <ChevronLeft className="h-6 w-6" />
+          <Button
+            variant="ghost"
+            size="sm"
+            className="gap-1"
+            onClick={() => navigate({ to: "/pools/$id/predict", params: { id } })}
+          >
+            <ChevronLeft className="h-4 w-4" />
+            Voltar aos Jogos
           </Button>
           <div className="flex-1">
             <h1 className="text-lg font-bold">Seu Palpite</h1>
