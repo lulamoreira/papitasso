@@ -592,12 +592,150 @@ function PoolDetailComponent() {
              ))}
           </TabsContent>
 
-          <TabsContent value="members" className="py-20 text-center space-y-4">
-            <Users className="h-12 w-12 text-muted-foreground mx-auto opacity-20" />
-            <p className="text-muted-foreground">Em breve: Gerencie os participantes.</p>
+          <TabsContent value="members" className="py-6 space-y-4">
+            <div className="space-y-3">
+              {(leaderboard || []).map((member: any) => (
+                <div key={member.user_id} className="flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-muted/50">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10 border">
+                      <AvatarImage src={member.profile?.avatar_url} />
+                      <AvatarFallback><UserIcon /></AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="font-bold flex items-center gap-2">
+                        {member.profile?.name}
+                        {pool.owner_id === member.user_id && <Badge className="bg-primary/20 text-primary border-primary/20 text-[10px] font-black uppercase tracking-tighter h-5">Dono</Badge>}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                        {member.profile?.league_tier || 'Bronze'} · {member.profile?.xp || 0} XP
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-black text-sm">{member.points} pts</div>
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase">{member.position}º lugar</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Dialog: Transfer Ownership */}
+      <Dialog open={isTransferDialogOpen} onOpenChange={setIsTransferDialogOpen}>
+        <DialogContent className="max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Transferir Propriedade</DialogTitle>
+            <DialogDescription>
+              Escolha um membro para ser o novo dono do bolão. Você se tornará um membro comum.
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="h-[300px] pr-4">
+            <div className="space-y-2">
+              {members.filter(m => m.user_id !== profile?.id).map((member) => (
+                <button
+                  key={member.user_id}
+                  onClick={() => setSelectedNewOwner(member)}
+                  className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                    selectedNewOwner?.user_id === member.user_id 
+                      ? 'border-primary bg-primary/5' 
+                      : 'border-transparent bg-muted/30 hover:bg-muted/50'
+                  }`}
+                >
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={member.profile?.avatar_url} />
+                    <AvatarFallback><UserIcon /></AvatarFallback>
+                  </Avatar>
+                  <div className="text-left">
+                    <div className="font-bold">{member.profile?.name}</div>
+                    <div className="text-xs text-muted-foreground">Membro do bolão</div>
+                  </div>
+                </button>
+              ))}
+              {members.filter(m => m.user_id !== profile?.id).length === 0 && (
+                <div className="text-center py-10 text-muted-foreground">
+                  Não há outros membros para transferir.
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="ghost" onClick={() => setIsTransferDialogOpen(false)}>Cancelar</Button>
+            <Button 
+              disabled={!selectedNewOwner || isActionLoading} 
+              onClick={handleTransferOwnership}
+              className="gap-2"
+            >
+              {isActionLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              Confirmar Transferência
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* AlertDialog: Delete Pool */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-destructive flex items-center gap-2">
+              <Trash2 className="h-5 w-5" /> Apagar Bolão
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza? Isso apaga o bolão permanentemente, incluindo todos os palpites, rankings e prêmios. <strong>Esta ação não pode ser desfeita.</strong>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4 space-y-2">
+            <Label htmlFor="confirmName" className="text-xs font-bold uppercase tracking-widest">
+              Digite <span className="text-primary font-black">"{pool.name}"</span> para confirmar:
+            </Label>
+            <Input 
+              id="confirmName"
+              placeholder={pool.name}
+              value={confirmDeleteName}
+              onChange={(e) => setConfirmDeleteName(e.target.value)}
+              className="font-bold"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <Button 
+              variant="destructive" 
+              onClick={handleDeletePool} 
+              disabled={confirmDeleteName !== pool.name || isActionLoading}
+              className="gap-2"
+            >
+              {isActionLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              Apagar Permanentemente
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* AlertDialog: Leave Pool */}
+      <AlertDialog open={isLeaveDialogOpen} onOpenChange={setIsLeaveDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sair do Bolão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Deseja realmente sair de <span className="font-bold">"{pool.name}"</span>? 
+              Seus palpites e progresso neste bolão serão perdidos.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <Button 
+              variant="destructive" 
+              onClick={handleLeavePool} 
+              disabled={isActionLoading}
+              className="gap-2"
+            >
+              {isActionLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              Sair do Bolão
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
