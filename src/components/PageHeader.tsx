@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 interface PageHeaderProps {
   title: string;
   backTo?: string;
-  backToParams?: Record<string, string>;
+  backToParams?: any;
   rightElement?: ReactNode;
   className?: string;
 }
@@ -44,3 +44,4 @@ export function PageHeader({
     </header>
   );
 }
+

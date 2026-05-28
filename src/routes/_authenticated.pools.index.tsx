@@ -44,7 +44,8 @@ function PoolsListComponent() {
   });
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-24">
+
       <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
         <div className="container mx-auto flex h-16 items-center px-4 justify-between">
           <h1 className="text-xl font-bold">Meus Bolões</h1>
