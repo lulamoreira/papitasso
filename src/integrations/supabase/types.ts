@@ -376,6 +376,7 @@ export type Database = {
           placeholder_label: string | null
           stadium: string | null
           status: Database["public"]["Enums"]["match_status"] | null
+          venue_id: string | null
         }
         Insert: {
           away_score?: number | null
@@ -391,6 +392,7 @@ export type Database = {
           placeholder_label?: string | null
           stadium?: string | null
           status?: Database["public"]["Enums"]["match_status"] | null
+          venue_id?: string | null
         }
         Update: {
           away_score?: number | null
@@ -406,6 +408,7 @@ export type Database = {
           placeholder_label?: string | null
           stadium?: string | null
           status?: Database["public"]["Enums"]["match_status"] | null
+          venue_id?: string | null
         }
         Relationships: [
           {
@@ -420,6 +423,13 @@ export type Database = {
             columns: ["home_team_id"]
             isOneToOne: false
             referencedRelation: "teams"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matches_venue_id_fkey"
+            columns: ["venue_id"]
+            isOneToOne: false
+            referencedRelation: "venues"
             referencedColumns: ["id"]
           },
         ]
@@ -1389,6 +1399,39 @@ export type Database = {
           },
         ]
       }
+      venues: {
+        Row: {
+          capacity: number | null
+          city: string
+          country: string
+          created_at: string | null
+          id: string
+          image_url: string | null
+          name: string
+          state: string | null
+        }
+        Insert: {
+          capacity?: number | null
+          city: string
+          country: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          name: string
+          state?: string | null
+        }
+        Update: {
+          capacity?: number | null
+          city?: string
+          country?: string
+          created_at?: string | null
+          id?: string
+          image_url?: string | null
+          name?: string
+          state?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       leaderboard_view: {
@@ -1486,6 +1529,7 @@ export type Database = {
           placeholder_label: string | null
           stadium: string | null
           status: Database["public"]["Enums"]["match_status"] | null
+          venue_id: string | null
         }[]
         SetofOptions: {
           from: "*"
