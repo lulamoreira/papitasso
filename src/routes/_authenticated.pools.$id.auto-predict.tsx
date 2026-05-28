@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { Sparkles, Brain, Check, ChevronLeft, Save } from "lucide-react";
+import { Sparkles, Brain, Check, ChevronLeft, Save, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/pools/$id/auto-predict")({
   component: AutoPredictPage,
@@ -46,6 +46,9 @@ function AutoPredictPage() {
 
   const [matches, setMatches] = useState<any[]>([]);
   const [confirmed, setConfirmed] = useState<Set<string>>(new Set());
+  const [isSavingAll, setIsSavingAll] = useState(false);
+  const [saveProgress, setSaveProgress] = useState(0);
+  const [totalToSave, setTotalToSave] = useState(0);
 
   // Initialize matches when data is loaded
   useEffect(() => {
@@ -76,12 +79,25 @@ function AutoPredictPage() {
 
   const handleConfirmAll = async () => {
     const unconfirmed = matches.filter(m => !confirmed.has(m.match_id));
-    for (const match of unconfirmed) {
-      await saveMutation.mutateAsync(match);
+    if (unconfirmed.length === 0) return;
+
+    setIsSavingAll(true);
+    setSaveProgress(0);
+    setTotalToSave(unconfirmed.length);
+
+    try {
+      for (let i = 0; i < unconfirmed.length; i++) {
+        setSaveProgress(i + 1);
+        await saveMutation.mutateAsync(unconfirmed[i]);
+      }
+      toast.success("Todos os palpites foram salvos!");
+      queryClient.invalidateQueries({ queryKey: ["predictions", id] });
+      navigate({ to: "/pools/$id", params: { id } });
+    } catch (error) {
+      toast.error("Ocorreu um erro ao salvar alguns palpites.");
+    } finally {
+      setIsSavingAll(false);
     }
-    toast.success("Todos os palpites foram salvos!");
-    queryClient.invalidateQueries({ queryKey: ["predictions", id] });
-    navigate({ to: "/pools/$id", params: { id } });
   };
 
   const updateScore = (matchId: string, side: 'home' | 'away', val: number) => {
@@ -99,7 +115,7 @@ function AutoPredictPage() {
   return (
     <div className="container max-w-2xl mx-auto p-4 pb-24 space-y-6">
       <header className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
+        <Button variant="ghost" size="icon" onClick={() => window.history.back()} disabled={isSavingAll}>
           <ChevronLeft />
         </Button>
         <div>
@@ -180,10 +196,19 @@ function AutoPredictPage() {
               <Button 
                 className="flex-1 gap-2 text-lg py-6" 
                 onClick={handleConfirmAll}
-                disabled={confirmed.size === matches.length || saveMutation.isPending}
+                disabled={confirmed.size === matches.length || isSavingAll}
               >
-                <Save className="w-5 h-5" />
-                Confirmar Todos
+                {isSavingAll ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Salvando ({saveProgress}/{matches.filter(m => !confirmed.has(m.match_id)).length + (isSavingAll ? 0 : 0)}...)
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-5 h-5" />
+                    Confirmar Todos
+                  </>
+                )}
               </Button>
             </div>
           </div>
