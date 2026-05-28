@@ -101,13 +101,17 @@ function PredictionDetailComponent() {
 
   const fetchCommentary = async () => {
     setIsCommentaryLoading(true);
+    setCommentary(null); // Reset previous commentary
     try {
       const res = await (getAiCommentary as any)({ 
         data: { matchId, mode: isLocked ? 'post' : 'pre', style: commentaryStyle } 
       });
-      setCommentary(res.text);
+      if (res && res.text) {
+        setCommentary(res.text);
+      }
     } catch (err) {
-      toast.error("Erro ao gerar comentário");
+      console.error("AI Commentary failed:", err);
+      // Fail silently as requested, but log for debugging
     } finally {
       setIsCommentaryLoading(false);
     }
