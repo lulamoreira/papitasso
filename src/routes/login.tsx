@@ -49,7 +49,7 @@ function LoginComponent() {
 
   const handleSocialLogin = async (provider: "google" | "apple" | "facebook") => {
     try {
-      const result = await lovable.auth.signInWithOAuth(provider, {
+      const result = await lovable.auth.signInWithOAuth(provider as any, {
         redirect_uri: window.location.origin + search.redirect,
       });
       if (result.error) throw result.error;
