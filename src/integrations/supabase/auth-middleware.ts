@@ -23,22 +23,22 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
     const request = getRequest();
 
     if (!request?.headers) {
-      throw redirect({ to: '/login' });
+      throw new Error('AUTH_REQUIRED:/login');
     }
 
     const authHeader = request.headers.get('authorization');
 
     if (!authHeader) {
-      throw redirect({ to: '/login' });
+      throw new Error('AUTH_REQUIRED:/login');
     }
 
     if (!authHeader.startsWith('Bearer ')) {
-      throw redirect({ to: '/login' });
+      throw new Error('AUTH_REQUIRED:/login');
     }
 
     const token = authHeader.replace('Bearer ', '');
     if (!token) {
-      throw redirect({ to: '/login' });
+      throw new Error('AUTH_REQUIRED:/login');
     }
 
     const supabase = createClient<Database>(
@@ -60,11 +60,11 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
 
     const { data, error } = await supabase.auth.getClaims(token);
     if (error || !data?.claims) {
-      throw redirect({ to: '/login' });
+      throw new Error('AUTH_REQUIRED:/login');
     }
 
     if (!data.claims.sub) {
-      throw redirect({ to: '/login' });
+      throw new Error('AUTH_REQUIRED:/login');
     }
 
     return next({

@@ -87,39 +87,74 @@ function RootComponent() {
 }
 
 function ErrorComponent({ error }: { error: any; reset: () => void }) {
+  // Detecta redirect do TanStack que perdeu a tag isRedirect (após travessia serializada)
+  const errAny = error as any;
+  const isRedirectShaped = 
+    errAny?.isRedirect || 
+    errAny?.options?.to || 
+    (errAny?.options && typeof errAny.options === 'object' && 'to' in errAny.options);
+  
+  if (isRedirectShaped) {
+    const to = errAny.options?.to || '/login';
+    const search = errAny.options?.search;
+    if (typeof window !== 'undefined') {
+      const searchStr = search ? '?' + new URLSearchParams(search).toString() : '';
+      window.location.href = to + searchStr;
+    }
+    return <div className="min-h-screen flex items-center justify-center">Redirecionando...</div>;
+  }
+
   const message = error?.message || 'Erro desconhecido';
+  
+  // Trata erro customizado do middleware de auth
+  if (message.startsWith('AUTH_REQUIRED:')) {
+    const redirectPath = message.split(':')[1] || '/login';
+    if (typeof window !== 'undefined') window.location.href = redirectPath;
+    return <div className="min-h-screen flex items-center justify-center">Redirecionando...</div>;
+  }
+
+  if (message.includes('Unauthorized') || message.includes('No authorization header')) {
+    if (typeof window !== 'undefined') window.location.href = '/login';
+    return <div className="min-h-screen flex items-center justify-center">Redirecionando...</div>;
+  }
+
   const stack = error?.stack || 'Stack indisponível';
   const cause = (error as any)?.cause ? JSON.stringify((error as any).cause, null, 2) : null;
   
-  if (message.includes('Unauthorized') || message.includes('No authorization header')) {
-    if (typeof window !== 'undefined') window.location.href = '/login';
-    return <div>Redirecionando...</div>;
-  }
-  
   return (
-    <div style={{padding: 20}}>
-      <h1>OPS, O LANCE FOI PARA O VAR</h1>
-      <p>Não conseguimos carregar esta tela agora.</p>
-      <details open style={{marginTop: 20, background: '#fee', padding: 10, borderRadius: 4}}>
-        <summary><strong>Detalhes do erro (debug)</strong></summary>
-        <p><strong>Mensagem:</strong> {message}</p>
-        {cause && <><strong>Cause:</strong><pre>{cause}</pre></>}
-        <strong>Stack:</strong>
-        <pre style={{fontSize: 11, overflow: 'auto', maxHeight: 400}}>{stack}</pre>
-      </details>
-      <div style={{marginTop: 20, display: 'flex', gap: 10}}>
-        <button 
-          style={{padding: '8px 16px', cursor: 'pointer'}} 
-          onClick={() => window.location.reload()}
-        >
-          Tentar novamente
-        </button>
-        <button 
-          style={{padding: '8px 16px', cursor: 'pointer'}} 
-          onClick={() => window.location.href = '/'}
-        >
-          Voltar para Home
-        </button>
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-6 bg-background">
+      <div className="space-y-4 max-w-lg w-full">
+        <h1 className="text-4xl font-black text-primary uppercase italic tracking-tighter">OPS, O LANCE FOI PARA O VAR</h1>
+        <p className="text-muted-foreground">Não conseguimos carregar esta tela agora.</p>
+        
+        <details className="text-left bg-muted/50 p-4 rounded-lg border border-border">
+          <summary className="text-sm font-bold cursor-pointer hover:text-primary transition-colors">Detalhes do erro (debug)</summary>
+          <div className="mt-4 space-y-4">
+            <div>
+              <span className="text-xs font-bold uppercase text-muted-foreground">Mensagem</span>
+              <pre className="text-xs mt-1 whitespace-pre-wrap">{message}</pre>
+            </div>
+            {cause && (
+              <div>
+                <span className="text-xs font-bold uppercase text-muted-foreground">Causa</span>
+                <pre className="text-xs mt-1 bg-muted p-2 rounded overflow-auto max-h-40">{cause}</pre>
+              </div>
+            )}
+            <div>
+              <span className="text-xs font-bold uppercase text-muted-foreground">Stack Trace</span>
+              <pre className="text-xs mt-1 bg-muted p-2 rounded overflow-auto max-h-40 font-mono">{stack}</pre>
+            </div>
+          </div>
+        </details>
+
+        <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          <Button size="lg" className="flex-1 font-bold" onClick={() => window.location.reload()}>
+            Tentar novamente
+          </Button>
+          <Button size="lg" variant="outline" className="flex-1 font-bold" onClick={() => window.location.href = '/'}>
+            Voltar para Home
+          </Button>
+        </div>
       </div>
     </div>
   );
