@@ -1,3 +1,4 @@
+// TODO: habilitar Facebook provider em Lovable Cloud → Users → Auth settings (precisa App ID e Secret do Facebook Developers)
 import { createFileRoute, redirect } from "@tanstack/react-router";
 import { useState, useEffect } from "react";
 import { lovable } from "@/integrations/lovable/index";
@@ -46,7 +47,7 @@ function LoginComponent() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleSocialLogin = async (provider: "google" | "apple") => {
+  const handleSocialLogin = async (provider: "google" | "apple" | "facebook") => {
     try {
       const result = await lovable.auth.signInWithOAuth(provider, {
         redirect_uri: window.location.origin + search.redirect,
@@ -118,6 +119,12 @@ function LoginComponent() {
                 <path d="M17.05 20.28c-.96.95-2.01 1.95-3.32 1.95-1.28 0-1.72-.81-3.21-.81-1.48 0-1.98.78-3.19.81-1.28.03-2.48-1.1-3.48-2.48-2.04-2.84-3.6-8.01-1.5-11.64 1.05-1.8 2.88-2.94 4.88-2.97 1.51-.03 2.94 1.02 3.86 1.02.93 0 2.67-1.29 4.47-1.11.75.03 2.85.3 4.2 2.22-1.1.66-1.85 1.68-1.85 3.3 0 2 1.63 2.94 3.42 3.39-.14.41-.53 1.05-1.07 1.83zM12.03 4.86c-.01-1.89 1.55-3.51 3.42-3.63.03.18.06.37.06.56 0 1.76-1.43 3.52-3.41 3.52-.02-.15-.07-.3-.07-.45z" />
               </svg>
               Continuar com Apple
+            </Button>
+            <Button variant="outline" size="lg" className="w-full justify-start gap-4 py-6 text-base" onClick={() => handleSocialLogin("facebook")}>
+              <svg className="h-5 w-5" viewBox="0 0 24 24" fill="#1877F2">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+              </svg>
+              Continuar com Facebook
             </Button>
           </div>
 
