@@ -41,7 +41,7 @@ function OnboardingComponent() {
     }
   });
 
-  const filteredTeams = teams.filter(t => 
+  const filteredTeams = (teams || []).filter(t => 
     t.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
