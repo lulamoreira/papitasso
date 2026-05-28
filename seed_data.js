@@ -78,11 +78,11 @@ groups.forEach((g, gIdx) => {
 
 // Knockout matches (placeholders)
 const koPhases = [
-  {name: 'round_32', count: 16, labelPrefix: 'R32'},
-  {name: 'round_16', count: 8, labelPrefix: 'R16'},
-  {name: 'quarter_final', count: 4, labelPrefix: 'QF'},
-  {name: 'semi_final', count: 2, labelPrefix: 'SF'},
-  {name: 'third_place', count: 1, labelPrefix: '3RD'},
+  {name: 'round_of_32', count: 16, labelPrefix: 'R32'},
+  {name: 'round_of_16', count: 8, labelPrefix: 'R16'},
+  {name: 'quarter', count: 4, labelPrefix: 'QF'},
+  {name: 'semi', count: 2, labelPrefix: 'SF'},
+  {name: 'third', count: 1, labelPrefix: '3RD'},
   {name: 'final', count: 1, labelPrefix: 'FINAL'},
 ];
 
