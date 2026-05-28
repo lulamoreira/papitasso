@@ -54,44 +54,68 @@ serve(async (req) => {
       throw new Error("Limite do Modo Preguiça atingido (1x por dia).");
     }
 
+    // Só prevê jogos com AMBOS os times definidos (pula mata-mata placeholder)
     const { data: matchesWithTeams } = await supabase
       .from('matches')
       .select('*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*)')
       .in('id', unpredictedMatches.map((m: any) => m.id))
 
-    const predictions = [];
-    for (const match of matchesWithTeams!) {
-      const prompt = `Você é especialista em futebol. Preveja o placar mais provável entre ${match.home_team.name} (ranking FIFA ${match.home_team.fifa_ranking || 'N/A'}) e ${match.away_team.name} (ranking FIFA ${match.away_team.fifa_ranking || 'N/A'}) considerando histórico, fase ${match.phase} e contexto da Copa 2026. Responda APENAS em formato JSON: { "home": int, "away": int }`;
+    const validMatches = (matchesWithTeams || []).filter(
+      (m: any) => m.home_team && m.away_team
+    );
 
-      const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${GROQ_API_KEY}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "llama-3.3-70b-versatile",
-          messages: [{ role: "user", content: prompt }],
-          temperature: 0.8,
-          max_tokens: 500
-        }),
+    if (validMatches.length === 0) {
+      return new Response(JSON.stringify({ predictions: [] }), { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       })
+    }
 
-      if (!response.ok) {
-        const err = await response.text();
-        console.error('[Groq] error:', err);
-        throw new Error(`Groq ${response.status}: ${err}`);
-      }
+    // UMA chamada só, em lote (evita rate limit e timeout)
+    const matchList = validMatches.map((m: any, i: number) => 
+      `${i}. ${m.home_team.name} (FIFA ${m.home_team.fifa_ranking || 'N/A'}) vs ${m.away_team.name} (FIFA ${m.away_team.fifa_ranking || 'N/A'}) [fase: ${m.phase}]`
+    ).join('\n');
 
-      const aiResult = await response.json()
-      const pred = JSON.parse(aiResult.choices[0].message.content)
+    const prompt = `Você é especialista em futebol. Preveja o placar mais provável de CADA jogo abaixo da Copa 2026, considerando ranking FIFA, histórico e contexto.\n\nJogos:\n${matchList}\n\nResponda APENAS um objeto JSON com a chave "predictions" sendo um array, onde cada item tem o índice do jogo e o placar: {"predictions":[{"i":0,"home":2,"away":1}, ...]}. Inclua TODOS os jogos.`;
+
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${GROQ_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "llama-3.3-70b-versatile",
+        messages: [{ role: "user", content: prompt }],
+        temperature: 0.7,
+        max_tokens: 4000,
+        response_format: { type: "json_object" }
+      }),
+    })
+
+    if (!response.ok) {
+      const err = await response.text();
+      console.error('[Groq] error:', err);
+      throw new Error(`Groq ${response.status}: ${err}`);
+    }
+
+    const aiResult = await response.json()
+    let raw = aiResult.choices[0].message.content.trim();
+    // Defensivo: remove cercas de markdown se vierem
+    raw = raw.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```$/i, '').trim();
+    const parsed = JSON.parse(raw);
+    const aiPreds = parsed.predictions || [];
+
+    const predictions = [];
+    for (const ap of aiPreds) {
+      const match = validMatches[ap.i];
+      if (!match) continue;
       predictions.push({
         match_id: match.id,
         home_team: match.home_team,
         away_team: match.away_team,
-        predicted_home: pred.home,
-        predicted_away: pred.away
-      })
+        predicted_home: ap.home,
+        predicted_away: ap.away
+      });
     }
 
     await supabase.from('ai_usage_log').insert({
