@@ -1440,6 +1440,14 @@ export type Database = {
         Args: { p_pool_id: string }
         Returns: undefined
       }
+      is_pool_admin: {
+        Args: { p_pool_id: string; p_user_id: string }
+        Returns: boolean
+      }
+      is_pool_member: {
+        Args: { p_pool_id: string; p_user_id: string }
+        Returns: boolean
+      }
       lock_predictions_for_match: {
         Args: { p_match_id: string }
         Returns: undefined
