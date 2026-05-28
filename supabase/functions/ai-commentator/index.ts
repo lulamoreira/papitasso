@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { verifyUser } from '../_shared/auth.ts'
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
@@ -36,19 +36,7 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
 
     const cacheKey = `commentary:${match_id}:${mode}:${style}`
-    const oneHourAgo = new Date(Date.now() - 3600000).toISOString()
-    const { data: recentCommentary } = await supabase
-      .from('ai_usage_log')
-      .select('*')
-      .eq('function_name', cacheKey)
-      .gt('created_at', oneHourAgo)
-      .limit(1)
-      .maybeSingle()
-
-    if (recentCommentary) {
-       // Cache logic could be implemented here
-    }
-
+    
     const { data: match, error: matchError } = await supabase
       .from('matches')
       .select('*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*)')
@@ -71,27 +59,29 @@ serve(async (req) => {
     Resultado: ${score}. 
     Use entre 80 e 150 palavras. Em português brasileiro.`
 
-    console.log('[AI] Generating commentary with prompt:', prompt);
+    console.log('[Groq] Generating commentary with prompt:', prompt);
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+        "Authorization": `Bearer ${GROQ_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "llama-3.3-70b-versatile",
         messages: [
           { role: "system", content: "Você é um narrador esportivo brasileiro especializado na Copa do Mundo." },
           { role: "user", content: prompt }
         ],
+        temperature: 0.8,
+        max_tokens: 500
       }),
     })
 
     if (!response.ok) {
-      const errorData = await response.text();
-      console.error('[AI] Gateway error:', errorData);
-      throw new Error(`AI Gateway responded with ${response.status}`);
+      const err = await response.text();
+      console.error('[Groq] error:', err);
+      throw new Error(`Groq ${response.status}: ${err}`);
     }
 
     const aiResult = await response.json()

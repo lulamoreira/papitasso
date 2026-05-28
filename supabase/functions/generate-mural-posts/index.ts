@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import { verifyCronSecret } from '../_shared/auth.ts'
 
+const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
   Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -72,27 +73,35 @@ async function createMuralPost(poolId: string, content: string, type: string, us
 }
 
 async function generateZoeira(baseText: string) {
-  const lovableApiKey = Deno.env.get('LOVABLE_API_KEY')
-  if (!lovableApiKey) return baseText
+  if (!GROQ_API_KEY) return baseText
 
   try {
-    const response = await fetch('https://api.lovable.ai/v1/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${lovableApiKey}`,
+        'Authorization': `Bearer ${GROQ_API_KEY}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gemini-1.5-pro',
+        model: 'llama-3.3-70b-versatile',
         messages: [{
           role: 'system',
           content: 'Você é um torcedor brasileiro brincalhão. Gere uma mensagem de zoeira amigável em português, tom de bar, máximo 100 caracteres. Use 1 emoji.'
         }, {
           role: 'user',
           content: `Reescreva de forma criativa: ${baseText}`
-        }]
+        }],
+        temperature: 0.8,
+        max_tokens: 500
       })
     })
+
+    if (!response.ok) {
+      const err = await response.text();
+      console.error('[Groq] error:', err);
+      return baseText;
+    }
+
     const data = await response.json()
     return data.choices[0].message.content || baseText
   } catch {

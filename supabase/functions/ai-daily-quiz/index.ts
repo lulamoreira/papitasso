@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { verifyCronSecret } from '../_shared/auth.ts'
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
@@ -37,18 +37,25 @@ serve(async (req) => {
     const prompt = `Gere 1 pergunta de quiz sobre Copa do Mundo (histórica ou da edição 2026) em português, com 4 opções de resposta. Inclua um 'fato curioso' explicando a resposta. Dificuldade: ${difficulty}. 
     Responda APENAS em JSON: { "question": string, "options": [string, string, string, string], "correct_index": 0-3, "fact": string }`;
 
-    const response = await fetch("https://api.lovable.ai/v1/chat/completions", {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+        "Authorization": `Bearer ${GROQ_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gemini-1.5-flash",
+        model: "llama-3.3-70b-versatile",
         messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" }
+        temperature: 0.8,
+        max_tokens: 500
       }),
     })
+
+    if (!response.ok) {
+      const err = await response.text();
+      console.error('[Groq] error:', err);
+      throw new Error(`Groq ${response.status}: ${err}`);
+    }
 
     const aiResult = await response.json()
     const quizData = JSON.parse(aiResult.choices[0].message.content)
