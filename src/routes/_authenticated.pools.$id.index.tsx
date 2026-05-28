@@ -31,10 +31,12 @@ export const Route = createFileRoute("/_authenticated/pools/$id/")({
   component: PoolDetailComponent,
 });
 
+
 function PoolDetailComponent() {
-  const { id } = useParams({ from: "/_authenticated/pools/$id/" });
+  const { id } = Route.useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
 
   const { data: pool } = useSuspenseQuery({ queryKey: ["pool", id], queryFn: () => getPoolById({ data: id } as any) });
   const { data: leaderboard } = useSuspenseQuery({ queryKey: ["leaderboard", id], queryFn: () => getLeaderboard({ data: id } as any) });

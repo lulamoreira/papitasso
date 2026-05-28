@@ -16,6 +16,7 @@ import { Route as JoinCodeRouteImport } from './routes/join.$code'
 import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated.quiz'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
+import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated.profile.index'
 import { Route as AuthenticatedPoolsIndexRouteImport } from './routes/_authenticated.pools.index'
 import { Route as AuthenticatedPoolsNewRouteImport } from './routes/_authenticated.pools.new'
 import { Route as AuthenticatedPoolsIdRouteImport } from './routes/_authenticated.pools.$id'
@@ -31,6 +32,9 @@ import { Route as AuthenticatedPoolsIdFantasyRouteImport } from './routes/_authe
 import { Route as AuthenticatedPoolsIdChatRouteImport } from './routes/_authenticated.pools.$id.chat'
 import { Route as AuthenticatedPoolsIdBracketRouteImport } from './routes/_authenticated.pools.$id.bracket'
 import { Route as AuthenticatedPoolsIdAutoPredictRouteImport } from './routes/_authenticated.pools.$id.auto-predict'
+import { Route as AuthenticatedPoolsIdPropsIndexRouteImport } from './routes/_authenticated.pools.$id.props.index'
+import { Route as AuthenticatedPoolsIdPredictIndexRouteImport } from './routes/_authenticated.pools.$id.predict.index'
+import { Route as AuthenticatedPoolsIdFantasyIndexRouteImport } from './routes/_authenticated.pools.$id.fantasy.index'
 import { Route as AuthenticatedPoolsIdPropsEditRouteImport } from './routes/_authenticated.pools.$id.props.edit'
 import { Route as AuthenticatedPoolsIdPrizesEditRouteImport } from './routes/_authenticated.pools.$id.prizes.edit'
 import { Route as AuthenticatedPoolsIdPredictMatchIdRouteImport } from './routes/_authenticated.pools.$id.predict.$matchId'
@@ -71,6 +75,12 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedProfileIndexRoute =
+  AuthenticatedProfileIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedProfileRoute,
+  } as any)
 const AuthenticatedPoolsIndexRoute = AuthenticatedPoolsIndexRouteImport.update({
   id: '/pools/',
   path: '/pools/',
@@ -158,6 +168,24 @@ const AuthenticatedPoolsIdAutoPredictRoute =
     path: '/auto-predict',
     getParentRoute: () => AuthenticatedPoolsIdRoute,
   } as any)
+const AuthenticatedPoolsIdPropsIndexRoute =
+  AuthenticatedPoolsIdPropsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPoolsIdPropsRoute,
+  } as any)
+const AuthenticatedPoolsIdPredictIndexRoute =
+  AuthenticatedPoolsIdPredictIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPoolsIdPredictRoute,
+  } as any)
+const AuthenticatedPoolsIdFantasyIndexRoute =
+  AuthenticatedPoolsIdFantasyIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPoolsIdFantasyRoute,
+  } as any)
 const AuthenticatedPoolsIdPropsEditRoute =
   AuthenticatedPoolsIdPropsEditRouteImport.update({
     id: '/edit',
@@ -199,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/pools/$id': typeof AuthenticatedPoolsIdRouteWithChildren
   '/pools/new': typeof AuthenticatedPoolsNewRoute
   '/pools/': typeof AuthenticatedPoolsIndexRoute
+  '/profile/': typeof AuthenticatedProfileIndexRoute
   '/pools/$id/auto-predict': typeof AuthenticatedPoolsIdAutoPredictRoute
   '/pools/$id/bracket': typeof AuthenticatedPoolsIdBracketRoute
   '/pools/$id/chat': typeof AuthenticatedPoolsIdChatRoute
@@ -216,24 +245,24 @@ export interface FileRoutesByFullPath {
   '/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
   '/pools/$id/prizes/edit': typeof AuthenticatedPoolsIdPrizesEditRoute
   '/pools/$id/props/edit': typeof AuthenticatedPoolsIdPropsEditRoute
+  '/pools/$id/fantasy/': typeof AuthenticatedPoolsIdFantasyIndexRoute
+  '/pools/$id/predict/': typeof AuthenticatedPoolsIdPredictIndexRoute
+  '/pools/$id/props/': typeof AuthenticatedPoolsIdPropsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/profile': typeof AuthenticatedProfileRouteWithChildren
   '/quiz': typeof AuthenticatedQuizRoute
   '/join/$code': typeof JoinCodeRoute
   '/': typeof AuthenticatedIndexRoute
   '/pools/new': typeof AuthenticatedPoolsNewRoute
   '/pools': typeof AuthenticatedPoolsIndexRoute
+  '/profile': typeof AuthenticatedProfileIndexRoute
   '/pools/$id/auto-predict': typeof AuthenticatedPoolsIdAutoPredictRoute
   '/pools/$id/bracket': typeof AuthenticatedPoolsIdBracketRoute
   '/pools/$id/chat': typeof AuthenticatedPoolsIdChatRoute
-  '/pools/$id/fantasy': typeof AuthenticatedPoolsIdFantasyRouteWithChildren
   '/pools/$id/mural': typeof AuthenticatedPoolsIdMuralRoute
   '/pools/$id/pickem': typeof AuthenticatedPoolsIdPickemRoute
-  '/pools/$id/predict': typeof AuthenticatedPoolsIdPredictRouteWithChildren
-  '/pools/$id/props': typeof AuthenticatedPoolsIdPropsRouteWithChildren
   '/pools/$id/survivor': typeof AuthenticatedPoolsIdSurvivorRoute
   '/pools/$id/winners': typeof AuthenticatedPoolsIdWinnersRoute
   '/profile/cards/$teamId': typeof AuthenticatedProfileCardsTeamIdRoute
@@ -243,6 +272,9 @@ export interface FileRoutesByTo {
   '/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
   '/pools/$id/prizes/edit': typeof AuthenticatedPoolsIdPrizesEditRoute
   '/pools/$id/props/edit': typeof AuthenticatedPoolsIdPropsEditRoute
+  '/pools/$id/fantasy': typeof AuthenticatedPoolsIdFantasyIndexRoute
+  '/pools/$id/predict': typeof AuthenticatedPoolsIdPredictIndexRoute
+  '/pools/$id/props': typeof AuthenticatedPoolsIdPropsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -256,6 +288,7 @@ export interface FileRoutesById {
   '/_authenticated/pools/$id': typeof AuthenticatedPoolsIdRouteWithChildren
   '/_authenticated/pools/new': typeof AuthenticatedPoolsNewRoute
   '/_authenticated/pools/': typeof AuthenticatedPoolsIndexRoute
+  '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/pools/$id/auto-predict': typeof AuthenticatedPoolsIdAutoPredictRoute
   '/_authenticated/pools/$id/bracket': typeof AuthenticatedPoolsIdBracketRoute
   '/_authenticated/pools/$id/chat': typeof AuthenticatedPoolsIdChatRoute
@@ -273,6 +306,9 @@ export interface FileRoutesById {
   '/_authenticated/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
   '/_authenticated/pools/$id/prizes/edit': typeof AuthenticatedPoolsIdPrizesEditRoute
   '/_authenticated/pools/$id/props/edit': typeof AuthenticatedPoolsIdPropsEditRoute
+  '/_authenticated/pools/$id/fantasy/': typeof AuthenticatedPoolsIdFantasyIndexRoute
+  '/_authenticated/pools/$id/predict/': typeof AuthenticatedPoolsIdPredictIndexRoute
+  '/_authenticated/pools/$id/props/': typeof AuthenticatedPoolsIdPropsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -286,6 +322,7 @@ export interface FileRouteTypes {
     | '/pools/$id'
     | '/pools/new'
     | '/pools/'
+    | '/profile/'
     | '/pools/$id/auto-predict'
     | '/pools/$id/bracket'
     | '/pools/$id/chat'
@@ -303,24 +340,24 @@ export interface FileRouteTypes {
     | '/pools/$id/predict/$matchId'
     | '/pools/$id/prizes/edit'
     | '/pools/$id/props/edit'
+    | '/pools/$id/fantasy/'
+    | '/pools/$id/predict/'
+    | '/pools/$id/props/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/onboarding'
-    | '/profile'
     | '/quiz'
     | '/join/$code'
     | '/'
     | '/pools/new'
     | '/pools'
+    | '/profile'
     | '/pools/$id/auto-predict'
     | '/pools/$id/bracket'
     | '/pools/$id/chat'
-    | '/pools/$id/fantasy'
     | '/pools/$id/mural'
     | '/pools/$id/pickem'
-    | '/pools/$id/predict'
-    | '/pools/$id/props'
     | '/pools/$id/survivor'
     | '/pools/$id/winners'
     | '/profile/cards/$teamId'
@@ -330,6 +367,9 @@ export interface FileRouteTypes {
     | '/pools/$id/predict/$matchId'
     | '/pools/$id/prizes/edit'
     | '/pools/$id/props/edit'
+    | '/pools/$id/fantasy'
+    | '/pools/$id/predict'
+    | '/pools/$id/props'
   id:
     | '__root__'
     | '/_authenticated'
@@ -342,6 +382,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pools/$id'
     | '/_authenticated/pools/new'
     | '/_authenticated/pools/'
+    | '/_authenticated/profile/'
     | '/_authenticated/pools/$id/auto-predict'
     | '/_authenticated/pools/$id/bracket'
     | '/_authenticated/pools/$id/chat'
@@ -359,6 +400,9 @@ export interface FileRouteTypes {
     | '/_authenticated/pools/$id/predict/$matchId'
     | '/_authenticated/pools/$id/prizes/edit'
     | '/_authenticated/pools/$id/props/edit'
+    | '/_authenticated/pools/$id/fantasy/'
+    | '/_authenticated/pools/$id/predict/'
+    | '/_authenticated/pools/$id/props/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -417,6 +461,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/onboarding'
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/profile/': {
+      id: '/_authenticated/profile/'
+      path: '/'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof AuthenticatedProfileIndexRouteImport
+      parentRoute: typeof AuthenticatedProfileRoute
     }
     '/_authenticated/pools/': {
       id: '/_authenticated/pools/'
@@ -523,6 +574,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPoolsIdAutoPredictRouteImport
       parentRoute: typeof AuthenticatedPoolsIdRoute
     }
+    '/_authenticated/pools/$id/props/': {
+      id: '/_authenticated/pools/$id/props/'
+      path: '/'
+      fullPath: '/pools/$id/props/'
+      preLoaderRoute: typeof AuthenticatedPoolsIdPropsIndexRouteImport
+      parentRoute: typeof AuthenticatedPoolsIdPropsRoute
+    }
+    '/_authenticated/pools/$id/predict/': {
+      id: '/_authenticated/pools/$id/predict/'
+      path: '/'
+      fullPath: '/pools/$id/predict/'
+      preLoaderRoute: typeof AuthenticatedPoolsIdPredictIndexRouteImport
+      parentRoute: typeof AuthenticatedPoolsIdPredictRoute
+    }
+    '/_authenticated/pools/$id/fantasy/': {
+      id: '/_authenticated/pools/$id/fantasy/'
+      path: '/'
+      fullPath: '/pools/$id/fantasy/'
+      preLoaderRoute: typeof AuthenticatedPoolsIdFantasyIndexRouteImport
+      parentRoute: typeof AuthenticatedPoolsIdFantasyRoute
+    }
     '/_authenticated/pools/$id/props/edit': {
       id: '/_authenticated/pools/$id/props/edit'
       path: '/edit'
@@ -562,10 +634,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedProfileRouteChildren {
+  AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
   AuthenticatedProfileCardsTeamIdRoute: typeof AuthenticatedProfileCardsTeamIdRoute
 }
 
 const AuthenticatedProfileRouteChildren: AuthenticatedProfileRouteChildren = {
+  AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
   AuthenticatedProfileCardsTeamIdRoute: AuthenticatedProfileCardsTeamIdRoute,
 }
 
@@ -575,6 +649,7 @@ const AuthenticatedProfileRouteWithChildren =
 interface AuthenticatedPoolsIdFantasyRouteChildren {
   AuthenticatedPoolsIdFantasyBuildRoute: typeof AuthenticatedPoolsIdFantasyBuildRoute
   AuthenticatedPoolsIdFantasyRankingRoute: typeof AuthenticatedPoolsIdFantasyRankingRoute
+  AuthenticatedPoolsIdFantasyIndexRoute: typeof AuthenticatedPoolsIdFantasyIndexRoute
 }
 
 const AuthenticatedPoolsIdFantasyRouteChildren: AuthenticatedPoolsIdFantasyRouteChildren =
@@ -583,6 +658,8 @@ const AuthenticatedPoolsIdFantasyRouteChildren: AuthenticatedPoolsIdFantasyRoute
       AuthenticatedPoolsIdFantasyBuildRoute,
     AuthenticatedPoolsIdFantasyRankingRoute:
       AuthenticatedPoolsIdFantasyRankingRoute,
+    AuthenticatedPoolsIdFantasyIndexRoute:
+      AuthenticatedPoolsIdFantasyIndexRoute,
   }
 
 const AuthenticatedPoolsIdFantasyRouteWithChildren =
@@ -592,12 +669,15 @@ const AuthenticatedPoolsIdFantasyRouteWithChildren =
 
 interface AuthenticatedPoolsIdPredictRouteChildren {
   AuthenticatedPoolsIdPredictMatchIdRoute: typeof AuthenticatedPoolsIdPredictMatchIdRoute
+  AuthenticatedPoolsIdPredictIndexRoute: typeof AuthenticatedPoolsIdPredictIndexRoute
 }
 
 const AuthenticatedPoolsIdPredictRouteChildren: AuthenticatedPoolsIdPredictRouteChildren =
   {
     AuthenticatedPoolsIdPredictMatchIdRoute:
       AuthenticatedPoolsIdPredictMatchIdRoute,
+    AuthenticatedPoolsIdPredictIndexRoute:
+      AuthenticatedPoolsIdPredictIndexRoute,
   }
 
 const AuthenticatedPoolsIdPredictRouteWithChildren =
@@ -607,11 +687,13 @@ const AuthenticatedPoolsIdPredictRouteWithChildren =
 
 interface AuthenticatedPoolsIdPropsRouteChildren {
   AuthenticatedPoolsIdPropsEditRoute: typeof AuthenticatedPoolsIdPropsEditRoute
+  AuthenticatedPoolsIdPropsIndexRoute: typeof AuthenticatedPoolsIdPropsIndexRoute
 }
 
 const AuthenticatedPoolsIdPropsRouteChildren: AuthenticatedPoolsIdPropsRouteChildren =
   {
     AuthenticatedPoolsIdPropsEditRoute: AuthenticatedPoolsIdPropsEditRoute,
+    AuthenticatedPoolsIdPropsIndexRoute: AuthenticatedPoolsIdPropsIndexRoute,
   }
 
 const AuthenticatedPoolsIdPropsRouteWithChildren =
