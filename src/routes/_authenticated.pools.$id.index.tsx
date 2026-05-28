@@ -1,9 +1,17 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useQueryClient } from "@tanstack/react-query";
-import { getPoolById, getLeaderboard, getMatchesForPool, getPredictions, getProfile, getPrizes, getPrizeWinners, getProps, getPredictionsProps } from "@/lib/api.functions";
+import { 
+  getPoolById, getLeaderboard, getMatchesForPool, getPredictions, getProfile, 
+  getPrizes, getPrizeWinners, getProps, getPredictionsProps, getPoolMembers,
+  deletePool, transferOwnership, leavePool 
+} from "@/lib/api.functions";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, ArrowDownRight, Minus, PencilLine, User as UserIcon, Gift, Award, HelpCircle, Target } from "lucide-react";
+import { 
+  ChevronLeft, Share2, Settings, Trophy, Users, Calendar, ArrowUpRight, 
+  ArrowDownRight, Minus, PencilLine, User as UserIcon, Gift, Award, 
+  HelpCircle, Target, LogOut, UserPlus, Trash2, Loader2 
+} from "lucide-react";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +19,22 @@ import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { 
+  Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription 
+} from "@/components/ui/sheet";
+import { 
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, 
+  AlertDialogTrigger 
+} from "@/components/ui/alert-dialog";
+import { 
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, 
+  DialogFooter 
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -58,6 +82,70 @@ function PoolDetailComponent() {
   const totalProps = allProps?.length || 0;
   const predictedProps = predictionsProps?.length || 0;
   const propCompletionPercent = totalProps > 0 ? Math.round((predictedProps / totalProps) * 100) : 0;
+
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
+  const [confirmDeleteName, setConfirmDeleteName] = useState("");
+  const [selectedNewOwner, setSelectedNewOwner] = useState<any>(null);
+  const [isActionLoading, setIsActionLoading] = useState(false);
+  const [members, setMembers] = useState<any[]>([]);
+
+  const fetchMembers = async () => {
+    try {
+      const data = await getPoolMembers({ data: id } as any);
+      setMembers(data || []);
+    } catch (error) {
+      console.error("Error fetching members:", error);
+    }
+  };
+
+  const handleDeletePool = async () => {
+    if (confirmDeleteName !== pool?.name) {
+      toast.error("O nome do bolão não confere");
+      return;
+    }
+    setIsActionLoading(true);
+    try {
+      await deletePool({ data: id } as any);
+      toast.success("Bolão apagado com sucesso");
+      navigate({ to: "/pools" });
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao apagar bolão");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handleTransferOwnership = async () => {
+    if (!selectedNewOwner) return;
+    setIsActionLoading(true);
+    try {
+      await transferOwnership({ data: { poolId: id, newOwnerId: selectedNewOwner.user_id } } as any);
+      toast.success(`Propriedade transferida para ${selectedNewOwner.profile?.name}`);
+      queryClient.invalidateQueries({ queryKey: ["pool", id] });
+      setIsTransferDialogOpen(false);
+      setIsSettingsOpen(false);
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao transferir propriedade");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handleLeavePool = async () => {
+    setIsActionLoading(true);
+    try {
+      await leavePool({ data: id } as any);
+      toast.success("Você saiu do bolão");
+      navigate({ to: "/pools" });
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao sair do bolão");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
 
   if (!pool) {
     return (
@@ -123,9 +211,72 @@ function PoolDetailComponent() {
           <Button variant="ghost" size="icon" onClick={handleShare}>
             <Share2 className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon">
-            <Settings className="h-5 w-5" />
-          </Button>
+          <Sheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={() => {
+                if (isOwner) fetchMembers();
+              }}>
+                <Settings className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetHeader>
+                <SheetTitle>Configurações do Bolão</SheetTitle>
+                <SheetDescription>Gerencie as preferências e propriedade do seu bolão.</SheetDescription>
+              </SheetHeader>
+              <div className="py-6 space-y-6">
+                {isOwner ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Proprietário</Label>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start gap-3 h-14 font-bold border-2"
+                        onClick={() => setIsTransferDialogOpen(true)}
+                      >
+                        <UserPlus className="h-5 w-5 text-primary" />
+                        Transferir Propriedade
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2 pt-6 border-t">
+                      <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-destructive">Zona de Perigo</Label>
+                      <Button 
+                        variant="destructive" 
+                        className="w-full justify-start gap-3 h-14 font-black shadow-lg shadow-destructive/10"
+                        onClick={() => setIsDeleteDialogOpen(true)}
+                      >
+                        <Trash2 className="h-5 w-5" />
+                        Apagar Bolão
+                      </Button>
+                      <div className="pt-2">
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start gap-3 h-12 text-muted-foreground opacity-50 cursor-not-allowed border-dashed"
+                          disabled
+                        >
+                          <LogOut className="h-4 w-4" />
+                          <span className="text-xs">Sair do Bolão (Transfira primeiro)</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-destructive">Ações</Label>
+                    <Button 
+                      variant="destructive" 
+                      className="w-full justify-start gap-3 h-14 font-black shadow-lg shadow-destructive/10"
+                      onClick={() => setIsLeaveDialogOpen(true)}
+                    >
+                      <LogOut className="h-5 w-5" />
+                      Sair do Bolão
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </header>
 
@@ -442,12 +593,150 @@ function PoolDetailComponent() {
              ))}
           </TabsContent>
 
-          <TabsContent value="members" className="py-20 text-center space-y-4">
-            <Users className="h-12 w-12 text-muted-foreground mx-auto opacity-20" />
-            <p className="text-muted-foreground">Em breve: Gerencie os participantes.</p>
+          <TabsContent value="members" className="py-6 space-y-4">
+            <div className="space-y-3">
+              {(leaderboard || []).map((member: any) => (
+                <div key={member.user_id} className="flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-muted/50">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="h-10 w-10 border">
+                      <AvatarImage src={member.profile?.avatar_url} />
+                      <AvatarFallback><UserIcon /></AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div className="font-bold flex items-center gap-2">
+                        {member.profile?.name}
+                        {pool.owner_id === member.user_id && <Badge className="bg-primary/20 text-primary border-primary/20 text-[10px] font-black uppercase tracking-tighter h-5">Dono</Badge>}
+                      </div>
+                      <div className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                        {member.profile?.league_tier || 'Bronze'} · {member.profile?.xp || 0} XP
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="font-black text-sm">{member.points} pts</div>
+                    <div className="text-[10px] font-bold text-muted-foreground uppercase">{member.position}º lugar</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </TabsContent>
         </Tabs>
       </main>
+
+      {/* Dialog: Transfer Ownership */}
+      <Dialog open={isTransferDialogOpen} onOpenChange={setIsTransferDialogOpen}>
+        <DialogContent className="max-w-[400px]">
+          <DialogHeader>
+            <DialogTitle>Transferir Propriedade</DialogTitle>
+            <DialogDescription>
+              Escolha um membro para ser o novo dono do bolão. Você se tornará um membro comum.
+            </DialogDescription>
+          </DialogHeader>
+          <ScrollArea className="h-[300px] pr-4">
+            <div className="space-y-2">
+              {members.filter(m => m.user_id !== profile?.id).map((member) => (
+                <button
+                  key={member.user_id}
+                  onClick={() => setSelectedNewOwner(member)}
+                  className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all ${
+                    selectedNewOwner?.user_id === member.user_id 
+                      ? 'border-primary bg-primary/5' 
+                      : 'border-transparent bg-muted/30 hover:bg-muted/50'
+                  }`}
+                >
+                  <Avatar className="h-10 w-10">
+                    <AvatarImage src={member.profile?.avatar_url} />
+                    <AvatarFallback><UserIcon /></AvatarFallback>
+                  </Avatar>
+                  <div className="text-left">
+                    <div className="font-bold">{member.profile?.name}</div>
+                    <div className="text-xs text-muted-foreground">Membro do bolão</div>
+                  </div>
+                </button>
+              ))}
+              {members.filter(m => m.user_id !== profile?.id).length === 0 && (
+                <div className="text-center py-10 text-muted-foreground">
+                  Não há outros membros para transferir.
+                </div>
+              )}
+            </div>
+          </ScrollArea>
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button variant="ghost" onClick={() => setIsTransferDialogOpen(false)}>Cancelar</Button>
+            <Button 
+              disabled={!selectedNewOwner || isActionLoading} 
+              onClick={handleTransferOwnership}
+              className="gap-2"
+            >
+              {isActionLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              Confirmar Transferência
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* AlertDialog: Delete Pool */}
+      <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-destructive flex items-center gap-2">
+              <Trash2 className="h-5 w-5" /> Apagar Bolão
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza? Isso apaga o bolão permanentemente, incluindo todos os palpites, rankings e prêmios. <strong>Esta ação não pode ser desfeita.</strong>
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="py-4 space-y-2">
+            <Label htmlFor="confirmName" className="text-xs font-bold uppercase tracking-widest">
+              Digite <span className="text-primary font-black">"{pool.name}"</span> para confirmar:
+            </Label>
+            <Input 
+              id="confirmName"
+              placeholder={pool.name}
+              value={confirmDeleteName}
+              onChange={(e) => setConfirmDeleteName(e.target.value)}
+              className="font-bold"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <Button 
+              variant="destructive" 
+              onClick={handleDeletePool} 
+              disabled={confirmDeleteName !== pool.name || isActionLoading}
+              className="gap-2"
+            >
+              {isActionLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              Apagar Permanentemente
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* AlertDialog: Leave Pool */}
+      <AlertDialog open={isLeaveDialogOpen} onOpenChange={setIsLeaveDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sair do Bolão</AlertDialogTitle>
+            <AlertDialogDescription>
+              Deseja realmente sair de <span className="font-bold">"{pool.name}"</span>? 
+              Seus palpites e progresso neste bolão serão perdidos.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <Button 
+              variant="destructive" 
+              onClick={handleLeavePool} 
+              disabled={isActionLoading}
+              className="gap-2"
+            >
+              {isActionLoading && <Loader2 className="h-4 w-4 animate-spin" />}
+              Sair do Bolão
+            </Button>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

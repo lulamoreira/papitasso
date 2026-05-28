@@ -1492,6 +1492,7 @@ export type Database = {
           owner_id: string
         }[]
       }
+      delete_pool: { Args: { p_pool_id: string }; Returns: undefined }
       get_cron_headers: { Args: never; Returns: Json }
       increment_xp: {
         Args: { p_amount: number; p_user_id: string }
@@ -1509,6 +1510,7 @@ export type Database = {
         Args: { p_pool_id: string; p_user_id: string }
         Returns: boolean
       }
+      leave_pool: { Args: { p_pool_id: string }; Returns: undefined }
       lock_predictions_for_match: {
         Args: { p_match_id: string }
         Returns: undefined
@@ -1541,6 +1543,10 @@ export type Database = {
       refresh_leaderboard_view: { Args: never; Returns: undefined }
       toggle_chat_reaction: {
         Args: { p_emoji: string; p_message_id: string }
+        Returns: undefined
+      }
+      transfer_pool_ownership: {
+        Args: { p_new_owner: string; p_pool_id: string }
         Returns: undefined
       }
       update_quiz_streak: { Args: { p_user_id: string }; Returns: undefined }
