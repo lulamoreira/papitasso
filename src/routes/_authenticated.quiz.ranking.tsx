@@ -18,7 +18,7 @@ function QuizRankingPage() {
 
   const { data: leaderboard } = useSuspenseQuery({
     queryKey: ["quiz-global-leaderboard"],
-    queryFn: () => getQuizLeaderboard({ data: null }),
+    queryFn: () => getQuizLeaderboard({ data: undefined }),
   });
 
   return (
