@@ -816,7 +816,7 @@ export const getChatMessages = createServerFn({ method: "GET" })
     const { supabase } = context;
     let query = supabase
       .from("chat_messages")
-      .select("*, user:profiles(*)")
+      .select("*, user:profiles!chat_messages_user_id_fkey(*)")
       .eq("pool_id", poolId)
       .order("created_at", { ascending: true });
     
