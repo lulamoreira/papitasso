@@ -120,6 +120,7 @@ function MuralComponent() {
       <div className="space-y-4">
         <AnimatePresence initial={false}>
           {posts?.map((post: any) => (
+
             <motion.div
               key={post.id}
               initial={{ opacity: 0, scale: 0.95 }}
