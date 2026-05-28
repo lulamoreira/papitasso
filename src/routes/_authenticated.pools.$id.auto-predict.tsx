@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useSuspenseQuery, useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { getAiAutoPredictions, getPoolById, upsertPrediction } from "@/lib/api.functions";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Sparkles, Brain, Check, ChevronLeft, Save } from "lucide-react";
@@ -21,20 +22,31 @@ function AutoPredictPage() {
     queryFn: () => getPoolById({ data: id }),
   });
 
-  const { data: suggestions, isLoading } = useSuspenseQuery({
+  const { data: suggestions, isLoading, error: aiError } = useQuery({
     queryKey: ["ai-auto-predictions", id],
-    queryFn: () => getAiAutoPredictions({ data: id }),
+    queryFn: async () => {
+      try {
+        const result = await getAiAutoPredictions({ data: id });
+        return result;
+      } catch (err: any) {
+        console.error('[DEBUG] Palpita pra mim error:', err);
+        toast.error(err.message || "Erro ao gerar palpites automáticos");
+        throw err;
+      }
+    },
+    retry: false
   });
 
   const [matches, setMatches] = useState<any[]>([]);
   const [confirmed, setConfirmed] = useState<Set<string>>(new Set());
 
   // Initialize matches when data is loaded
-  useState(() => {
+  useEffect(() => {
     if (suggestions?.predictions) {
       setMatches(suggestions.predictions);
     }
-  });
+  }, [suggestions]);
+
 
   const saveMutation = useMutation({
     mutationFn: (match: any) => (upsertPrediction as any)({ 
@@ -90,7 +102,25 @@ function AutoPredictPage() {
         </div>
       </header>
 
-      {matches.length === 0 ? (
+      {isLoading ? (
+        <Card className="animate-pulse">
+          <CardContent className="p-8 text-center space-y-4">
+            <Brain className="w-12 h-12 text-primary mx-auto animate-bounce" />
+            <p className="text-muted-foreground">A IA está analisando as estatísticas e gerando os melhores palpites...</p>
+          </CardContent>
+        </Card>
+      ) : aiError ? (
+        <Card className="border-red-200 bg-red-50">
+          <CardContent className="p-8 text-center space-y-4">
+            <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+              <Sparkles className="text-red-500" />
+            </div>
+            <p className="text-red-700 font-medium">Não foi possível carregar as sugestões da IA.</p>
+            <p className="text-red-500 text-xs">{(aiError as any).message}</p>
+            <Button variant="outline" onClick={() => window.history.back()}>Voltar</Button>
+          </CardContent>
+        </Card>
+      ) : matches.length === 0 ? (
         <Card>
           <CardContent className="p-8 text-center space-y-4">
             <Brain className="w-12 h-12 text-muted-foreground mx-auto opacity-20" />
@@ -99,6 +129,7 @@ function AutoPredictPage() {
           </CardContent>
         </Card>
       ) : (
+
         <div className="space-y-4">
           {matches.map((m) => (
             <Card key={m.match_id} className={confirmed.has(m.match_id) ? "opacity-60 bg-muted/30" : ""}>

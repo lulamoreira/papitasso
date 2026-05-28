@@ -711,8 +711,19 @@ export const getAiAutoPredictions = createServerFn({ method: "POST" })
     const { data, error } = await supabase.functions.invoke('ai-auto-predict', {
       body: { pool_id: poolId, user_id: userId }
     });
-    if (error) throw error;
+    
+    if (error) {
+      console.error('[DEBUG] ai-auto-predict invocation error:', error);
+      throw error;
+    }
+    
+    if (data && data.error === 'AI gateway' && data.detail) {
+      console.error('[DEBUG] ai-auto-predict gateway error:', data.detail);
+      throw new Error(`Erro na IA: ${data.detail}`);
+    }
+    
     return data;
+
   });
 
 export const generateShareCard = createServerFn({ method: "POST" })
