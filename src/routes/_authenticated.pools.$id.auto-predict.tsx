@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { getAiAutoPredictions, getPoolById, upsertPrediction } from "@/lib/api.functions";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
