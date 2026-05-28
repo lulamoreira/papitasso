@@ -32,10 +32,36 @@ let _supabaseAdmin: ReturnType<typeof createSupabaseAdminClient> | undefined;
 
 // Server-side Supabase client with service role - bypasses RLS
 // SECURITY: Only use this for trusted server-side operations, never expose to client code
-// Import like: import { supabaseAdmin } from "@/integrations/supabase/client.server";
 export const supabaseAdmin = new Proxy({} as ReturnType<typeof createSupabaseAdminClient>, {
   get(_, prop, receiver) {
     if (!_supabaseAdmin) _supabaseAdmin = createSupabaseAdminClient();
     return Reflect.get(_supabaseAdmin, prop, receiver);
   },
 });
+
+/**
+ * Creates a Supabase client for use in server functions that forwards the user's authorization.
+ * This ensures RLS works correctly by using the user's own JWT.
+ */
+export function createServerClient(req: Request) {
+  const SUPABASE_URL = process.env.SUPABASE_URL;
+  const SUPABASE_PUBLISHABLE_KEY = process.env.SUPABASE_PUBLISHABLE_KEY;
+
+  if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) {
+    throw new Error('Missing Supabase environment variables');
+  }
+
+  const authHeader = req.headers.get('Authorization') || req.headers.get('authorization');
+
+  return createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+    global: {
+      headers: {
+        Authorization: authHeader || '',
+      },
+    },
+    auth: {
+      persistSession: false,
+      autoRefreshToken: false,
+    },
+  });
+}
