@@ -64,6 +64,17 @@ export const getNextMatch = createServerFn({ method: "GET" })
     return data || null;
   });
 
+async function generateUniqueInviteCode(supabase: any): Promise<string> {
+  for (let i = 0; i < 10; i++) {
+    const candidate = Array.from({length: 7}, () => 
+      'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]
+    ).join('');
+    const { data } = await supabase.from('pools').select('id').eq('invite_code', candidate).maybeSingle();
+    if (!data) return candidate;
+  }
+  throw new Error('Não foi possível gerar invite code único');
+}
+
 export const createPool = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
@@ -89,35 +100,20 @@ export const createPool = createServerFn({ method: "POST" })
     }).parse(data);
 
     const { supabase, userId } = context;
-    const invite_code = Math.random().toString(36).substring(2, 8).toUpperCase();
+    const invite_code = await generateUniqueInviteCode(supabase);
     
-    // Inserção usando o cliente autenticado (userId vem do token JWT)
-    const { data: pool, error: poolError } = await supabase
-      .from("pools")
-      .insert({
-        name: validated.name,
-        type: validated.type,
-        scope_type: validated.scope_type,
-        scope_config: validated.scope_config,
-        scoring_config: validated.scoring_config,
-        modes_enabled: validated.modes_enabled,
-        invite_code,
-        owner_id: userId
-      })
-      .select()
-      .single();
+    // Inserção atômica via RPC
+    const { data: pool, error: poolError } = await supabase.rpc('create_pool_with_owner', {
+      p_name: validated.name,
+      p_type: validated.type,
+      p_scope_type: validated.scope_type,
+      p_scope_config: validated.scope_config,
+      p_scoring_config: validated.scoring_config,
+      p_modes_enabled: validated.modes_enabled,
+      p_invite_code: invite_code
+    }).single();
 
     if (poolError) throw poolError;
-
-    const { error: memberError } = await supabase
-      .from("pool_members")
-      .insert({
-        pool_id: pool.id,
-        user_id: userId,
-        role: 'owner'
-      });
-
-    if (memberError) throw memberError;
 
     if (validated.prizes && validated.prizes.length > 0) {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -297,14 +293,27 @@ export const getLeaderboard = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: poolId, context }: any) => {
     const { supabase } = context;
-    const { data, error } = await supabase
+    
+    // Views não suportam FK constraints no PostgREST, join manual necessário
+    const { data: lb, error } = await supabase
       .from("leaderboard_view")
-      .select("*, profile:profiles!leaderboard_view_user_id_fkey(*)")
+      .select("*")
       .eq("pool_id", poolId)
       .order("position", { ascending: true });
-    
+
     if (error) throw error;
-    return data;
+    if (!lb || lb.length === 0) return [];
+
+    const userIds = lb.map((r: any) => r.user_id);
+    const { data: profiles } = await supabase
+      .from("profiles")
+      .select("id, name, avatar_url, xp, league_tier")
+      .in("id", userIds);
+
+    return lb.map((row: any) => ({
+      ...row,
+      profile: profiles?.find((p: any) => p.id === row.user_id) ?? null,
+    }));
   });
 
 export const getPrizes = createServerFn({ method: "GET" })
