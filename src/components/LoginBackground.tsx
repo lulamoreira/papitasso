@@ -78,7 +78,7 @@ export function LoginBackground() {
 
   return (
     <div className="fixed inset-0 z-0 overflow-hidden bg-black">
-      <div className="grid h-full w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-0.5">
+      <div className="grid h-full w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-0.5">
         {images.map((img, idx) => (
           <div key={idx} className="relative aspect-square overflow-hidden bg-slate-900">
             <AnimatePresence mode="popLayout">
