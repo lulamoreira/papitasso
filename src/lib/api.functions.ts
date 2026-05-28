@@ -259,7 +259,7 @@ export const getMatchesForPool = createServerFn({ method: "GET" })
 
     const { data: matches, error: matchesError } = await supabase
       .from("matches")
-      .select("*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*)")
+      .select("*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*), venue:venues(name, city, state, country, image_url)")
       .in("id", data.map((m: any) => m.id))
       .order("kickoff_at", { ascending: true });
     

@@ -44,6 +44,12 @@ function NewPoolComponent() {
   const [createdPool, setCreatedPool] = useState<any>(null);
 
   const { data: teams } = useSuspenseQuery({ queryKey: ["teams"], queryFn: () => getTeams() });
+  const singleTeamValue = useMemo(() => {
+    if (formData.scope_type === 'single_team' && formData.scope_config?.team_code) {
+      return formData.scope_config.team_code;
+    }
+    return "";
+  }, [formData.scope_type, formData.scope_config]);
   const navigate = useNavigate();
 
   const createPoolMutation = useMutation({
@@ -171,6 +177,28 @@ function NewPoolComponent() {
                     </CardContent>
                   </Card>
                 ))}
+                {formData.scope_type === 'single_team' && (
+                  <Card className="p-4 border-2 border-primary/20">
+                    <div className="space-y-3">
+                      <Label className="text-sm font-bold uppercase tracking-wider">Escolha a Seleção</Label>
+                      <select 
+                        className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                        value={singleTeamValue}
+                        onChange={(e) => setFormData({ 
+                          ...formData, 
+                          scope_config: { team_code: e.target.value } 
+                        })}
+                      >
+                        <option value="">Selecione...</option>
+                        {teams?.map((team: any) => (
+                          <option key={team.code} value={team.code}>
+                            {team.name}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </Card>
+                )}
               </div>
             )}
 
