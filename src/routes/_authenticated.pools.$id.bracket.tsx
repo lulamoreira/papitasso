@@ -29,11 +29,10 @@ function BracketComponent() {
   const { data: teams } = useSuspenseQuery({ queryKey: ["teams"], queryFn: () => getTeams() });
 
   const [bracket, setBracket] = useState<any>(prediction?.bracket_json || {
-    round_of_32: [],
-    round_of_16: [],
-    quarter_finals: [],
-    semi_finals: [],
-    final: { winner_team_id: null, score: "" }
+    r16: [],
+    qf: [],
+    sf: [],
+    final: { match_id: null, winner_team_id: null, home_score: 0, away_score: 0 }
   });
 
   const knockoutMatches = matches?.filter((m: any) => m.phase !== 'Group Stage') || [];
