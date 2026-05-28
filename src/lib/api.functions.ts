@@ -14,7 +14,7 @@ export const getProfile = createServerFn({ method: "GET" })
       .eq("id", userId)
       .maybeSingle();
 
-    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
+    console.log('[DEBUG] query result:', { data, error, count: Array.isArray(data) ? data.length : (data ? 1 : 0) });
 
     if (error) throw error;
     return data;
