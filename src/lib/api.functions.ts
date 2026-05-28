@@ -269,7 +269,7 @@ export const getLeaderboard = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("leaderboard_view")
-      .select("*, profile:profiles(*)")
+      .select("*, profile:profiles!leaderboard_view_user_id_fkey(*)")
       .eq("pool_id", poolId)
       .order("position", { ascending: true });
     
