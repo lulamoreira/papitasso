@@ -74,11 +74,19 @@ serve(async (req) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.0-flash",
+          model: "google/gemini-2.5-flash",
           messages: [{ role: "user", content: prompt }],
           response_format: { type: "json_object" }
         }),
       })
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error('[ai-auto-predict] gateway error:', errText);
+        return new Response(JSON.stringify({ error: 'AI gateway', detail: errText }), 
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
+      }
+
 
       const aiResult = await response.json()
       const pred = JSON.parse(aiResult.choices[0].message.content)
