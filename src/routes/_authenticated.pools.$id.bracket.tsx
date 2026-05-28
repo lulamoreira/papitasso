@@ -136,18 +136,29 @@ function BracketComponent() {
            <Card className="border-4 border-primary bg-primary/5">
              <CardContent className="p-6 text-center space-y-4">
                 <div className="text-2xl font-black text-primary">
-                  {bracket.final.winner_team_id ? teams.find((t: any) => t.id === bracket.final.winner_team_id)?.name : 'ESCOLHA O CAMPEÃO'}
+                  {bracket.final?.winner_team_id ? teams?.find((t: any) => t.id === bracket.final.winner_team_id)?.name : 'ESCOLHA O CAMPEÃO'}
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-muted-foreground">Placar Esperado (Final)</label>
-                  <input 
-                    type="text" 
-                    placeholder="Ex: 2-1" 
-                    className="w-full bg-background border rounded p-2 text-center font-black"
-                    value={bracket.final.score}
-                    disabled={isLocked}
-                    onChange={(e) => setBracket({...bracket, final: {...bracket.final, score: e.target.value}})}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-muted-foreground">Casa</label>
+                    <input 
+                      type="number" 
+                      className="w-full bg-background border rounded p-2 text-center font-black"
+                      value={bracket.final?.home_score || 0}
+                      disabled={isLocked}
+                      onChange={(e) => setBracket({...bracket, final: {...bracket.final, home_score: parseInt(e.target.value) || 0}})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-muted-foreground">Fora</label>
+                    <input 
+                      type="number" 
+                      className="w-full bg-background border rounded p-2 text-center font-black"
+                      value={bracket.final?.away_score || 0}
+                      disabled={isLocked}
+                      onChange={(e) => setBracket({...bracket, final: {...bracket.final, away_score: parseInt(e.target.value) || 0}})}
+                    />
+                  </div>
                 </div>
              </CardContent>
            </Card>
