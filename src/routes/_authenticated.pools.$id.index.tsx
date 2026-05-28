@@ -210,9 +210,72 @@ function PoolDetailComponent() {
           <Button variant="ghost" size="icon" onClick={handleShare}>
             <Share2 className="h-5 w-5" />
           </Button>
-          <Button variant="ghost" size="icon">
-            <Settings className="h-5 w-5" />
-          </Button>
+          <Sheet open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon" onClick={() => {
+                if (isOwner) fetchMembers();
+              }}>
+                <Settings className="h-5 w-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+              <SheetHeader>
+                <SheetTitle>Configurações do Bolão</SheetTitle>
+                <SheetDescription>Gerencie as preferências e propriedade do seu bolão.</SheetDescription>
+              </SheetHeader>
+              <div className="py-6 space-y-6">
+                {isOwner ? (
+                  <>
+                    <div className="space-y-2">
+                      <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Proprietário</Label>
+                      <Button 
+                        variant="outline" 
+                        className="w-full justify-start gap-3 h-14 font-bold border-2"
+                        onClick={() => setIsTransferDialogOpen(true)}
+                      >
+                        <UserPlus className="h-5 w-5 text-primary" />
+                        Transferir Propriedade
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2 pt-6 border-t">
+                      <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-destructive">Zona de Perigo</Label>
+                      <Button 
+                        variant="destructive" 
+                        className="w-full justify-start gap-3 h-14 font-black shadow-lg shadow-destructive/10"
+                        onClick={() => setIsDeleteDialogOpen(true)}
+                      >
+                        <Trash2 className="h-5 w-5" />
+                        Apagar Bolão
+                      </Button>
+                      <div className="pt-2">
+                        <Button 
+                          variant="outline" 
+                          className="w-full justify-start gap-3 h-12 text-muted-foreground opacity-50 cursor-not-allowed border-dashed"
+                          disabled
+                        >
+                          <LogOut className="h-4 w-4" />
+                          <span className="text-xs">Sair do Bolão (Transfira primeiro)</span>
+                        </Button>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="space-y-2">
+                    <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-destructive">Ações</Label>
+                    <Button 
+                      variant="destructive" 
+                      className="w-full justify-start gap-3 h-14 font-black shadow-lg shadow-destructive/10"
+                      onClick={() => setIsLeaveDialogOpen(true)}
+                    >
+                      <LogOut className="h-5 w-5" />
+                      Sair do Bolão
+                    </Button>
+                  </div>
+                )}
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
       </header>
 
