@@ -115,8 +115,15 @@ function AutoPredictPage() {
   return (
     <div className="container max-w-2xl mx-auto p-4 pb-24 space-y-6">
       <header className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => window.history.back()} disabled={isSavingAll}>
-          <ChevronLeft />
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1"
+          onClick={() => navigate({ to: "/pools/$id", params: { id } })}
+          disabled={isSavingAll}
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Voltar ao Bolão
         </Button>
         <div>
           <h1 className="text-2xl font-bold flex items-center gap-2">

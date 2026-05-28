@@ -1,4 +1,4 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getPoolById, getSurvivorRounds, getSurvivorPredictions, upsertSurvivorPrediction, getTeams } from "@/lib/api.functions";
 import { Card, CardContent } from "@/components/ui/card";
@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { toast } from "sonner";
-import { Skull, Trophy, CheckCircle2, Calendar } from "lucide-react";
+import { Skull, Trophy, CheckCircle2, Calendar, ChevronLeft } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
@@ -25,6 +25,7 @@ export const Route = createFileRoute("/_authenticated/pools/$id/survivor")({
 
 function SurvivorComponent() {
   const { id } = useParams({ from: "/_authenticated/pools/$id/survivor" } as any);
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [selectedTeam, setSelectedTeam] = useState<any>(null);
 
@@ -62,14 +63,24 @@ function SurvivorComponent() {
 
   return (
     <div className="container mx-auto p-4 space-y-6 pb-24">
-      <header className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-black">Survivor Mode</h1>
-          <p className="text-muted-foreground text-sm">Sobreviva o máximo que puder.</p>
-        </div>
-        <div className={`px-4 py-2 rounded-full font-black text-sm flex items-center gap-2 ${isAlive ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}`}>
-          {isAlive ? <Trophy className="h-4 w-4" /> : <Skull className="h-4 w-4" />}
-          {isAlive ? 'VIVO' : `ELIMINADO NA RD ${lastEliminatedRound}`}
+      <header className="flex items-center gap-2 pb-3 mb-3 border-b">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1"
+          onClick={() => navigate({ to: "/pools/$id", params: { id } })}
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Voltar ao Bolão
+        </Button>
+        <div className="ml-auto flex items-center gap-3">
+          <div className="text-right">
+            <h1 className="text-lg font-bold">Survivor Mode</h1>
+          </div>
+          <div className={`px-3 py-1 rounded-full font-black text-[10px] flex items-center gap-1 ${isAlive ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}`}>
+            {isAlive ? <Trophy className="h-3 w-3" /> : <Skull className="h-3 w-3" />}
+            {isAlive ? 'VIVO' : `RD ${lastEliminatedRound}`}
+          </div>
         </div>
       </header>
 
