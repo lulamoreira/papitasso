@@ -31,6 +31,8 @@ import { Route as AuthenticatedPoolsIdFantasyRouteImport } from './routes/_authe
 import { Route as AuthenticatedPoolsIdChatRouteImport } from './routes/_authenticated.pools.$id.chat'
 import { Route as AuthenticatedPoolsIdBracketRouteImport } from './routes/_authenticated.pools.$id.bracket'
 import { Route as AuthenticatedPoolsIdAutoPredictRouteImport } from './routes/_authenticated.pools.$id.auto-predict'
+import { Route as AuthenticatedPoolsIdPredictIndexRouteImport } from './routes/_authenticated.pools.$id.predict.index'
+import { Route as AuthenticatedPoolsIdFantasyIndexRouteImport } from './routes/_authenticated.pools.$id.fantasy.index'
 import { Route as AuthenticatedPoolsIdPropsEditRouteImport } from './routes/_authenticated.pools.$id.props.edit'
 import { Route as AuthenticatedPoolsIdPrizesEditRouteImport } from './routes/_authenticated.pools.$id.prizes.edit'
 import { Route as AuthenticatedPoolsIdPredictMatchIdRouteImport } from './routes/_authenticated.pools.$id.predict.$matchId'
@@ -158,6 +160,18 @@ const AuthenticatedPoolsIdAutoPredictRoute =
     path: '/auto-predict',
     getParentRoute: () => AuthenticatedPoolsIdRoute,
   } as any)
+const AuthenticatedPoolsIdPredictIndexRoute =
+  AuthenticatedPoolsIdPredictIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPoolsIdPredictRoute,
+  } as any)
+const AuthenticatedPoolsIdFantasyIndexRoute =
+  AuthenticatedPoolsIdFantasyIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPoolsIdFantasyRoute,
+  } as any)
 const AuthenticatedPoolsIdPropsEditRoute =
   AuthenticatedPoolsIdPropsEditRouteImport.update({
     id: '/edit',
@@ -216,6 +230,8 @@ export interface FileRoutesByFullPath {
   '/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
   '/pools/$id/prizes/edit': typeof AuthenticatedPoolsIdPrizesEditRoute
   '/pools/$id/props/edit': typeof AuthenticatedPoolsIdPropsEditRoute
+  '/pools/$id/fantasy/': typeof AuthenticatedPoolsIdFantasyIndexRoute
+  '/pools/$id/predict/': typeof AuthenticatedPoolsIdPredictIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -229,10 +245,8 @@ export interface FileRoutesByTo {
   '/pools/$id/auto-predict': typeof AuthenticatedPoolsIdAutoPredictRoute
   '/pools/$id/bracket': typeof AuthenticatedPoolsIdBracketRoute
   '/pools/$id/chat': typeof AuthenticatedPoolsIdChatRoute
-  '/pools/$id/fantasy': typeof AuthenticatedPoolsIdFantasyRouteWithChildren
   '/pools/$id/mural': typeof AuthenticatedPoolsIdMuralRoute
   '/pools/$id/pickem': typeof AuthenticatedPoolsIdPickemRoute
-  '/pools/$id/predict': typeof AuthenticatedPoolsIdPredictRouteWithChildren
   '/pools/$id/props': typeof AuthenticatedPoolsIdPropsRouteWithChildren
   '/pools/$id/survivor': typeof AuthenticatedPoolsIdSurvivorRoute
   '/pools/$id/winners': typeof AuthenticatedPoolsIdWinnersRoute
@@ -243,6 +257,8 @@ export interface FileRoutesByTo {
   '/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
   '/pools/$id/prizes/edit': typeof AuthenticatedPoolsIdPrizesEditRoute
   '/pools/$id/props/edit': typeof AuthenticatedPoolsIdPropsEditRoute
+  '/pools/$id/fantasy': typeof AuthenticatedPoolsIdFantasyIndexRoute
+  '/pools/$id/predict': typeof AuthenticatedPoolsIdPredictIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -273,6 +289,8 @@ export interface FileRoutesById {
   '/_authenticated/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
   '/_authenticated/pools/$id/prizes/edit': typeof AuthenticatedPoolsIdPrizesEditRoute
   '/_authenticated/pools/$id/props/edit': typeof AuthenticatedPoolsIdPropsEditRoute
+  '/_authenticated/pools/$id/fantasy/': typeof AuthenticatedPoolsIdFantasyIndexRoute
+  '/_authenticated/pools/$id/predict/': typeof AuthenticatedPoolsIdPredictIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -303,6 +321,8 @@ export interface FileRouteTypes {
     | '/pools/$id/predict/$matchId'
     | '/pools/$id/prizes/edit'
     | '/pools/$id/props/edit'
+    | '/pools/$id/fantasy/'
+    | '/pools/$id/predict/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -316,10 +336,8 @@ export interface FileRouteTypes {
     | '/pools/$id/auto-predict'
     | '/pools/$id/bracket'
     | '/pools/$id/chat'
-    | '/pools/$id/fantasy'
     | '/pools/$id/mural'
     | '/pools/$id/pickem'
-    | '/pools/$id/predict'
     | '/pools/$id/props'
     | '/pools/$id/survivor'
     | '/pools/$id/winners'
@@ -330,6 +348,8 @@ export interface FileRouteTypes {
     | '/pools/$id/predict/$matchId'
     | '/pools/$id/prizes/edit'
     | '/pools/$id/props/edit'
+    | '/pools/$id/fantasy'
+    | '/pools/$id/predict'
   id:
     | '__root__'
     | '/_authenticated'
@@ -359,6 +379,8 @@ export interface FileRouteTypes {
     | '/_authenticated/pools/$id/predict/$matchId'
     | '/_authenticated/pools/$id/prizes/edit'
     | '/_authenticated/pools/$id/props/edit'
+    | '/_authenticated/pools/$id/fantasy/'
+    | '/_authenticated/pools/$id/predict/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -523,6 +545,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPoolsIdAutoPredictRouteImport
       parentRoute: typeof AuthenticatedPoolsIdRoute
     }
+    '/_authenticated/pools/$id/predict/': {
+      id: '/_authenticated/pools/$id/predict/'
+      path: '/'
+      fullPath: '/pools/$id/predict/'
+      preLoaderRoute: typeof AuthenticatedPoolsIdPredictIndexRouteImport
+      parentRoute: typeof AuthenticatedPoolsIdPredictRoute
+    }
+    '/_authenticated/pools/$id/fantasy/': {
+      id: '/_authenticated/pools/$id/fantasy/'
+      path: '/'
+      fullPath: '/pools/$id/fantasy/'
+      preLoaderRoute: typeof AuthenticatedPoolsIdFantasyIndexRouteImport
+      parentRoute: typeof AuthenticatedPoolsIdFantasyRoute
+    }
     '/_authenticated/pools/$id/props/edit': {
       id: '/_authenticated/pools/$id/props/edit'
       path: '/edit'
@@ -575,6 +611,7 @@ const AuthenticatedProfileRouteWithChildren =
 interface AuthenticatedPoolsIdFantasyRouteChildren {
   AuthenticatedPoolsIdFantasyBuildRoute: typeof AuthenticatedPoolsIdFantasyBuildRoute
   AuthenticatedPoolsIdFantasyRankingRoute: typeof AuthenticatedPoolsIdFantasyRankingRoute
+  AuthenticatedPoolsIdFantasyIndexRoute: typeof AuthenticatedPoolsIdFantasyIndexRoute
 }
 
 const AuthenticatedPoolsIdFantasyRouteChildren: AuthenticatedPoolsIdFantasyRouteChildren =
@@ -583,6 +620,8 @@ const AuthenticatedPoolsIdFantasyRouteChildren: AuthenticatedPoolsIdFantasyRoute
       AuthenticatedPoolsIdFantasyBuildRoute,
     AuthenticatedPoolsIdFantasyRankingRoute:
       AuthenticatedPoolsIdFantasyRankingRoute,
+    AuthenticatedPoolsIdFantasyIndexRoute:
+      AuthenticatedPoolsIdFantasyIndexRoute,
   }
 
 const AuthenticatedPoolsIdFantasyRouteWithChildren =
@@ -592,12 +631,15 @@ const AuthenticatedPoolsIdFantasyRouteWithChildren =
 
 interface AuthenticatedPoolsIdPredictRouteChildren {
   AuthenticatedPoolsIdPredictMatchIdRoute: typeof AuthenticatedPoolsIdPredictMatchIdRoute
+  AuthenticatedPoolsIdPredictIndexRoute: typeof AuthenticatedPoolsIdPredictIndexRoute
 }
 
 const AuthenticatedPoolsIdPredictRouteChildren: AuthenticatedPoolsIdPredictRouteChildren =
   {
     AuthenticatedPoolsIdPredictMatchIdRoute:
       AuthenticatedPoolsIdPredictMatchIdRoute,
+    AuthenticatedPoolsIdPredictIndexRoute:
+      AuthenticatedPoolsIdPredictIndexRoute,
   }
 
 const AuthenticatedPoolsIdPredictRouteWithChildren =
@@ -686,3 +728,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
