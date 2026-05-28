@@ -1101,6 +1101,8 @@ export const getPlayerMatchStats = createServerFn({ method: "GET" })
       .eq("match_id", matchId);
     
     if (error) throw error;
+    return data;
+  });
 
 export const deletePool = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
