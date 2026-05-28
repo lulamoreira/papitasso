@@ -18,6 +18,7 @@ import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
 import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated.profile.index'
 import { Route as AuthenticatedPoolsIndexRouteImport } from './routes/_authenticated.pools.index'
+import { Route as AuthenticatedQuizRankingRouteImport } from './routes/_authenticated.quiz.ranking'
 import { Route as AuthenticatedPoolsNewRouteImport } from './routes/_authenticated.pools.new'
 import { Route as AuthenticatedPoolsIdRouteImport } from './routes/_authenticated.pools.$id'
 import { Route as AuthenticatedPoolsIdIndexRouteImport } from './routes/_authenticated.pools.$id.index'
@@ -86,6 +87,12 @@ const AuthenticatedPoolsIndexRoute = AuthenticatedPoolsIndexRouteImport.update({
   path: '/pools/',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedQuizRankingRoute =
+  AuthenticatedQuizRankingRouteImport.update({
+    id: '/ranking',
+    path: '/ranking',
+    getParentRoute: () => AuthenticatedQuizRoute,
+  } as any)
 const AuthenticatedPoolsNewRoute = AuthenticatedPoolsNewRouteImport.update({
   id: '/pools/new',
   path: '/pools/new',
@@ -222,10 +229,11 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
   '/profile': typeof AuthenticatedProfileRouteWithChildren
-  '/quiz': typeof AuthenticatedQuizRoute
+  '/quiz': typeof AuthenticatedQuizRouteWithChildren
   '/join/$code': typeof JoinCodeRoute
   '/pools/$id': typeof AuthenticatedPoolsIdRouteWithChildren
   '/pools/new': typeof AuthenticatedPoolsNewRoute
+  '/quiz/ranking': typeof AuthenticatedQuizRankingRoute
   '/pools/': typeof AuthenticatedPoolsIndexRoute
   '/profile/': typeof AuthenticatedProfileIndexRoute
   '/pools/$id/auto-predict': typeof AuthenticatedPoolsIdAutoPredictRoute
@@ -252,10 +260,11 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/quiz': typeof AuthenticatedQuizRoute
+  '/quiz': typeof AuthenticatedQuizRouteWithChildren
   '/join/$code': typeof JoinCodeRoute
   '/': typeof AuthenticatedIndexRoute
   '/pools/new': typeof AuthenticatedPoolsNewRoute
+  '/quiz/ranking': typeof AuthenticatedQuizRankingRoute
   '/pools': typeof AuthenticatedPoolsIndexRoute
   '/profile': typeof AuthenticatedProfileIndexRoute
   '/pools/$id/auto-predict': typeof AuthenticatedPoolsIdAutoPredictRoute
@@ -282,11 +291,12 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_authenticated/onboarding': typeof AuthenticatedOnboardingRoute
   '/_authenticated/profile': typeof AuthenticatedProfileRouteWithChildren
-  '/_authenticated/quiz': typeof AuthenticatedQuizRoute
+  '/_authenticated/quiz': typeof AuthenticatedQuizRouteWithChildren
   '/join/$code': typeof JoinCodeRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
   '/_authenticated/pools/$id': typeof AuthenticatedPoolsIdRouteWithChildren
   '/_authenticated/pools/new': typeof AuthenticatedPoolsNewRoute
+  '/_authenticated/quiz/ranking': typeof AuthenticatedQuizRankingRoute
   '/_authenticated/pools/': typeof AuthenticatedPoolsIndexRoute
   '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/pools/$id/auto-predict': typeof AuthenticatedPoolsIdAutoPredictRoute
@@ -321,6 +331,7 @@ export interface FileRouteTypes {
     | '/join/$code'
     | '/pools/$id'
     | '/pools/new'
+    | '/quiz/ranking'
     | '/pools/'
     | '/profile/'
     | '/pools/$id/auto-predict'
@@ -351,6 +362,7 @@ export interface FileRouteTypes {
     | '/join/$code'
     | '/'
     | '/pools/new'
+    | '/quiz/ranking'
     | '/pools'
     | '/profile'
     | '/pools/$id/auto-predict'
@@ -381,6 +393,7 @@ export interface FileRouteTypes {
     | '/_authenticated/'
     | '/_authenticated/pools/$id'
     | '/_authenticated/pools/new'
+    | '/_authenticated/quiz/ranking'
     | '/_authenticated/pools/'
     | '/_authenticated/profile/'
     | '/_authenticated/pools/$id/auto-predict'
@@ -475,6 +488,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/pools/'
       preLoaderRoute: typeof AuthenticatedPoolsIndexRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/quiz/ranking': {
+      id: '/_authenticated/quiz/ranking'
+      path: '/ranking'
+      fullPath: '/quiz/ranking'
+      preLoaderRoute: typeof AuthenticatedQuizRankingRouteImport
+      parentRoute: typeof AuthenticatedQuizRoute
     }
     '/_authenticated/pools/new': {
       id: '/_authenticated/pools/new'
@@ -646,6 +666,17 @@ const AuthenticatedProfileRouteChildren: AuthenticatedProfileRouteChildren = {
 const AuthenticatedProfileRouteWithChildren =
   AuthenticatedProfileRoute._addFileChildren(AuthenticatedProfileRouteChildren)
 
+interface AuthenticatedQuizRouteChildren {
+  AuthenticatedQuizRankingRoute: typeof AuthenticatedQuizRankingRoute
+}
+
+const AuthenticatedQuizRouteChildren: AuthenticatedQuizRouteChildren = {
+  AuthenticatedQuizRankingRoute: AuthenticatedQuizRankingRoute,
+}
+
+const AuthenticatedQuizRouteWithChildren =
+  AuthenticatedQuizRoute._addFileChildren(AuthenticatedQuizRouteChildren)
+
 interface AuthenticatedPoolsIdFantasyRouteChildren {
   AuthenticatedPoolsIdFantasyBuildRoute: typeof AuthenticatedPoolsIdFantasyBuildRoute
   AuthenticatedPoolsIdFantasyRankingRoute: typeof AuthenticatedPoolsIdFantasyRankingRoute
@@ -739,7 +770,7 @@ const AuthenticatedPoolsIdRouteWithChildren =
 interface AuthenticatedRouteChildren {
   AuthenticatedOnboardingRoute: typeof AuthenticatedOnboardingRoute
   AuthenticatedProfileRoute: typeof AuthenticatedProfileRouteWithChildren
-  AuthenticatedQuizRoute: typeof AuthenticatedQuizRoute
+  AuthenticatedQuizRoute: typeof AuthenticatedQuizRouteWithChildren
   AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
   AuthenticatedPoolsIdRoute: typeof AuthenticatedPoolsIdRouteWithChildren
   AuthenticatedPoolsNewRoute: typeof AuthenticatedPoolsNewRoute
@@ -749,7 +780,7 @@ interface AuthenticatedRouteChildren {
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedOnboardingRoute: AuthenticatedOnboardingRoute,
   AuthenticatedProfileRoute: AuthenticatedProfileRouteWithChildren,
-  AuthenticatedQuizRoute: AuthenticatedQuizRoute,
+  AuthenticatedQuizRoute: AuthenticatedQuizRouteWithChildren,
   AuthenticatedIndexRoute: AuthenticatedIndexRoute,
   AuthenticatedPoolsIdRoute: AuthenticatedPoolsIdRouteWithChildren,
   AuthenticatedPoolsNewRoute: AuthenticatedPoolsNewRoute,
