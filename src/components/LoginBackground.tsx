@@ -49,26 +49,27 @@ export function LoginBackground() {
   }, []);
 
   return (
-    <div className="fixed inset-0 z-0 overflow-hidden bg-black opacity-40">
-      <div className="grid h-full w-full grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-1">
+    <div className="fixed inset-0 z-0 overflow-hidden bg-black">
+      <div className="grid h-full w-full grid-cols-4 md:grid-cols-8 lg:grid-cols-12 gap-0.5">
         {images.map((img, idx) => (
-          <div key={idx} className="relative aspect-square overflow-hidden bg-muted">
+          <div key={idx} className="relative aspect-square overflow-hidden bg-slate-900">
             <AnimatePresence mode="popLayout">
               <motion.img
-                key={img}
+                key={img + idx}
                 src={img}
-                alt="Soccer background"
-                initial={{ opacity: 0, scale: 1.1 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 1 }}
-                className="absolute inset-0 h-full w-full object-cover grayscale-[20%]"
+                alt=""
+                initial={{ opacity: 0, filter: "brightness(0.5) scale(1.2)" }}
+                animate={{ opacity: 0.6, filter: "brightness(0.8) scale(1)" }}
+                exit={{ opacity: 0, filter: "brightness(0.5) scale(0.8)" }}
+                transition={{ duration: 1.5, ease: "easeInOut" }}
+                className="absolute inset-0 h-full w-full object-cover"
               />
             </AnimatePresence>
           </div>
         ))}
       </div>
-      <div className="absolute inset-0 bg-gradient-to-br from-background/80 via-background/40 to-background/80" />
+      <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-transparent to-black/40" />
+      <div className="absolute inset-0 backdrop-grayscale-[30%]" />
     </div>
   );
 }
