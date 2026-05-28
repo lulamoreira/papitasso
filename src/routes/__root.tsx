@@ -86,55 +86,40 @@ function RootComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: any; reset: () => void }) {
-  const router = useRouter();
-
-  console.error("Root Error:", error);
-
-  // Handle Unauthorized errors by redirecting to login
-  if (
-    error?.message?.includes('Unauthorized') || 
-    error?.message?.includes('No authorization header') ||
-    error?.status === 401
-  ) {
-    if (typeof window !== 'undefined') {
-      window.location.href = '/login';
-    }
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-pulse flex flex-col items-center gap-2">
-          <div className="h-8 w-8 bg-primary rounded-full" />
-          <p className="text-sm font-medium text-muted-foreground italic">Redirecionando...</p>
-        </div>
-      </div>
-    );
+function ErrorComponent({ error }: { error: any; reset: () => void }) {
+  const message = error?.message || 'Erro desconhecido';
+  const stack = error?.stack || 'Stack indisponível';
+  const cause = (error as any)?.cause ? JSON.stringify((error as any).cause, null, 2) : null;
+  
+  if (message.includes('Unauthorized') || message.includes('No authorization header')) {
+    if (typeof window !== 'undefined') window.location.href = '/login';
+    return <div>Redirecionando...</div>;
   }
-
+  
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-6 bg-background">
-      <div className="text-7xl">⚽</div>
-      <div className="space-y-2 max-w-md">
-        <h1 className="text-3xl font-black text-primary uppercase italic tracking-tighter">Ops, o lance foi para o VAR</h1>
-        <p className="text-muted-foreground">{error?.message || "Não conseguimos carregar esta tela agora."}</p>
-        {error && (
-          <pre className="mt-4 p-2 bg-muted rounded text-[10px] text-muted-foreground text-left overflow-auto max-h-40 whitespace-pre-wrap">
-            {JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}
-          </pre>
-        )}
-      </div>
-      <div className="flex flex-col sm:flex-row gap-3">
-        <Button
-          className="font-bold"
-          onClick={() => {
-            router.invalidate();
-            reset();
-          }}
+    <div style={{padding: 20}}>
+      <h1>OPS, O LANCE FOI PARA O VAR</h1>
+      <p>Não conseguimos carregar esta tela agora.</p>
+      <details open style={{marginTop: 20, background: '#fee', padding: 10, borderRadius: 4}}>
+        <summary><strong>Detalhes do erro (debug)</strong></summary>
+        <p><strong>Mensagem:</strong> {message}</p>
+        {cause && <><strong>Cause:</strong><pre>{cause}</pre></>}
+        <strong>Stack:</strong>
+        <pre style={{fontSize: 11, overflow: 'auto', maxHeight: 400}}>{stack}</pre>
+      </details>
+      <div style={{marginTop: 20, display: 'flex', gap: 10}}>
+        <button 
+          style={{padding: '8px 16px', cursor: 'pointer'}} 
+          onClick={() => window.location.reload()}
         >
           Tentar novamente
-        </Button>
-        <Button variant="outline" onClick={() => router.navigate({ to: "/" })}>
-          Voltar para a Home
-        </Button>
+        </button>
+        <button 
+          style={{padding: '8px 16px', cursor: 'pointer'}} 
+          onClick={() => window.location.href = '/'}
+        >
+          Voltar para Home
+        </button>
       </div>
     </div>
   );
