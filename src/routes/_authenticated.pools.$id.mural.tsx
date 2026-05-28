@@ -186,12 +186,12 @@ function MuralComponent() {
             <Megaphone className="h-20 w-20 mx-auto mb-4" />
             <p className="font-black text-xl">O mural está vazio...</p>
             <p className="text-sm">Seja o primeiro a mandar um salve!</p>
-          </div>
-        )}
+        </div>
       </main>
     </div>
   );
 }
+
 
 
 
