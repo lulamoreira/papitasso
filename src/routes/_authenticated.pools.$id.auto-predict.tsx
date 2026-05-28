@@ -17,6 +17,7 @@ export const Route = createFileRoute("/_authenticated/pools/$id/auto-predict")({
 function AutoPredictPage() {
   const { id } = Route.useParams();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   
   const { data: pool } = useSuspenseQuery({
     queryKey: ["pool", id],
