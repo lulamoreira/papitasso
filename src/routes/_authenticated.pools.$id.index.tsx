@@ -82,6 +82,70 @@ function PoolDetailComponent() {
   const predictedProps = predictionsProps?.length || 0;
   const propCompletionPercent = totalProps > 0 ? Math.round((predictedProps / totalProps) * 100) : 0;
 
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isTransferDialogOpen, setIsTransferDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isLeaveDialogOpen, setIsLeaveDialogOpen] = useState(false);
+  const [confirmDeleteName, setConfirmDeleteName] = useState("");
+  const [selectedNewOwner, setSelectedNewOwner] = useState<any>(null);
+  const [isActionLoading, setIsActionLoading] = useState(false);
+  const [members, setMembers] = useState<any[]>([]);
+
+  const fetchMembers = async () => {
+    try {
+      const data = await getPoolMembers({ data: id } as any);
+      setMembers(data || []);
+    } catch (error) {
+      console.error("Error fetching members:", error);
+    }
+  };
+
+  const handleDeletePool = async () => {
+    if (confirmDeleteName !== pool?.name) {
+      toast.error("O nome do bolão não confere");
+      return;
+    }
+    setIsActionLoading(true);
+    try {
+      await deletePool({ data: id } as any);
+      toast.success("Bolão apagado com sucesso");
+      navigate({ to: "/pools" });
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao apagar bolão");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handleTransferOwnership = async () => {
+    if (!selectedNewOwner) return;
+    setIsActionLoading(true);
+    try {
+      await transferOwnership({ data: { poolId: id, newOwnerId: selectedNewOwner.user_id } } as any);
+      toast.success(`Propriedade transferida para ${selectedNewOwner.profile?.name}`);
+      queryClient.invalidateQueries({ queryKey: ["pool", id] });
+      setIsTransferDialogOpen(false);
+      setIsSettingsOpen(false);
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao transferir propriedade");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
+  const handleLeavePool = async () => {
+    setIsActionLoading(true);
+    try {
+      await leavePool({ data: id } as any);
+      toast.success("Você saiu do bolão");
+      navigate({ to: "/pools" });
+    } catch (error: any) {
+      toast.error(error.message || "Erro ao sair do bolão");
+    } finally {
+      setIsActionLoading(false);
+    }
+  };
+
   if (!pool) {
     return (
       <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 text-center space-y-4">
