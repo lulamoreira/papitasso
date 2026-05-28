@@ -17,24 +17,25 @@ import { ptBR } from "date-fns/locale";
 export const Route = createFileRoute("/_authenticated/pools/$id/")({
   loader: async ({ params, context }) => {
     await Promise.all([
-      context.queryClient.ensureQueryData({ queryKey: ["pool", params.id], queryFn: () => getPoolById({ data: params.id } as any) }),
-      context.queryClient.ensureQueryData({ queryKey: ["leaderboard", params.id], queryFn: () => getLeaderboard({ data: params.id } as any) }),
-      context.queryClient.ensureQueryData({ queryKey: ["poolMatches", params.id], queryFn: () => getMatchesForPool({ data: params.id } as any) }),
-      context.queryClient.ensureQueryData({ queryKey: ["predictions", params.id], queryFn: () => getPredictions({ data: params.id } as any) }),
+      context.queryClient.ensureQueryData({ queryKey: ["pool", params.id], queryFn: () => getPoolById({ data: params.id }) }),
+      context.queryClient.ensureQueryData({ queryKey: ["leaderboard", params.id], queryFn: () => getLeaderboard({ data: params.id }) }),
+      context.queryClient.ensureQueryData({ queryKey: ["poolMatches", params.id], queryFn: () => getMatchesForPool({ data: params.id }) }),
+      context.queryClient.ensureQueryData({ queryKey: ["predictions", params.id], queryFn: () => getPredictions({ data: params.id }) }),
       context.queryClient.ensureQueryData({ queryKey: ["profile"], queryFn: () => getProfile() }),
-      context.queryClient.ensureQueryData({ queryKey: ["prizes", params.id], queryFn: () => getPrizes({ data: params.id } as any) }),
-      context.queryClient.ensureQueryData({ queryKey: ["winners", params.id], queryFn: () => getPrizeWinners({ data: params.id } as any) }),
+      context.queryClient.ensureQueryData({ queryKey: ["prizes", params.id], queryFn: () => getPrizes({ data: params.id }) }),
+      context.queryClient.ensureQueryData({ queryKey: ["winners", params.id], queryFn: () => getPrizeWinners({ data: params.id }) }),
       context.queryClient.ensureQueryData({ queryKey: ["props"], queryFn: () => getProps() }),
-      context.queryClient.ensureQueryData({ queryKey: ["predictionsProps", params.id], queryFn: () => getPredictionsProps({ data: params.id } as any) }),
+      context.queryClient.ensureQueryData({ queryKey: ["predictionsProps", params.id], queryFn: () => getPredictionsProps({ data: params.id }) }),
     ]);
   },
   component: PoolDetailComponent,
 });
 
 function PoolDetailComponent() {
-  const { id } = useParams({ from: "/_authenticated/pools/$id/" });
+  const { id } = Route.useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+
 
   const { data: pool } = useSuspenseQuery({ queryKey: ["pool", id], queryFn: () => getPoolById({ data: id } as any) });
   const { data: leaderboard } = useSuspenseQuery({ queryKey: ["leaderboard", id], queryFn: () => getLeaderboard({ data: id } as any) });
