@@ -871,7 +871,7 @@ export const getMuralPosts = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("mural_posts")
-      .select("*, user:profiles(*), target_user:profiles(*)")
+      .select("*, user:profiles!mural_posts_user_id_fkey(*), target_user:profiles!mural_posts_target_user_id_fkey(*)")
       .eq("pool_id", poolId)
       .order("created_at", { ascending: false });
     
