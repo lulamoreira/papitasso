@@ -819,19 +819,22 @@ export const getUserStats = createServerFn({ method: "GET" })
     
     const { data: predictions, error: predErr } = await supabase
       .from("predictions_exact")
-      .select("points")
+      .select("points_awarded")
       .eq("user_id", userId);
     
     if (predErr) throw predErr;
 
     const total = predictions.length;
-    const exactScores = predictions.filter((p: any) => p.points === 3).length;
-    const hits = predictions.filter((p: any) => p.points && p.points > 0).length;
+    // Placar exato vale 10 pts (scoring_config.exact padrão)
+    const exactScores = predictions.filter((p: any) => p.points_awarded === 10).length;
+    const hits = predictions.filter((p: any) => p.points_awarded && p.points_awarded > 0).length;
+    // Considera só jogos já pontuados pra taxa de acerto
+    const scored = predictions.filter((p: any) => p.points_awarded !== null).length;
     
     return {
       total_predictions: total,
       exact_scores: exactScores,
-      accuracy_rate: total > 0 ? Math.round((hits / total) * 100) : 0,
+      accuracy_rate: scored > 0 ? Math.round((hits / scored) * 100) : 0,
       current_streak: 0, 
       best_streak: 0 
     };
