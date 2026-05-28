@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { verifyCronSecret } from '../_shared/auth.ts'
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
@@ -16,9 +17,9 @@ serve(async (req) => {
   }
 
   try {
+    verifyCronSecret(req);
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
 
-    // Check if quiz already exists for today
     const today = new Date().toISOString().split('T')[0]
     const { data: existing } = await supabase
       .from('daily_quiz')

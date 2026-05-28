@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { verifyCronSecret } from '../_shared/auth.ts'
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
@@ -7,7 +8,8 @@ const supabase = createClient(
 
 Deno.serve(async (req) => {
   try {
-    // 1. Fetch pools that have been active recently
+    verifyCronSecret(req);
+
     const { data: pools, error: poolsError } = await supabase
       .from('pools')
       .select('id, name')
@@ -17,10 +19,7 @@ Deno.serve(async (req) => {
     const postsCreated = []
 
     for (const pool of pools) {
-      // Logic for different zoeiras
-      
-      // A. Exact scores today
-      const { data: exactPredictions, error: predError } = await supabase
+      const { data: exactPredictions } = await supabase
         .from('predictions_exact')
         .select('*, user:profiles(name)')
         .eq('pool_id', pool.id)
@@ -28,10 +27,8 @@ Deno.serve(async (req) => {
         .gte('updated_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
       
       if (exactPredictions && exactPredictions.length > 0) {
-        // Filter for truly exact scores (max points)
-        // Note: score config varies, but we assume > 0 points means something happened
         for (const pred of exactPredictions) {
-          if (pred.points_awarded >= 10) { // Assuming 10+ is an exact score
+          if (pred.points_awarded >= 10) {
              const content = await generateZoeira(`${pred.user.name} acertou um placar exato e está se sentindo o próprio Profeta! 🔮`)
              await createMuralPost(pool.id, content, 'auto_zoeira', null, pred.user_id)
              postsCreated.push({ pool: pool.name, user: pred.user.name, type: 'exact' })
@@ -39,8 +36,7 @@ Deno.serve(async (req) => {
         }
       }
 
-      // B. Leaderboard changes
-      const { data: leaderboard, error: lbError } = await supabase
+      const { data: leaderboard } = await supabase
         .from('leaderboard_view')
         .select('*, user:profiles(name)')
         .eq('pool_id', pool.id)

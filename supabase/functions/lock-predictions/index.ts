@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { verifyCronSecret } from '../_shared/auth.ts'
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
@@ -7,13 +8,13 @@ const supabase = createClient(
 
 Deno.serve(async (req) => {
   try {
-    // 1. Get matches that just started (kickoff_at <= now) and aren't locked yet
-    // In a real scenario, we might want to lock a few minutes before kickoff
+    verifyCronSecret(req);
+    
     const { data: matches, error: matchesError } = await supabase
       .from('matches')
       .select('id')
       .lte('kickoff_at', new Date().toISOString())
-      .is('status', 'scheduled') // Only lock scheduled matches
+      .is('status', 'scheduled')
 
     if (matchesError) throw matchesError
 
@@ -23,7 +24,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // 2. Lock predictions for each match
     const lockedMatches = []
     for (const match of matches) {
       const { error: lockError } = await supabase.rpc('lock_predictions_for_match', { 
