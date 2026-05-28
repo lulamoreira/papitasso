@@ -77,7 +77,7 @@ function PredictListComponent() {
             >
               <Card 
                 className={`overflow-hidden transition-all relative ${locked ? 'opacity-70' : 'cursor-pointer hover:border-primary border-2 border-transparent shadow-sm'}`}
-                onClick={() => !locked && navigate({ 
+                onClick={() => !locked && match.home_team && match.away_team && navigate({ 
                   to: "/pools/$id/predict/$matchId", 
                   params: { id, matchId: match.id } 
                 })}
@@ -101,41 +101,59 @@ function PredictListComponent() {
                   </div>
 
                   <div className="grid grid-cols-7 items-center gap-2">
-                    <div className="col-span-3 flex flex-col items-center gap-2">
-                      <div className="relative">
-                        <img 
-                          src={match.home_team.flag_url} 
-                          alt={match.home_team.name} 
-                          className="h-10 w-14 object-cover rounded shadow-sm border border-muted" 
-                        />
-                        <div className="absolute -inset-0.5 rounded border border-white/20 pointer-events-none" />
-                      </div>
-                      <span className="text-sm font-bold text-center line-clamp-1">{match.home_team.name}</span>
-                    </div>
-
-                    <div className="col-span-1 flex flex-col items-center justify-center">
-                      {isFinished || (locked && match.home_score !== null) ? (
-                        <div className="text-lg font-black bg-muted/50 rounded-lg px-2.5 py-1 tabular-nums border">
-                          {match.home_score ?? 0}
-                          <span className="mx-1 text-muted-foreground font-medium">×</span>
-                          {match.away_score ?? 0}
+                    {!match.home_team || !match.away_team ? (
+                      <div className="col-span-7 text-center py-4">
+                        <div className="text-sm font-black text-muted-foreground tracking-tight">
+                          {match.placeholder_label || 'A definir'}
                         </div>
-                      ) : (
-                        <div className="text-xs font-black text-primary/40 italic tracking-tighter">VS</div>
-                      )}
-                    </div>
-
-                    <div className="col-span-3 flex flex-col items-center gap-2">
-                      <div className="relative">
-                        <img 
-                          src={match.away_team.flag_url} 
-                          alt={match.away_team.name} 
-                          className="h-10 w-14 object-cover rounded shadow-sm border border-muted" 
-                        />
-                        <div className="absolute -inset-0.5 rounded border border-white/20 pointer-events-none" />
+                        <div className="text-[10px] text-muted-foreground/60 uppercase mt-1">
+                          {match.phase === 'round_of_32' ? 'Oitavas (32)' :
+                           match.phase === 'round_of_16' ? 'Oitavas' :
+                           match.phase === 'quarter' ? 'Quartas' :
+                           match.phase === 'semi' ? 'Semifinal' :
+                           match.phase === 'third' ? 'Disputa 3º lugar' :
+                           match.phase === 'final' ? 'FINAL' : 'Mata-mata'}
+                        </div>
                       </div>
-                      <span className="text-sm font-bold text-center line-clamp-1">{match.away_team.name}</span>
-                    </div>
+                    ) : (
+                      <>
+                        <div className="col-span-3 flex flex-col items-center gap-2">
+                          <div className="relative">
+                            <img 
+                              src={match.home_team?.flag_url} 
+                              alt={match.home_team?.name} 
+                              className="h-10 w-14 object-cover rounded shadow-sm border border-muted" 
+                            />
+                            <div className="absolute -inset-0.5 rounded border border-white/20 pointer-events-none" />
+                          </div>
+                          <span className="text-sm font-bold text-center line-clamp-1">{match.home_team?.name}</span>
+                        </div>
+
+                        <div className="col-span-1 flex flex-col items-center justify-center">
+                          {isFinished || (locked && match.home_score !== null) ? (
+                            <div className="text-lg font-black bg-muted/50 rounded-lg px-2.5 py-1 tabular-nums border">
+                              {match.home_score ?? 0}
+                              <span className="mx-1 text-muted-foreground font-medium">×</span>
+                              {match.away_score ?? 0}
+                            </div>
+                          ) : (
+                            <div className="text-xs font-black text-primary/40 italic tracking-tighter">VS</div>
+                          )}
+                        </div>
+
+                        <div className="col-span-3 flex flex-col items-center gap-2">
+                          <div className="relative">
+                            <img 
+                              src={match.away_team?.flag_url} 
+                              alt={match.away_team?.name} 
+                              className="h-10 w-14 object-cover rounded shadow-sm border border-muted" 
+                            />
+                            <div className="absolute -inset-0.5 rounded border border-white/20 pointer-events-none" />
+                          </div>
+                          <span className="text-sm font-bold text-center line-clamp-1">{match.away_team?.name}</span>
+                        </div>
+                      </>
+                    )}
                   </div>
 
                   {prediction && (

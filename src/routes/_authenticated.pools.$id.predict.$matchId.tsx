@@ -207,93 +207,107 @@ function PredictionDetailComponent() {
         </div>
 
         <div className="w-full max-w-sm flex items-center justify-between gap-6">
-          <div className="flex flex-col items-center gap-4 flex-1">
-            <div className="h-20 w-28 bg-muted rounded-lg overflow-hidden shadow-md">
-              <img src={match.home_team.flag_url} alt={match.home_team.name} className="h-full w-full object-cover" />
-            </div>
-            <span className="text-center font-black text-sm uppercase tracking-tighter">{match.home_team.name}</span>
-            <div className="flex items-center gap-3">
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="h-10 w-10 rounded-full"
-                onClick={() => setHomeScore((s: number) => Math.max(0, s - 1))}
-                disabled={isLocked}
-              >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <div className="relative flex h-20 items-center justify-center">
-                <AnimatePresence mode="popLayout">
-                  <motion.span 
-                    key={homeScore}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -20, opacity: 0 }}
-                    className="text-5xl font-black tabular-nums absolute"
-                  >
-                    {homeScore}
-                  </motion.span>
-                </AnimatePresence>
+          {!match.home_team || !match.away_team ? (
+            <div className="flex-1 text-center py-12 space-y-4">
+              <div className="text-3xl font-black text-primary tracking-tight">
+                {match.placeholder_label || 'A definir'}
               </div>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="h-10 w-10 rounded-full"
-                onClick={() => setHomeScore((s: number) => s + 1)}
-                disabled={isLocked}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-
-          <div className="text-3xl font-black text-muted-foreground/30">VS</div>
-
-          <div className="flex flex-col items-center gap-4 flex-1">
-            <div className="h-20 w-28 bg-muted rounded-lg overflow-hidden shadow-md">
-              <img src={match.away_team.flag_url} alt={match.away_team.name} className="h-full w-full object-cover" />
-            </div>
-            <span className="text-center font-black text-sm uppercase tracking-tighter">{match.away_team.name}</span>
-            <div className="flex items-center gap-3">
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="h-10 w-10 rounded-full"
-                onClick={() => setAwayScore((s: number) => Math.max(0, s - 1))}
-                disabled={isLocked}
-              >
-                <Minus className="h-4 w-4" />
-              </Button>
-              <div className="relative flex h-20 items-center justify-center">
-                <AnimatePresence mode="popLayout">
-                  <motion.span 
-                    key={awayScore}
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: -20, opacity: 0 }}
-                    className="text-5xl font-black tabular-nums absolute"
-                  >
-                    {awayScore}
-                  </motion.span>
-                </AnimatePresence>
+              <div className="bg-amber-100 text-amber-700 p-4 rounded-xl flex flex-col items-center gap-2 border border-amber-200">
+                <Lock className="w-5 h-5" />
+                <p className="text-sm font-bold">Palpites liberados quando os times forem definidos</p>
               </div>
-              <Button 
-                variant="outline" 
-                size="icon" 
-                className="h-10 w-10 rounded-full"
-                onClick={() => setAwayScore((s: number) => s + 1)}
-                disabled={isLocked}
-              >
-                <Plus className="h-4 w-4" />
-              </Button>
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="flex flex-col items-center gap-4 flex-1">
+                <div className="h-20 w-28 bg-muted rounded-lg overflow-hidden shadow-md">
+                  <img src={match.home_team?.flag_url} alt={match.home_team?.name} className="h-full w-full object-cover" />
+                </div>
+                <span className="text-center font-black text-sm uppercase tracking-tighter">{match.home_team?.name}</span>
+                <div className="flex items-center gap-3">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="h-10 w-10 rounded-full"
+                    onClick={() => setHomeScore((s: number) => Math.max(0, s - 1))}
+                    disabled={isLocked}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <div className="relative flex h-20 items-center justify-center">
+                    <AnimatePresence mode="popLayout">
+                      <motion.span 
+                        key={homeScore}
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -20, opacity: 0 }}
+                        className="text-5xl font-black tabular-nums absolute"
+                      >
+                        {homeScore}
+                      </motion.span>
+                    </AnimatePresence>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="h-10 w-10 rounded-full"
+                    onClick={() => setHomeScore((s: number) => s + 1)}
+                    disabled={isLocked}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+
+              <div className="text-3xl font-black text-muted-foreground/30">VS</div>
+
+              <div className="flex flex-col items-center gap-4 flex-1">
+                <div className="h-20 w-28 bg-muted rounded-lg overflow-hidden shadow-md">
+                  <img src={match.away_team?.flag_url} alt={match.away_team?.name} className="h-full w-full object-cover" />
+                </div>
+                <span className="text-center font-black text-sm uppercase tracking-tighter">{match.away_team?.name}</span>
+                <div className="flex items-center gap-3">
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="h-10 w-10 rounded-full"
+                    onClick={() => setAwayScore((s: number) => Math.max(0, s - 1))}
+                    disabled={isLocked}
+                  >
+                    <Minus className="h-4 w-4" />
+                  </Button>
+                  <div className="relative flex h-20 items-center justify-center">
+                    <AnimatePresence mode="popLayout">
+                      <motion.span 
+                        key={awayScore}
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: -20, opacity: 0 }}
+                        className="text-5xl font-black tabular-nums absolute"
+                      >
+                        {awayScore}
+                      </motion.span>
+                    </AnimatePresence>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    size="icon" 
+                    className="h-10 w-10 rounded-full"
+                    onClick={() => setAwayScore((s: number) => s + 1)}
+                    disabled={isLocked}
+                  >
+                    <Plus className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
         </div>
 
         <div className="w-full max-w-sm pt-8">
           <Button 
             className="w-full h-14 text-lg font-bold gap-2 shadow-xl shadow-primary/20"
-            disabled={isLocked || upsertMutation.isPending}
+            disabled={isLocked || upsertMutation.isPending || !match.home_team || !match.away_team}
             onClick={() => upsertMutation.mutate()}
           >
             {upsertMutation.isPending ? "Salvando..." : (
@@ -317,7 +331,7 @@ function PredictionDetailComponent() {
           <DrawerContent className="h-[80vh]">
              <div className="container max-w-2xl mx-auto h-full overflow-hidden flex flex-col">
                <DrawerHeader>
-                 <DrawerTitle>Resenha: {match.home_team.name} x {match.away_team.name}</DrawerTitle>
+                 <DrawerTitle>Resenha: {match.home_team?.name || 'A definir'} x {match.away_team?.name || 'A definir'}</DrawerTitle>
                </DrawerHeader>
                <div className="flex-1 overflow-hidden">
                  <PoolChat poolId={id} matchId={matchId} />
