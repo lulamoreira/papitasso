@@ -17,19 +17,20 @@ import { ptBR } from "date-fns/locale";
 export const Route = createFileRoute("/_authenticated/pools/$id/")({
   loader: async ({ params, context }) => {
     await Promise.all([
-      context.queryClient.ensureQueryData({ queryKey: ["pool", params.id], queryFn: () => getPoolById({ data: params.id }) }),
-      context.queryClient.ensureQueryData({ queryKey: ["leaderboard", params.id], queryFn: () => getLeaderboard({ data: params.id }) }),
-      context.queryClient.ensureQueryData({ queryKey: ["poolMatches", params.id], queryFn: () => getMatchesForPool({ data: params.id }) }),
-      context.queryClient.ensureQueryData({ queryKey: ["predictions", params.id], queryFn: () => getPredictions({ data: params.id }) }),
+      context.queryClient.ensureQueryData({ queryKey: ["pool", params.id], queryFn: () => getPoolById({ data: params.id } as any) }),
+      context.queryClient.ensureQueryData({ queryKey: ["leaderboard", params.id], queryFn: () => getLeaderboard({ data: params.id } as any) }),
+      context.queryClient.ensureQueryData({ queryKey: ["poolMatches", params.id], queryFn: () => getMatchesForPool({ data: params.id } as any) }),
+      context.queryClient.ensureQueryData({ queryKey: ["predictions", params.id], queryFn: () => getPredictions({ data: params.id } as any) }),
       context.queryClient.ensureQueryData({ queryKey: ["profile"], queryFn: () => getProfile() }),
-      context.queryClient.ensureQueryData({ queryKey: ["prizes", params.id], queryFn: () => getPrizes({ data: params.id }) }),
-      context.queryClient.ensureQueryData({ queryKey: ["winners", params.id], queryFn: () => getPrizeWinners({ data: params.id }) }),
+      context.queryClient.ensureQueryData({ queryKey: ["prizes", params.id], queryFn: () => getPrizes({ data: params.id } as any) }),
+      context.queryClient.ensureQueryData({ queryKey: ["winners", params.id], queryFn: () => getPrizeWinners({ data: params.id } as any) }),
       context.queryClient.ensureQueryData({ queryKey: ["props"], queryFn: () => getProps() }),
-      context.queryClient.ensureQueryData({ queryKey: ["predictionsProps", params.id], queryFn: () => getPredictionsProps({ data: params.id }) }),
+      context.queryClient.ensureQueryData({ queryKey: ["predictionsProps", params.id], queryFn: () => getPredictionsProps({ data: params.id } as any) }),
     ]);
   },
   component: PoolDetailComponent,
 });
+
 
 function PoolDetailComponent() {
   const { id } = Route.useParams();
