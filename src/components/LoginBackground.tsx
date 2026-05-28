@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Import all 30 images
+// Import all 48 high-quality images
 import img01 from "@/assets/login-bg/01.jpg";
 import img02 from "@/assets/login-bg/02.jpg";
 import img03 from "@/assets/login-bg/03.jpg";
@@ -32,11 +32,31 @@ import img27 from "@/assets/login-bg/27.jpg";
 import img28 from "@/assets/login-bg/28.jpg";
 import img29 from "@/assets/login-bg/29.jpg";
 import img30 from "@/assets/login-bg/30.jpg";
+import img31 from "@/assets/login-bg/31.jpg";
+import img32 from "@/assets/login-bg/32.jpg";
+import img33 from "@/assets/login-bg/33.jpg";
+import img34 from "@/assets/login-bg/34.jpg";
+import img35 from "@/assets/login-bg/35.jpg";
+import img36 from "@/assets/login-bg/36.jpg";
+import img37 from "@/assets/login-bg/37.jpg";
+import img38 from "@/assets/login-bg/38.jpg";
+import img39 from "@/assets/login-bg/39.jpg";
+import img40 from "@/assets/login-bg/40.jpg";
+import img41 from "@/assets/login-bg/41.jpg";
+import img42 from "@/assets/login-bg/42.jpg";
+import img43 from "@/assets/login-bg/43.jpg";
+import img44 from "@/assets/login-bg/44.jpg";
+import img45 from "@/assets/login-bg/45.jpg";
+import img46 from "@/assets/login-bg/46.jpg";
+import img47 from "@/assets/login-bg/47.jpg";
+import img48 from "@/assets/login-bg/48.jpg";
 
 const ALL_IMAGES = [
   img01, img02, img03, img04, img05, img06, img07, img08, img09, img10,
   img11, img12, img13, img14, img15, img16, img17, img18, img19, img20,
   img21, img22, img23, img24, img25, img26, img27, img28, img29, img30,
+  img31, img32, img33, img34, img35, img36, img37, img38, img39, img40,
+  img41, img42, img43, img44, img45, img46, img47, img48,
 ];
 
 const GRID_SIZE = 12; // 2 lines x 6 columns
