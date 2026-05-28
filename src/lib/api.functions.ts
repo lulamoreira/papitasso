@@ -7,16 +7,35 @@ export const getProfile = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }: any) => {
     console.log('[DEBUG]', 'getProfile', { context_keys: Object.keys(context) });
-    const { supabase, userId } = context;
-    const { data, error } = await supabase
+    const { supabase, userId, claims } = context;
+    let { data, error } = await supabase
       .from("profiles")
       .select("*, favorite_team:teams!profiles_favorite_team_id_fkey(*)")
       .eq("id", userId)
       .maybeSingle();
 
-    console.log('[DEBUG] query result:', { data, error, count: Array.isArray(data) ? data.length : (data ? 1 : 0) });
+    console.log('[DEBUG] getProfile initial query:', { data, error });
 
     if (error) throw error;
+
+    // Se profile não existe, cria um vazio e retorna
+    if (!data) {
+      console.log('[DEBUG] Profile not found, creating one...');
+      const { data: created, error: createError } = await supabase
+        .from("profiles")
+        .upsert({ 
+          id: userId, 
+          name: claims?.user_metadata?.full_name || claims?.user_metadata?.name || claims?.email || 'Torcedor',
+          avatar_url: claims?.user_metadata?.avatar_url || null
+        }, { onConflict: 'id' })
+        .select("*, favorite_team:teams!profiles_favorite_team_id_fkey(*)")
+        .single();
+      
+      console.log('[DEBUG] Profile creation result:', { created, createError });
+      if (createError) throw createError;
+      data = created;
+    }
+
     return data;
   });
 
@@ -34,26 +53,13 @@ export const updateProfile = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const { data: updated, error } = await supabase
       .from("profiles")
-      .update(validated)
-      .eq("id", userId)
+      .upsert({ id: userId, ...validated }, { onConflict: 'id' })
       .select()
-      .maybeSingle();
+      .single();
 
-    console.log('[DEBUG] query result:', { data: updated, error, count: updated ? 1 : 0 });
+    console.log('[DEBUG] updateProfile result:', { data: updated, error });
 
     if (error) throw error;
-    if (!updated) {
-      const { data: inserted, error: insertError } = await supabase
-        .from("profiles")
-        .insert({ id: userId, ...validated })
-        .select()
-        .maybeSingle();
-      
-      console.log('[DEBUG] query result:', { data: inserted, error: insertError, count: inserted ? 1 : 0 });
-      if (insertError) throw insertError;
-      return inserted;
-    }
-
     return updated;
   });
 
