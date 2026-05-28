@@ -469,6 +469,21 @@ export const upsertBracketPrediction = createServerFn({ method: "POST" })
     const { poolId, bracketJson } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
+    // Security check: Verify first match of bracket hasn't started
+    const { data: pool, error: poolError } = await supabase
+      .from("pools")
+      .select("created_at")
+      .eq("id", poolId)
+      .single();
+    
+    if (poolError) throw poolError;
+    
+    // Default lock for 2026 World Cup bracket (start of R32)
+    const bracketLockDate = new Date("2026-06-25T00:00:00Z"); 
+    if (new Date() > bracketLockDate) {
+      throw new Error("Bracket predictions are locked.");
+    }
+
     const { data, error } = await supabase
       .from("predictions_bracket")
       .upsert({
