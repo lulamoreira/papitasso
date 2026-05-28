@@ -86,17 +86,36 @@ function RootComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+function ErrorComponent({ error, reset }: { error: any; reset: () => void }) {
   const router = useRouter();
 
-  console.error(error);
+  console.error("Root Error:", error);
+
+  // Handle Unauthorized errors by redirecting to login
+  if (
+    error?.message?.includes('Unauthorized') || 
+    error?.message?.includes('No authorization header') ||
+    error?.status === 401
+  ) {
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login';
+    }
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center gap-2">
+          <div className="h-8 w-8 bg-primary rounded-full" />
+          <p className="text-sm font-medium text-muted-foreground italic">Redirecionando...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-6 bg-background">
       <div className="text-7xl">⚽</div>
       <div className="space-y-2 max-w-md">
         <h1 className="text-3xl font-black text-primary uppercase italic tracking-tighter">Ops, o lance foi para o VAR</h1>
-        <p className="text-muted-foreground">Não conseguimos carregar esta tela agora.</p>
+        <p className="text-muted-foreground">{error?.message || "Não conseguimos carregar esta tela agora."}</p>
       </div>
       <div className="flex flex-col sm:flex-row gap-3">
         <Button
