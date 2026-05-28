@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import { useNavigate } from "@tanstack/react-router";
 import { getAiAutoPredictions, getPoolById, upsertPrediction } from "@/lib/api.functions";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,6 +17,7 @@ export const Route = createFileRoute("/_authenticated/pools/$id/auto-predict")({
 function AutoPredictPage() {
   const { id } = Route.useParams();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   
   const { data: pool } = useSuspenseQuery({
     queryKey: ["pool", id],
@@ -79,6 +81,7 @@ function AutoPredictPage() {
     }
     toast.success("Todos os palpites foram salvos!");
     queryClient.invalidateQueries({ queryKey: ["predictions", id] });
+    navigate({ to: "/pools/$id", params: { id } });
   };
 
   const updateScore = (matchId: string, side: 'home' | 'away', val: number) => {
