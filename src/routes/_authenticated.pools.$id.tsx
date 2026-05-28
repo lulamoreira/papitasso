@@ -153,7 +153,10 @@ function PoolDetailComponent() {
 
         <Tabs defaultValue="matches" className="w-full" onValueChange={(val) => {
           if (['pickem', 'survivor', 'bracket', 'props', 'fantasy', 'chat', 'mural'].includes(val)) {
-            navigate({ to: `/pools/${id}/${val}` });
+            navigate({ 
+              to: "/pools/$id/" + val as any, 
+              params: { id } 
+            });
           }
 
         }}>
