@@ -39,6 +39,7 @@ function NewPoolComponent() {
     modes_enabled: ["exact"],
     name: "",
     scoring_config: { exact: 10, diff_winner: 5, winner: 3, miss: 0 },
+    prizes: [],
   });
   const [createdPool, setCreatedPool] = useState<any>(null);
 
