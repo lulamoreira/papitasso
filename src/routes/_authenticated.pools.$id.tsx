@@ -152,13 +152,12 @@ function PoolDetailComponent() {
         </Button>
 
         <Tabs defaultValue="matches" className="w-full" onValueChange={(val) => {
-          if (['pickem', 'survivor', 'bracket', 'props', 'fantasy', 'chat', 'mural'].includes(val)) {
-            navigate({ 
-              to: "/pools/$id/" + val as any, 
-              params: { id } 
-            });
+          const externalRoutes = ['pickem', 'survivor', 'bracket', 'props', 'fantasy', 'chat', 'mural'];
+          if (externalRoutes.includes(val)) {
+            // Use a simpler approach for dynamic navigation if types are being difficult
+            const target = `/pools/${id}/${val}`;
+            navigate({ to: target as any });
           }
-
         }}>
           <TabsList className={`w-full grid overflow-x-auto ${hasWinners ? 'grid-cols-11' : 'grid-cols-10'} min-w-max`}>
             <TabsTrigger value="matches" className="gap-1 px-3"><Calendar className="h-3 w-3" /> <span className="hidden sm:inline">Jogos</span></TabsTrigger>
