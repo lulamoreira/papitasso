@@ -251,6 +251,7 @@ export const upsertPrediction = createServerFn({ method: "POST" })
       .maybeSingle();
     
     if (matchError) throw matchError;
+    if (!match) throw new Error("Partida não encontrada");
     if (new Date(match.kickoff_at) <= new Date()) {
       throw new Error("Match already started. Predictions are locked.");
     }
