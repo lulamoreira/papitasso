@@ -4,6 +4,7 @@ import { useMutation, useSuspenseQuery } from "@tanstack/react-query";
 import { createPool, getTeams } from "@/lib/api.functions";
 import { HELP_TEXTS } from "@/lib/help-texts";
 import { HelpButton } from "@/components/HelpButton";
+import { PrizeEditor } from "@/components/PrizeEditor";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, ChevronRight, Trophy, Flame, CheckCircle2, Share2, Copy } from "lucide-react";
+import { ChevronLeft, ChevronRight, Trophy, Flame, CheckCircle2, Share2, Copy, Gift } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 
 export const Route = createFileRoute("/_authenticated/pools/new")({
