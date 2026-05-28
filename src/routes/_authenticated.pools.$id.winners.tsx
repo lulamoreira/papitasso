@@ -1,7 +1,9 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getPoolById, getPrizeWinners, updateWinnerStatus } from "@/lib/api.functions";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ChevronLeft, CheckCircle2, Image as ImageIcon, Loader2, User as UserIcon, Award } from "lucide-react";
@@ -90,25 +92,9 @@ function WinnersManagementComponent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="container mx-auto flex h-16 items-center px-4 gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-1"
-            onClick={() => navigate({ to: "/pools/$id", params: { id } })}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Voltar ao Bolão
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-lg font-bold">Entrega de Prêmios</h1>
-            <p className="text-[10px] text-muted-foreground uppercase font-black">{pool.name}</p>
-          </div>
-        </div>
-      </header>
-
+      <PageHeader title="Entrega de Prêmios" backTo="/pools/$id" backToParams={{ id }} />
       <main className="container mx-auto p-4 space-y-4">
+
         {winners?.map((winner: any) => (
           <Card key={winner.id} className="overflow-hidden">
             <CardContent className="p-0">

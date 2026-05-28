@@ -1,7 +1,9 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProps, createCustomProp, getPoolById, resolveProp } from "@/lib/api.functions";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, Plus, Save, Trash2, CheckCircle, AlertTriangle } from "lucide-react";
 import { useState } from "react";
@@ -83,27 +85,9 @@ function PropsEditComponent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="container mx-auto flex h-16 items-center px-4 gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-1"
-            onClick={() => navigate({ to: "/pools/$id/props", params: { id } })}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Voltar aos Props
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-lg font-bold">Gerenciar Props</h1>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
-              Configurações do Bolão
-            </p>
-          </div>
-        </div>
-      </header>
-
+      <PageHeader title="Gerenciar Props" backTo="/pools/$id/props" backToParams={{ id }} />
       <main className="container mx-auto p-4 space-y-6 pb-24">
+
         <div className="flex justify-between items-center">
           <h2 className="font-black text-xl">Props Ativos</h2>
           <Button size="sm" className="gap-2" onClick={() => setIsAdding(true)}>

@@ -112,9 +112,10 @@ function NewPoolComponent() {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10 px-4 py-4">
         <div className="container mx-auto max-w-2xl flex items-center justify-between">
-          <Button variant="ghost" size="icon" onClick={prevStep} disabled={step === 1 || step === 6}>
+          <Button variant="ghost" size="icon" onClick={() => step > 1 ? prevStep() : navigate({ to: "/pools" })} disabled={step === 6}>
             <ChevronLeft className="h-6 w-6" />
           </Button>
+
           <div className="flex flex-col items-center flex-1">
             <h1 className="text-lg font-bold">{STEPS[step - 1].title}</h1>
             <div className="w-full max-w-[150px] mt-1">

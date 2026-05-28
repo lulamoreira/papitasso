@@ -7,6 +7,7 @@ import { FantasyPitch } from "@/components/fantasy/FantasyPitch";
 import { Trophy, Users, TrendingUp, Clock, ChevronRight, Settings, ArrowRightLeft, ChevronLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/PageHeader";
 
 
 export const Route = createFileRoute("/_authenticated/pools/$id/fantasy/")({
@@ -30,18 +31,21 @@ function FantasyDashboardComponent() {
 
   if (!lineup) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 space-y-6 text-center">
-        <div className="p-6 bg-primary/10 rounded-full">
-          <Trophy className="h-16 w-16 text-primary" />
+      <div className="min-h-screen bg-background flex flex-col">
+        <PageHeader title="Fantasy Mode" backTo="/pools/$id" backToParams={{ id }} />
+        <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-6 text-center">
+          <div className="p-6 bg-primary/10 rounded-full">
+            <Trophy className="h-16 w-16 text-primary" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-black uppercase italic tracking-tighter">Fantasy Mode</h1>
+            <p className="text-muted-foreground">Você ainda não escalou seu time para este bolão.</p>
+          </div>
+          <Button size="lg" className="h-14 px-8 font-black uppercase italic gap-2" onClick={() => navigate({ to: `/pools/${id}/fantasy/build` })}>
+            Começar Escalada
+            <ChevronRight className="h-6 w-6" />
+          </Button>
         </div>
-        <div className="space-y-2">
-          <h1 className="text-3xl font-black uppercase italic tracking-tighter">Fantasy Mode</h1>
-          <p className="text-muted-foreground">Você ainda não escalou seu time para este bolão.</p>
-        </div>
-        <Button size="lg" className="h-14 px-8 font-black uppercase italic gap-2" onClick={() => navigate({ to: `/pools/${id}/fantasy/build` })}>
-          Começar Escalada
-          <ChevronRight className="h-6 w-6" />
-        </Button>
       </div>
     );
   }
@@ -56,10 +60,10 @@ function FantasyDashboardComponent() {
   }));
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-24">
       <header className="bg-primary text-white p-6 pb-20 rounded-b-[3rem] space-y-4">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="sm"
@@ -67,8 +71,9 @@ function FantasyDashboardComponent() {
               onClick={() => navigate({ to: "/pools/$id", params: { id } })}
             >
               <ChevronLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Voltar ao Bolão</span>
+              <span className="hidden sm:inline">Bolão</span>
             </Button>
+
             <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md hidden xs:block">
               <Trophy className="h-6 w-6" />
             </div>

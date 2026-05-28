@@ -91,20 +91,16 @@ function ProfileComponent() {
 
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-24">
       <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
         <div className="container mx-auto flex h-16 items-center px-4 justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate({ to: "/" })}>
-              <ChevronLeft className="h-6 w-6" />
-            </Button>
-            <h1 className="text-xl font-bold">Meu Perfil</h1>
-          </div>
+          <h1 className="text-xl font-bold">Meu Perfil</h1>
           <Button variant="ghost" size="icon" onClick={() => setIsEditing(!isEditing)}>
             <Settings className="h-5 w-5" />
           </Button>
         </div>
       </header>
+
 
       <main className="container mx-auto max-w-lg p-4 pt-6 space-y-8">
         {/* 1. Cabeçalho Gamificado */}

@@ -63,8 +63,8 @@ function QuizPage() {
   const isAnswered = !!userStatus;
 
   return (
-    <div className="container max-w-2xl mx-auto p-4 pb-20 space-y-6">
-      <header className="flex items-center justify-between">
+    <div className="container max-w-2xl mx-auto p-4 pb-24 space-y-6">
+      <header className="flex items-center justify-between pt-4">
         <div>
           <h1 className="text-3xl font-bold text-primary flex items-center gap-2">
             <Trophy className="w-8 h-8 text-yellow-500" />
@@ -77,6 +77,7 @@ function QuizPage() {
           <span className="font-bold text-primary">{profile?.quiz_streak || 0} dias</span>
         </div>
       </header>
+
 
       <Card className="overflow-hidden border-2 border-primary/20 shadow-xl">
         <div className="bg-primary p-1">

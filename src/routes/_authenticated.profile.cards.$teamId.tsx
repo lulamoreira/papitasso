@@ -1,7 +1,9 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getTeams, getCollectedCards } from "@/lib/api.functions";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+
 import { ChevronLeft } from "lucide-react";
 import { TeamCard } from "@/components/gamification/TeamCard";
 import { toast } from "sonner";
@@ -44,16 +46,9 @@ function TeamCardDetailsComponent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="container mx-auto flex h-16 items-center px-4 gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate({ to: "/profile" })}>
-            <ChevronLeft className="h-6 w-6" />
-          </Button>
-          <h1 className="text-xl font-bold">Card da Seleção</h1>
-        </div>
-      </header>
-
+      <PageHeader title="Card da Seleção" backTo="/profile" />
       <main className="container mx-auto max-w-lg p-8">
+
         <TeamCard 
           team={team as any} 
           level={card.level} 

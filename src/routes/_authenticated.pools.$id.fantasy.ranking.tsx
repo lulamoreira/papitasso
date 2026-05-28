@@ -1,7 +1,9 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { getFantasyRanking, getPoolById } from "@/lib/api.functions";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+
 import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Trophy, Medal, Target } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,27 +27,9 @@ function FantasyRankingComponent() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="container mx-auto flex h-16 items-center px-4 gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-1"
-            onClick={() => navigate({ to: "/pools/$id/fantasy", params: { id } })}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Voltar ao Fantasy
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-lg font-bold">Ranking Fantasy</h1>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">
-              {pool.name}
-            </p>
-          </div>
-        </div>
-      </header>
-
+      <PageHeader title="Ranking Fantasy" backTo="/pools/$id/fantasy" backToParams={{ id }} />
       <main className="flex-1 container max-w-lg mx-auto p-4 space-y-6">
+
         <div className="flex justify-center gap-4 py-8">
            {ranking.slice(0, 3).map((player: any, i: number) => (
              <div key={player.profile.id} className="flex flex-col items-center gap-2 first:scale-110">

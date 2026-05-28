@@ -1,7 +1,9 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getPoolById, getMatchesForPool, getPickemPredictions, upsertPickemPrediction } from "@/lib/api.functions";
+import { PageHeader } from "@/components/PageHeader";
 import { Card, CardContent } from "@/components/ui/card";
+
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import { format } from "date-fns";
@@ -44,22 +46,11 @@ function PickemComponent() {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-6 pb-24">
-      <header className="flex items-center gap-2 pb-3 mb-3 border-b">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-1"
-          onClick={() => navigate({ to: "/pools/$id", params: { id } })}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Voltar ao Bolão
-        </Button>
-        <div className="ml-auto text-right">
-          <h1 className="text-lg font-bold">Pick'em Challenge</h1>
-          <p className="text-muted-foreground text-[10px] uppercase font-black">Quem vence?</p>
-        </div>
-      </header>
+    <div className="min-h-screen bg-background">
+      <PageHeader title="Pick'em Challenge" backTo="/pools/$id" backToParams={{ id }} />
+      <main className="container mx-auto p-4 space-y-6 pb-24">
+
+
 
       <div className="space-y-4">
         {matches.map((match: any) => {
@@ -110,6 +101,9 @@ function PickemComponent() {
           );
         })}
       </div>
-    </div>
-  );
+    </main>
+  </div>
+);
 }
+
+

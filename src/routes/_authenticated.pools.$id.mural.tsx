@@ -1,7 +1,9 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMuralPosts, createMuralPost, deleteMuralPost, getProfile } from "@/lib/api.functions";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -87,19 +89,11 @@ function MuralComponent() {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-6 pb-24">
-      <header className="flex items-center gap-2 pb-3 mb-3 border-b">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-1"
-          onClick={() => navigate({ to: "/pools/$id", params: { id } })}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Voltar ao Bolão
-        </Button>
-        <h1 className="text-lg font-bold ml-auto">Mural da Torcida</h1>
-      </header>
+    <div className="min-h-screen bg-background">
+      <PageHeader title="Mural da Torcida" backTo="/pools/$id" backToParams={{ id }} />
+      <main className="container mx-auto p-4 space-y-6 pb-24">
+
+
 
       <Card className="border-2 border-primary/20 shadow-xl shadow-primary/5">
         <CardContent className="p-4">
@@ -128,6 +122,8 @@ function MuralComponent() {
       <div className="space-y-4">
         <AnimatePresence initial={false}>
           {posts?.map((post: any) => (
+
+
             <motion.div
               key={post.id}
               initial={{ opacity: 0, scale: 0.95 }}
@@ -195,6 +191,12 @@ function MuralComponent() {
           </div>
         )}
       </div>
-    </div>
-  );
+    </main>
+  </div>
+);
 }
+
+
+
+
+

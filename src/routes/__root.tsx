@@ -12,6 +12,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { Toaster } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
+import { BottomNav } from "@/components/BottomNav";
+
 
 
 import appCss from "../styles.css?url";
@@ -79,8 +81,10 @@ function RootComponent() {
           className="min-h-screen relative"
         >
           <Outlet />
+          <BottomNav />
         </motion.div>
       </AnimatePresence>
+
       <Toaster position="top-center" expand={false} richColors />
     </QueryClientProvider>
   );

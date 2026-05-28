@@ -1,7 +1,9 @@
 import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getProps, getPredictionsProps, upsertPredictionProp, getPoolById, getTeams, getPlayers } from "@/lib/api.functions";
+import { PageHeader } from "@/components/PageHeader";
 import { Button } from "@/components/ui/button";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ChevronLeft, HelpCircle, User, Users, Flag, Hash, CheckCircle2, Circle, Trophy, Settings } from "lucide-react";
 import { useState } from "react";
@@ -111,32 +113,20 @@ function PropsComponent() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="container mx-auto flex h-16 items-center px-4 gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-1"
-            onClick={() => navigate({ to: "/pools/$id", params: { id } })}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Voltar ao Bolão
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-lg font-bold">Props do Bolão</h1>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
-              Palpites de Longo Prazo
-            </p>
-          </div>
-          {pool.owner_id === queryClient.getQueryData<any>(["profile"])?.id && (
+      <PageHeader 
+        title="Props do Bolão" 
+        backTo="/pools/$id" 
+        backToParams={{ id }}
+        rightElement={pool.owner_id === queryClient.getQueryData<any>(["profile"])?.id && (
             <Button variant="ghost" size="icon" onClick={() => navigate({ to: `/pools/${id}/props/edit` })}>
               <Settings className="h-5 w-5" />
             </Button>
-          )}
-        </div>
-      </header>
-
+          )
+        }
+      />
       <main className="container mx-auto p-4 space-y-4 pb-24">
+
+
         <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 flex items-center justify-between">
           <div>
             <div className="text-xs text-muted-foreground font-bold uppercase">Progresso</div>
