@@ -98,7 +98,7 @@ function PickemComponent() {
             </Card>
           );
         })}
-      </div>
+      </main>
     </div>
   );
 }

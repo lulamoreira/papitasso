@@ -166,7 +166,7 @@ function SurvivorComponent() {
             </Card>
           );
         })}
-      </div>
+      </main>
     </div>
   );
 }

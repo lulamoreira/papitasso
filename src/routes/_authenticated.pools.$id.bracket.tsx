@@ -169,7 +169,7 @@ function BracketComponent() {
              </CardContent>
            </Card>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
