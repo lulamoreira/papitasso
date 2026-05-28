@@ -62,14 +62,14 @@ serve(async (req) => {
     for (const match of matchesWithTeams!) {
       const prompt = `Você é especialista em futebol. Preveja o placar mais provável entre ${match.home_team.name} (ranking FIFA ${match.home_team.fifa_ranking || 'N/A'}) e ${match.away_team.name} (ranking FIFA ${match.away_team.fifa_ranking || 'N/A'}) considerando histórico, fase ${match.phase} e contexto da Copa 2026. Responda APENAS em formato JSON: { "home": int, "away": int }`;
 
-      const response = await fetch("https://api.lovable.ai/v1/chat/completions", {
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${LOVABLE_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "gemini-1.5-flash",
+          model: "google/gemini-2.0-flash",
           messages: [{ role: "user", content: prompt }],
           response_format: { type: "json_object" }
         }),

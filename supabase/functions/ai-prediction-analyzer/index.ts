@@ -51,14 +51,14 @@ serve(async (req) => {
     O consenso do grupo é ${group_consensus}. Popularidade do palpite: ${popularity_pct.toFixed(1)}%.
     Responda em JSON: { risk_level: 'safe'|'medium'|'bold', comment: string (máximo 15 palavras) }`;
 
-    const response = await fetch("https://api.lovable.ai/v1/chat/completions", {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gemini-1.5-flash",
+        model: "google/gemini-2.0-flash",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" }
       }),
