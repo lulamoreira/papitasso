@@ -420,6 +420,19 @@ export const upsertSurvivorPrediction = createServerFn({ method: "POST" })
     const { poolId, roundNumber, teamId } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
+    // Security check: Verify round is not locked
+    const { data: round, error: roundError } = await supabase
+      .from("survivor_rounds")
+      .select("is_locked")
+      .eq("pool_id", poolId)
+      .eq("round_number", roundNumber)
+      .single();
+    
+    if (roundError) throw roundError;
+    if (round.is_locked) {
+      throw new Error("Round is locked.");
+    }
+
     const { data, error } = await supabase
       .from("predictions_survivor")
       .upsert({
