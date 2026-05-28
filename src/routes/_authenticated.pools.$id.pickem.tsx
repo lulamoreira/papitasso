@@ -97,11 +97,11 @@ function PickemComponent() {
               </CardContent>
             </Card>
           );
-          );
         })}
       </div>
     </main>
   </div>
 );
 }
+
 

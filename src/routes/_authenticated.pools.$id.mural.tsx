@@ -185,11 +185,11 @@ function MuralComponent() {
             <p className="font-black text-xl">O mural está vazio...</p>
             <p className="text-sm">Seja o primeiro a mandar um salve!</p>
           </div>
-          </div>
         )}
       </main>
     </div>
   );
 }
+
 
 

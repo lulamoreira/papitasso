@@ -165,11 +165,11 @@ function SurvivorComponent() {
               </CardContent>
             </Card>
           );
-          );
         })}
       </div>
     </main>
   </div>
 );
 }
+
 
