@@ -9,7 +9,7 @@ export const getProfile = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("profiles")
-      .select("*, favorite_team:teams(*)")
+      .select("*, favorite_team:teams!profiles_favorite_team_id_fkey(*)")
       .eq("id", userId)
       .single();
 
@@ -456,7 +456,7 @@ export const getSurvivorPredictions = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("predictions_survivor")
-      .select("*, team:teams(*)")
+      .select("*, team:teams!predictions_survivor_team_id_fkey(*)")
       .eq("pool_id", poolId)
       .eq("user_id", userId);
     
@@ -734,7 +734,7 @@ export const getCollectedCards = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("collected_cards")
-      .select("*, team:teams(*)")
+      .select("*, team:teams!collected_cards_team_id_fkey(*)")
       .eq("user_id", userId);
     
     if (error) throw error;
@@ -802,7 +802,7 @@ export const getPlayers = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("players")
-      .select("*, team:teams(*)")
+      .select("*, team:teams!players_team_id_fkey(*)")
       .order("name");
     
     if (error) throw error;
@@ -976,7 +976,7 @@ export const getFantasyPlayers = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("players")
-      .select("*, team:teams(*)")
+      .select("*, team:teams!players_team_id_fkey(*)")
       .order("market_value", { ascending: false });
 
     if (error) throw error;
