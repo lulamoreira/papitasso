@@ -116,7 +116,7 @@ export const getMyPools = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("pool_members")
-      .select("pool_id, pools(*)")
+      .select("pool_id, pools!pool_members_pool_id_fkey(*)")
       .eq("user_id", userId);
     
     if (error) throw error;
@@ -130,7 +130,7 @@ export const getPoolById = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("pools")
-      .select("*, owner:profiles(*)")
+      .select("*, owner:profiles!pools_owner_id_fkey(*)")
       .eq("id", id)
       .single();
     
@@ -145,7 +145,7 @@ export const getPoolByInviteCode = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("pools")
-      .select("*, owner:profiles(*)")
+      .select("*, owner:profiles!pools_owner_id_fkey(*)")
       .eq("invite_code", code.toUpperCase())
       .single();
     
@@ -269,7 +269,7 @@ export const getLeaderboard = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("leaderboard_view")
-      .select("*, profile:profiles(*)")
+      .select("*, profile:profiles!leaderboard_view_user_id_fkey(*)")
       .eq("pool_id", poolId)
       .order("position", { ascending: true });
     
@@ -325,7 +325,7 @@ export const getPrizeWinners = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("prize_winners")
-      .select("*, prize:prizes(*), profile:profiles(*)")
+      .select("*, prize:prizes!prize_winners_prize_id_fkey(*), profile:profiles!prize_winners_user_id_fkey(*)")
       .filter("prize.pool_id", "eq", poolId);
     
     if (error) throw error;
@@ -816,7 +816,7 @@ export const getChatMessages = createServerFn({ method: "GET" })
     const { supabase } = context;
     let query = supabase
       .from("chat_messages")
-      .select("*, user:profiles(*)")
+      .select("*, user:profiles!chat_messages_user_id_fkey(*)")
       .eq("pool_id", poolId)
       .order("created_at", { ascending: true });
     
@@ -871,7 +871,7 @@ export const getMuralPosts = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("mural_posts")
-      .select("*, user:profiles(*), target_user:profiles(*)")
+      .select("*, user:profiles!mural_posts_user_id_fkey(*), target_user:profiles!mural_posts_target_user_id_fkey(*)")
       .eq("pool_id", poolId)
       .order("created_at", { ascending: false });
     
@@ -919,7 +919,7 @@ export const getFantasyLineup = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data: lineup, error: lineupError } = await supabase
       .from("fantasy_lineups")
-      .select("*, players:fantasy_lineup_players(*, player:players(*))")
+      .select("*, players:fantasy_lineup_players!fantasy_lineup_players_lineup_id_fkey(*, player:players!fantasy_lineup_players_player_id_fkey(*))")
       .eq("pool_id", poolId)
       .eq("user_id", userId)
       .eq("gameweek", gameweek)
@@ -989,7 +989,7 @@ export const getFantasyRanking = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("fantasy_lineups")
-      .select("user_id, total_points, profile:profiles(*)")
+      .select("user_id, total_points, profile:profiles!fantasy_lineups_user_id_fkey(*)")
       .eq("pool_id", poolId)
       .order("total_points", { ascending: false });
 
@@ -1015,7 +1015,7 @@ export const getPlayerMatchStats = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("player_match_stats")
-      .select("*, player:players(*)")
+      .select("*, player:players!player_match_stats_player_id_fkey(*)")
       .eq("match_id", matchId);
     
     if (error) throw error;
