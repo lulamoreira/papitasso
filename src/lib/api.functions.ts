@@ -673,13 +673,23 @@ export const getQuizUserStatus = createServerFn({ method: "GET" })
 export const getAiCommentary = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
-    const { matchId, mode, style } = rawData?.data || rawData;
-    const { supabase } = context;
-    const { data, error } = await supabase.functions.invoke('ai-commentator', {
-      body: { match_id: matchId, mode, style }
-    });
-    if (error) throw error;
-    return data;
+    try {
+      const { matchId, mode, style } = rawData?.data || rawData;
+      const { supabase } = context;
+      const { data, error } = await supabase.functions.invoke('ai-commentator', {
+        body: { match_id: matchId, mode, style }
+      });
+      
+      if (error) {
+        console.error('[AI] getAiCommentary function error:', error);
+        return null;
+      }
+      
+      return data;
+    } catch (err) {
+      console.error('[AI] getAiCommentary catch error:', err);
+      return null;
+    }
   });
 
 export const getAiPredictionAnalysis = createServerFn({ method: "POST" })
