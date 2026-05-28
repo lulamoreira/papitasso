@@ -6,7 +6,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronLeft, Trophy, Medal, Target } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-export const Route = createFileRoute("/_authenticated/pools/$id/fantasy/ranking" as any)({
+export const Route = createFileRoute("/_authenticated/pools/$id/fantasy/ranking")({
   loader: async ({ params, context }: any) => {
     await Promise.all([
       context.queryClient.ensureQueryData({ queryKey: ["fantasyRanking", params.id], queryFn: () => getFantasyRanking({ data: params.id } as any) }),

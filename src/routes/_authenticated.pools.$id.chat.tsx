@@ -1,7 +1,7 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { PoolChat } from "@/components/PoolChat";
 
-export const Route = createFileRoute("/_authenticated/pools/$id/chat" as any)({
+export const Route = createFileRoute("/_authenticated/pools/$id/chat")({
   component: PoolChatRoute,
 });
 
