@@ -9,7 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { Trophy, Target, Sparkles, Brain } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { LoginBackground } from "@/components/LoginBackground";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/login")({
@@ -74,30 +74,34 @@ function LoginComponent() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4 py-12">
-      <Card className="w-full max-w-md border-none shadow-xl">
+    <div className="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-12">
+      <LoginBackground />
+      
+      <Card className="relative z-10 w-full max-w-md border-none bg-white/95 shadow-2xl backdrop-blur-sm dark:bg-slate-900/95">
         <CardHeader className="space-y-1 text-center">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 relative">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10 relative overflow-hidden border-4 border-white shadow-lg">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentSlide}
                 initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
                 animate={{ scale: 1, opacity: 1, rotate: 0 }}
                 exit={{ scale: 0.5, opacity: 0, rotate: 20 }}
-                className="absolute"
+                className="absolute flex items-center justify-center"
               >
                 {slides[currentSlide].icon}
               </motion.div>
             </AnimatePresence>
           </div>
-          <CardTitle className="text-3xl font-black tracking-tighter text-primary uppercase italic">GolPalpite</CardTitle>
+          <CardTitle className="text-4xl font-black tracking-tighter text-primary uppercase italic drop-shadow-sm">
+            GolPalpite
+          </CardTitle>
           <AnimatePresence mode="wait">
             <motion.p
               key={currentSlide}
               initial={{ opacity: 0, y: 5 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -5 }}
-              className="text-sm font-bold text-muted-foreground uppercase tracking-widest"
+              className="text-xs font-bold text-muted-foreground uppercase tracking-widest"
             >
               {slides[currentSlide].text}
             </motion.p>
@@ -105,7 +109,7 @@ function LoginComponent() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="grid grid-cols-1 gap-3">
-            <Button variant="outline" size="lg" className="w-full justify-start gap-4 py-6 text-base" onClick={() => handleSocialLogin("google")}>
+            <Button variant="outline" size="lg" className="w-full justify-start gap-4 py-6 text-base hover:bg-primary/5 hover:border-primary transition-all duration-300" onClick={() => handleSocialLogin("google")}>
               <svg className="h-5 w-5" viewBox="0 0 24 24">
                 <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
                 <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
@@ -114,13 +118,13 @@ function LoginComponent() {
               </svg>
               Continuar com Google
             </Button>
-            <Button variant="outline" size="lg" className="w-full justify-start gap-4 py-6 text-base" onClick={() => handleSocialLogin("apple")}>
+            <Button variant="outline" size="lg" className="w-full justify-start gap-4 py-6 text-base hover:bg-primary/5 hover:border-primary transition-all duration-300" onClick={() => handleSocialLogin("apple")}>
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M17.05 20.28c-.96.95-2.01 1.95-3.32 1.95-1.28 0-1.72-.81-3.21-.81-1.48 0-1.98.78-3.19.81-1.28.03-2.48-1.1-3.48-2.48-2.04-2.84-3.6-8.01-1.5-11.64 1.05-1.8 2.88-2.94 4.88-2.97 1.51-.03 2.94 1.02 3.86 1.02.93 0 2.67-1.29 4.47-1.11.75.03 2.85.3 4.2 2.22-1.1.66-1.85 1.68-1.85 3.3 0 2 1.63 2.94 3.42 3.39-.14.41-.53 1.05-1.07 1.83zM12.03 4.86c-.01-1.89 1.55-3.51 3.42-3.63.03.18.06.37.06.56 0 1.76-1.43 3.52-3.41 3.52-.02-.15-.07-.3-.07-.45z" />
               </svg>
               Continuar com Apple
             </Button>
-            <Button variant="outline" size="lg" className="w-full justify-start gap-4 py-6 text-base" onClick={() => handleSocialLogin("facebook")}>
+            <Button variant="outline" size="lg" className="w-full justify-start gap-4 py-6 text-base hover:bg-primary/5 hover:border-primary transition-all duration-300" onClick={() => handleSocialLogin("facebook")}>
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="#1877F2">
                 <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
               </svg>
@@ -133,18 +137,18 @@ function LoginComponent() {
               <Separator />
             </div>
             <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-background px-2 text-muted-foreground">Ou com e-mail</span>
+              <span className="bg-white dark:bg-slate-900 px-2 text-muted-foreground font-semibold">Ou com e-mail</span>
             </div>
           </div>
 
           <form onSubmit={handleEmailLogin} className="space-y-4">
             <div className="space-y-2">
-              <Input type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Input type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} required className="bg-muted/50 border-none h-12" />
             </div>
             <div className="space-y-2">
-              <Input type="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} required />
+              <Input type="password" placeholder="Senha" value={password} onChange={(e) => setPassword(e.target.value)} required className="bg-muted/50 border-none h-12" />
             </div>
-            <Button type="submit" className="w-full py-6 text-lg font-bold" disabled={loading}>
+            <Button type="submit" className="w-full py-6 text-lg font-bold shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-300" disabled={loading}>
               {loading ? "Entrando..." : "Entrar"}
             </Button>
           </form>
