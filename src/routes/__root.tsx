@@ -116,6 +116,11 @@ function ErrorComponent({ error, reset }: { error: any; reset: () => void }) {
       <div className="space-y-2 max-w-md">
         <h1 className="text-3xl font-black text-primary uppercase italic tracking-tighter">Ops, o lance foi para o VAR</h1>
         <p className="text-muted-foreground">{error?.message || "Não conseguimos carregar esta tela agora."}</p>
+        {error && (
+          <pre className="mt-4 p-2 bg-muted rounded text-[10px] text-muted-foreground text-left overflow-auto max-h-40 whitespace-pre-wrap">
+            {JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}
+          </pre>
+        )}
       </div>
       <div className="flex flex-col sm:flex-row gap-3">
         <Button
