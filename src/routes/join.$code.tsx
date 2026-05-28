@@ -35,6 +35,21 @@ function JoinPoolComponent() {
   });
 
 
+  if (!pool) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4 text-center space-y-4">
+        <div className="h-20 w-20 bg-muted rounded-full flex items-center justify-center text-muted-foreground">
+          <Trophy className="h-10 w-10 opacity-20" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-bold">Bolão não encontrado</h2>
+          <p className="text-muted-foreground">O link pode estar expirado ou o bolão foi removido.</p>
+        </div>
+        <Button onClick={() => navigate({ to: "/" })}>Voltar ao Início</Button>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md border-none shadow-2xl">

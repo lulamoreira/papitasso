@@ -11,7 +11,7 @@ export const getProfile = createServerFn({ method: "GET" })
       .from("profiles")
       .select("*, favorite_team:teams!profiles_favorite_team_id_fkey(*)")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
     return data;
@@ -59,7 +59,7 @@ export const getNextMatch = createServerFn({ method: "GET" })
       .gte("kickoff_at", new Date().toISOString())
       .order("kickoff_at", { ascending: true })
       .limit(1)
-      .single();
+      .maybeSingle();
     if (error && error.code !== "PGRST116") throw error;
     return data || null;
   });
@@ -158,7 +158,7 @@ export const getPoolById = createServerFn({ method: "GET" })
       .from("pools")
       .select("*, owner:profiles!pools_owner_id_fkey(*)")
       .eq("id", id)
-      .single();
+      .maybeSingle();
     
     if (error) throw error;
     return data;
@@ -173,7 +173,7 @@ export const getPoolByInviteCode = createServerFn({ method: "GET" })
       .from("pools")
       .select("*, owner:profiles!pools_owner_id_fkey(*)")
       .eq("invite_code", code.toUpperCase())
-      .single();
+      .maybeSingle();
     
     if (error) throw error;
     return data;
@@ -190,9 +190,10 @@ export const joinPool = createServerFn({ method: "POST" })
       .from("pools")
       .select("id")
       .eq("invite_code", code.toUpperCase())
-      .single();
+      .maybeSingle();
     
     if (poolError) throw poolError;
+    if (!pool) throw new Error("Bolão não encontrado");
 
     const { error: memberError } = await supabase
       .from("pool_members")
@@ -247,9 +248,10 @@ export const upsertPrediction = createServerFn({ method: "POST" })
       .from("matches")
       .select("kickoff_at")
       .eq("id", matchId)
-      .single();
+      .maybeSingle();
     
     if (matchError) throw matchError;
+    if (!match) throw new Error("Partida não encontrada");
     if (new Date(match.kickoff_at) <= new Date()) {
       throw new Error("Match already started. Predictions are locked.");
     }
@@ -403,9 +405,10 @@ export const upsertPickemPrediction = createServerFn({ method: "POST" })
       .from("matches")
       .select("kickoff_at")
       .eq("id", matchId)
-      .single();
+      .maybeSingle();
     
     if (matchError) throw matchError;
+    if (!match) throw new Error("Partida não encontrada");
     if (new Date(match.kickoff_at) <= new Date()) {
       throw new Error("Match already started. Predictions are locked.");
     }
@@ -466,9 +469,10 @@ export const upsertSurvivorPrediction = createServerFn({ method: "POST" })
       .select("is_locked")
       .eq("pool_id", poolId)
       .eq("round_number", roundNumber)
-      .single();
+      .maybeSingle();
     
     if (roundError) throw roundError;
+    if (!round) throw new Error("Rodada não encontrada");
     if (round.is_locked) {
       throw new Error("Round is locked.");
     }
@@ -514,9 +518,10 @@ export const upsertBracketPrediction = createServerFn({ method: "POST" })
       .from("pools")
       .select("created_at")
       .eq("id", poolId)
-      .single();
+      .maybeSingle();
     
     if (poolError) throw poolError;
+    if (!pool) throw new Error("Bolão não encontrado");
     
     // Default lock for 2026 World Cup bracket (start of R32)
     const bracketLockDate = new Date("2026-06-25T00:00:00Z"); 
@@ -588,7 +593,7 @@ export const getAchievementById = createServerFn({ method: "GET" })
     const { data, error } = await supabase
       .from("achievements")
       .eq("id", id)
-      .single();
+      .maybeSingle();
     if (error) throw error;
     return data;
   });
@@ -613,7 +618,7 @@ export const submitQuizAnswer = createServerFn({ method: "POST" })
       .from("daily_quiz")
       .select("*")
       .eq("id", quizId)
-      .single();
+      .maybeSingle();
 
     const isCorrect = quiz.correct_index === answerIndex;
 
@@ -717,9 +722,10 @@ export const upsertPredictionProp = createServerFn({ method: "POST" })
       .from("props")
       .select("is_locked")
       .eq("id", propId)
-      .single();
+      .maybeSingle();
     
     if (propError) throw propError;
+    if (!prop) throw new Error("Prop não encontrada");
     if (prop.is_locked) {
       throw new Error("Predictions for this prop are locked.");
     }
