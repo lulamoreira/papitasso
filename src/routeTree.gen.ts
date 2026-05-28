@@ -19,6 +19,7 @@ import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authentic
 import { Route as AuthenticatedPoolsIndexRouteImport } from './routes/_authenticated.pools.index'
 import { Route as AuthenticatedPoolsNewRouteImport } from './routes/_authenticated.pools.new'
 import { Route as AuthenticatedPoolsIdRouteImport } from './routes/_authenticated.pools.$id'
+import { Route as AuthenticatedPoolsIdIndexRouteImport } from './routes/_authenticated.pools.$id.index'
 import { Route as AuthenticatedProfileCardsTeamIdRouteImport } from './routes/_authenticated.profile.cards.$teamId'
 import { Route as AuthenticatedPoolsIdWinnersRouteImport } from './routes/_authenticated.pools.$id.winners'
 import { Route as AuthenticatedPoolsIdSurvivorRouteImport } from './routes/_authenticated.pools.$id.survivor'
@@ -85,6 +86,12 @@ const AuthenticatedPoolsIdRoute = AuthenticatedPoolsIdRouteImport.update({
   path: '/pools/$id',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedPoolsIdIndexRoute =
+  AuthenticatedPoolsIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPoolsIdRoute,
+  } as any)
 const AuthenticatedProfileCardsTeamIdRoute =
   AuthenticatedProfileCardsTeamIdRouteImport.update({
     id: '/cards/$teamId',
@@ -203,6 +210,7 @@ export interface FileRoutesByFullPath {
   '/pools/$id/survivor': typeof AuthenticatedPoolsIdSurvivorRoute
   '/pools/$id/winners': typeof AuthenticatedPoolsIdWinnersRoute
   '/profile/cards/$teamId': typeof AuthenticatedProfileCardsTeamIdRoute
+  '/pools/$id/': typeof AuthenticatedPoolsIdIndexRoute
   '/pools/$id/fantasy/build': typeof AuthenticatedPoolsIdFantasyBuildRoute
   '/pools/$id/fantasy/ranking': typeof AuthenticatedPoolsIdFantasyRankingRoute
   '/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
@@ -216,7 +224,6 @@ export interface FileRoutesByTo {
   '/quiz': typeof AuthenticatedQuizRoute
   '/join/$code': typeof JoinCodeRoute
   '/': typeof AuthenticatedIndexRoute
-  '/pools/$id': typeof AuthenticatedPoolsIdRouteWithChildren
   '/pools/new': typeof AuthenticatedPoolsNewRoute
   '/pools': typeof AuthenticatedPoolsIndexRoute
   '/pools/$id/auto-predict': typeof AuthenticatedPoolsIdAutoPredictRoute
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/pools/$id/survivor': typeof AuthenticatedPoolsIdSurvivorRoute
   '/pools/$id/winners': typeof AuthenticatedPoolsIdWinnersRoute
   '/profile/cards/$teamId': typeof AuthenticatedProfileCardsTeamIdRoute
+  '/pools/$id': typeof AuthenticatedPoolsIdIndexRoute
   '/pools/$id/fantasy/build': typeof AuthenticatedPoolsIdFantasyBuildRoute
   '/pools/$id/fantasy/ranking': typeof AuthenticatedPoolsIdFantasyRankingRoute
   '/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
@@ -259,6 +267,7 @@ export interface FileRoutesById {
   '/_authenticated/pools/$id/survivor': typeof AuthenticatedPoolsIdSurvivorRoute
   '/_authenticated/pools/$id/winners': typeof AuthenticatedPoolsIdWinnersRoute
   '/_authenticated/profile/cards/$teamId': typeof AuthenticatedProfileCardsTeamIdRoute
+  '/_authenticated/pools/$id/': typeof AuthenticatedPoolsIdIndexRoute
   '/_authenticated/pools/$id/fantasy/build': typeof AuthenticatedPoolsIdFantasyBuildRoute
   '/_authenticated/pools/$id/fantasy/ranking': typeof AuthenticatedPoolsIdFantasyRankingRoute
   '/_authenticated/pools/$id/predict/$matchId': typeof AuthenticatedPoolsIdPredictMatchIdRoute
@@ -288,6 +297,7 @@ export interface FileRouteTypes {
     | '/pools/$id/survivor'
     | '/pools/$id/winners'
     | '/profile/cards/$teamId'
+    | '/pools/$id/'
     | '/pools/$id/fantasy/build'
     | '/pools/$id/fantasy/ranking'
     | '/pools/$id/predict/$matchId'
@@ -301,7 +311,6 @@ export interface FileRouteTypes {
     | '/quiz'
     | '/join/$code'
     | '/'
-    | '/pools/$id'
     | '/pools/new'
     | '/pools'
     | '/pools/$id/auto-predict'
@@ -315,6 +324,7 @@ export interface FileRouteTypes {
     | '/pools/$id/survivor'
     | '/pools/$id/winners'
     | '/profile/cards/$teamId'
+    | '/pools/$id'
     | '/pools/$id/fantasy/build'
     | '/pools/$id/fantasy/ranking'
     | '/pools/$id/predict/$matchId'
@@ -343,6 +353,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pools/$id/survivor'
     | '/_authenticated/pools/$id/winners'
     | '/_authenticated/profile/cards/$teamId'
+    | '/_authenticated/pools/$id/'
     | '/_authenticated/pools/$id/fantasy/build'
     | '/_authenticated/pools/$id/fantasy/ranking'
     | '/_authenticated/pools/$id/predict/$matchId'
@@ -427,6 +438,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/pools/$id'
       preLoaderRoute: typeof AuthenticatedPoolsIdRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/pools/$id/': {
+      id: '/_authenticated/pools/$id/'
+      path: '/'
+      fullPath: '/pools/$id/'
+      preLoaderRoute: typeof AuthenticatedPoolsIdIndexRouteImport
+      parentRoute: typeof AuthenticatedPoolsIdRoute
     }
     '/_authenticated/profile/cards/$teamId': {
       id: '/_authenticated/profile/cards/$teamId'
@@ -612,6 +630,7 @@ interface AuthenticatedPoolsIdRouteChildren {
   AuthenticatedPoolsIdPropsRoute: typeof AuthenticatedPoolsIdPropsRouteWithChildren
   AuthenticatedPoolsIdSurvivorRoute: typeof AuthenticatedPoolsIdSurvivorRoute
   AuthenticatedPoolsIdWinnersRoute: typeof AuthenticatedPoolsIdWinnersRoute
+  AuthenticatedPoolsIdIndexRoute: typeof AuthenticatedPoolsIdIndexRoute
   AuthenticatedPoolsIdPrizesEditRoute: typeof AuthenticatedPoolsIdPrizesEditRoute
 }
 
@@ -628,6 +647,7 @@ const AuthenticatedPoolsIdRouteChildren: AuthenticatedPoolsIdRouteChildren = {
   AuthenticatedPoolsIdPropsRoute: AuthenticatedPoolsIdPropsRouteWithChildren,
   AuthenticatedPoolsIdSurvivorRoute: AuthenticatedPoolsIdSurvivorRoute,
   AuthenticatedPoolsIdWinnersRoute: AuthenticatedPoolsIdWinnersRoute,
+  AuthenticatedPoolsIdIndexRoute: AuthenticatedPoolsIdIndexRoute,
   AuthenticatedPoolsIdPrizesEditRoute: AuthenticatedPoolsIdPrizesEditRoute,
 }
 
@@ -666,13 +686,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
