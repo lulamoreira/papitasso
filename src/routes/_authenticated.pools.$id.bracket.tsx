@@ -29,11 +29,10 @@ function BracketComponent() {
   const { data: teams } = useSuspenseQuery({ queryKey: ["teams"], queryFn: () => getTeams() });
 
   const [bracket, setBracket] = useState<any>(prediction?.bracket_json || {
-    round_of_32: [],
-    round_of_16: [],
-    quarter_finals: [],
-    semi_finals: [],
-    final: { winner_team_id: null, score: "" }
+    r16: [],
+    qf: [],
+    sf: [],
+    final: { match_id: matches?.find((m: any) => m.phase === 'final')?.id || null, winner_team_id: null, home_score: 0, away_score: 0 }
   });
 
   const knockoutMatches = matches?.filter((m: any) => m.phase !== 'Group Stage') || [];
@@ -86,16 +85,16 @@ function BracketComponent() {
           {[...Array(8)].map((_, i) => (
             <div key={`r16-${i}`} className="space-y-1">
               <div 
-                className={`p-2 border rounded text-xs font-bold cursor-pointer transition-all ${bracket.round_of_16[i*2] ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
-                onClick={() => handlePickWinner('quarter_finals', i, bracket.round_of_16[i*2])}
+                className={`p-2 border rounded text-xs font-bold cursor-pointer transition-all ${bracket.r16?.[i*2] ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
+                onClick={() => handlePickWinner('qf', i, bracket.r16?.[i*2])}
               >
-                {bracket.round_of_16[i*2] ? teams.find((t: any) => t.id === bracket.round_of_16[i*2])?.name : 'Time A'}
+                {bracket.r16?.[i*2] ? teams?.find((t: any) => t.id === bracket.r16[i*2])?.name : 'Time A'}
               </div>
               <div 
-                className={`p-2 border rounded text-xs font-bold cursor-pointer transition-all ${bracket.round_of_16[i*2+1] ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
-                onClick={() => handlePickWinner('quarter_finals', i, bracket.round_of_16[i*2+1])}
+                className={`p-2 border rounded text-xs font-bold cursor-pointer transition-all ${bracket.r16?.[i*2+1] ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
+                onClick={() => handlePickWinner('qf', i, bracket.r16?.[i*2+1])}
               >
-                {bracket.round_of_16[i*2+1] ? teams.find((t: any) => t.id === bracket.round_of_16[i*2+1])?.name : 'Time B'}
+                {bracket.r16?.[i*2+1] ? teams?.find((t: any) => t.id === bracket.r16[i*2+1])?.name : 'Time B'}
               </div>
             </div>
           ))}
@@ -107,10 +106,10 @@ function BracketComponent() {
           {[...Array(4)].map((_, i) => (
             <div key={`qf-${i}`} className="space-y-1">
               <div 
-                className={`p-3 border rounded font-black text-sm cursor-pointer transition-all ${bracket.quarter_finals[i] === bracket.semi_finals[Math.floor(i/2)] && bracket.quarter_finals[i] ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
-                onClick={() => handlePickWinner('semi_finals', Math.floor(i/2), bracket.quarter_finals[i])}
+                className={`p-3 border rounded font-black text-sm cursor-pointer transition-all ${bracket.qf?.[i] === bracket.sf?.[Math.floor(i/2)] && bracket.qf?.[i] ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
+                onClick={() => handlePickWinner('sf', Math.floor(i/2), bracket.qf?.[i])}
               >
-                {bracket.quarter_finals[i] ? teams.find((t: any) => t.id === bracket.quarter_finals[i])?.name : 'Vencedor QF'}
+                {bracket.qf?.[i] ? teams?.find((t: any) => t.id === bracket.qf[i])?.name : 'Vencedor QF'}
               </div>
             </div>
           ))}
@@ -122,10 +121,10 @@ function BracketComponent() {
           {[...Array(2)].map((_, i) => (
             <div key={`sf-${i}`} className="space-y-1">
               <div 
-                className={`p-4 border rounded font-black text-lg cursor-pointer transition-all ${bracket.semi_finals[i] === bracket.final.winner_team_id ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
-                onClick={() => setBracket({...bracket, final: {...bracket.final, winner_team_id: bracket.semi_finals[i]}})}
+                className={`p-4 border rounded font-black text-lg cursor-pointer transition-all ${bracket.sf?.[i] === bracket.final?.winner_team_id ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
+                onClick={() => setBracket({...bracket, final: {...bracket.final, winner_team_id: bracket.sf?.[i]}})}
               >
-                {bracket.semi_finals[i] ? teams.find((t: any) => t.id === bracket.semi_finals[i])?.name : 'Vencedor SF'}
+                {bracket.sf?.[i] ? teams?.find((t: any) => t.id === bracket.sf[i])?.name : 'Vencedor SF'}
               </div>
             </div>
           ))}
@@ -137,18 +136,29 @@ function BracketComponent() {
            <Card className="border-4 border-primary bg-primary/5">
              <CardContent className="p-6 text-center space-y-4">
                 <div className="text-2xl font-black text-primary">
-                  {bracket.final.winner_team_id ? teams.find((t: any) => t.id === bracket.final.winner_team_id)?.name : 'ESCOLHA O CAMPEÃO'}
+                  {bracket.final?.winner_team_id ? teams?.find((t: any) => t.id === bracket.final.winner_team_id)?.name : 'ESCOLHA O CAMPEÃO'}
                 </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase text-muted-foreground">Placar Esperado (Final)</label>
-                  <input 
-                    type="text" 
-                    placeholder="Ex: 2-1" 
-                    className="w-full bg-background border rounded p-2 text-center font-black"
-                    value={bracket.final.score}
-                    disabled={isLocked}
-                    onChange={(e) => setBracket({...bracket, final: {...bracket.final, score: e.target.value}})}
-                  />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-muted-foreground">Casa</label>
+                    <input 
+                      type="number" 
+                      className="w-full bg-background border rounded p-2 text-center font-black"
+                      value={bracket.final?.home_score || 0}
+                      disabled={isLocked}
+                      onChange={(e) => setBracket({...bracket, final: {...bracket.final, home_score: parseInt(e.target.value) || 0}})}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-black uppercase text-muted-foreground">Fora</label>
+                    <input 
+                      type="number" 
+                      className="w-full bg-background border rounded p-2 text-center font-black"
+                      value={bracket.final?.away_score || 0}
+                      disabled={isLocked}
+                      onChange={(e) => setBracket({...bracket, final: {...bracket.final, away_score: parseInt(e.target.value) || 0}})}
+                    />
+                  </div>
                 </div>
              </CardContent>
            </Card>
