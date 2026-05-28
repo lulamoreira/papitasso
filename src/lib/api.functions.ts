@@ -11,7 +11,7 @@ export const getProfile = createServerFn({ method: "GET" })
       .from("profiles")
       .select("*, favorite_team:teams!profiles_favorite_team_id_fkey(*)")
       .eq("id", userId)
-      .single();
+      .maybeSingle();
 
     if (error) throw error;
     return data;
@@ -59,7 +59,7 @@ export const getNextMatch = createServerFn({ method: "GET" })
       .gte("kickoff_at", new Date().toISOString())
       .order("kickoff_at", { ascending: true })
       .limit(1)
-      .single();
+      .maybeSingle();
     if (error && error.code !== "PGRST116") throw error;
     return data || null;
   });
@@ -158,7 +158,7 @@ export const getPoolById = createServerFn({ method: "GET" })
       .from("pools")
       .select("*, owner:profiles!pools_owner_id_fkey(*)")
       .eq("id", id)
-      .single();
+      .maybeSingle();
     
     if (error) throw error;
     return data;
@@ -173,7 +173,7 @@ export const getPoolByInviteCode = createServerFn({ method: "GET" })
       .from("pools")
       .select("*, owner:profiles!pools_owner_id_fkey(*)")
       .eq("invite_code", code.toUpperCase())
-      .single();
+      .maybeSingle();
     
     if (error) throw error;
     return data;
@@ -190,7 +190,7 @@ export const joinPool = createServerFn({ method: "POST" })
       .from("pools")
       .select("id")
       .eq("invite_code", code.toUpperCase())
-      .single();
+      .maybeSingle();
     
     if (poolError) throw poolError;
 
@@ -247,7 +247,7 @@ export const upsertPrediction = createServerFn({ method: "POST" })
       .from("matches")
       .select("kickoff_at")
       .eq("id", matchId)
-      .single();
+      .maybeSingle();
     
     if (matchError) throw matchError;
     if (new Date(match.kickoff_at) <= new Date()) {
@@ -403,7 +403,7 @@ export const upsertPickemPrediction = createServerFn({ method: "POST" })
       .from("matches")
       .select("kickoff_at")
       .eq("id", matchId)
-      .single();
+      .maybeSingle();
     
     if (matchError) throw matchError;
     if (new Date(match.kickoff_at) <= new Date()) {
@@ -466,7 +466,7 @@ export const upsertSurvivorPrediction = createServerFn({ method: "POST" })
       .select("is_locked")
       .eq("pool_id", poolId)
       .eq("round_number", roundNumber)
-      .single();
+      .maybeSingle();
     
     if (roundError) throw roundError;
     if (round.is_locked) {
