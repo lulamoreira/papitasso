@@ -32,6 +32,7 @@ const STEPS = [
 
 function NewPoolComponent() {
   const [step, setStep] = useState(1);
+  const [hasAttemptedNext, setHasAttemptedNext] = useState(false);
   const [formData, setFormData] = useState<any>({
     type: "simple",
     scope_type: "full_tournament",
@@ -61,8 +62,29 @@ function NewPoolComponent() {
     onError: (err: any) => toast.error(err.message || "Erro ao criar bolão"),
   });
 
-  const nextStep = () => setStep((s) => Math.min(s + 1, 6));
-  const prevStep = () => setStep((s) => Math.max(s - 1, 1));
+  const validateStep = (currentStep: number): boolean => {
+    const identidadeStep = STEPS.findIndex(s => s.title === "Identidade") + 1;
+    
+    if (currentStep === identidadeStep) {
+      if (!formData.name || formData.name.trim().length < 3) {
+        setHasAttemptedNext(true);
+        toast.error("Dê um nome ao seu bolão (mínimo 3 letras)");
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const nextStep = () => {
+    if (!validateStep(step)) return;
+    setHasAttemptedNext(false);
+    setStep((s) => Math.min(s + 1, STEPS.length));
+  };
+
+  const prevStep = () => {
+    setHasAttemptedNext(false);
+    setStep((s) => Math.max(s - 1, 1));
+  };
 
   const progress = (step / STEPS.length) * 100;
 
@@ -240,13 +262,20 @@ function NewPoolComponent() {
             {step === 3 && (
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <Label>Nome do Bolão</Label>
+                  <Label className={hasAttemptedNext && (!formData.name || formData.name.trim().length < 3) ? "text-red-500" : ""}>
+                    Nome do Bolão
+                  </Label>
                   <Input 
                     placeholder="Ex: Amigos do Futebol, Firma 2026..." 
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="h-12"
+                    className={`h-12 ${hasAttemptedNext && (!formData.name || formData.name.trim().length < 3) ? "border-red-500 focus-visible:ring-red-500" : ""}`}
                   />
+                  {hasAttemptedNext && (!formData.name || formData.name.trim().length < 3) ? (
+                    <p className="text-xs text-red-500 font-medium">Nome obrigatório (mín. 3 letras)</p>
+                  ) : (
+                    <p className="text-xs text-muted-foreground">Esse nome aparece pros participantes</p>
+                  )}
                 </div>
                 
                 <div className="space-y-3">
