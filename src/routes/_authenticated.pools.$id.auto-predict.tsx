@@ -83,6 +83,7 @@ function AutoPredictPage() {
 
     setIsSavingAll(true);
     setSaveProgress(0);
+    setTotalToSave(unconfirmed.length);
 
     try {
       for (let i = 0; i < unconfirmed.length; i++) {
