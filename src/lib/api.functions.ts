@@ -83,7 +83,7 @@ export const getNextMatch = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("matches")
-      .select("*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*)")
+      .select("*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*), venue:venues(*)")
       .gte("kickoff_at", new Date().toISOString())
       .order("kickoff_at", { ascending: true })
       .limit(1)
