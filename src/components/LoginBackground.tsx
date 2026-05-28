@@ -6,7 +6,6 @@ const SOCCER_IMAGES = [
   "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&q=80&w=400&h=400",
   "https://images.unsplash.com/photo-1517466787929-bc90951d0974?auto=format&fit=crop&q=80&w=400&h=400",
   "https://images.unsplash.com/photo-1540747913346-19e3ad386698?auto=format&fit=crop&q=80&w=400&h=400",
-  "https://images.unsplash.com/photo-1510567198462-974a10128427?auto=format&fit=crop&q=80&w=400&h=400",
   "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?auto=format&fit=crop&q=80&w=400&h=400",
   "https://images.unsplash.com/photo-1431324155629-1a6eda1eed2d?auto=format&fit=crop&q=80&w=400&h=400",
   "https://images.unsplash.com/photo-1516515429572-12f3626a6c17?auto=format&fit=crop&q=80&w=400&h=400",
@@ -32,6 +31,9 @@ const SOCCER_IMAGES = [
   "https://images.unsplash.com/photo-1514163061630-403303a7a030?auto=format&fit=crop&q=80&w=400&h=400",
   "https://images.unsplash.com/photo-1509048191080-d2984bad6ad5?auto=format&fit=crop&q=80&w=400&h=400",
   "https://images.unsplash.com/photo-1516244485114-046603708e1a?auto=format&fit=crop&q=80&w=400&h=400",
+  "https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&q=80&w=400&h=400",
+  "https://images.unsplash.com/photo-1518604666860-9ed391f76460?auto=format&fit=crop&q=80&w=400&h=400",
+  "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&q=80&w=400&h=400",
 ];
 
 const GRID_SIZE = 24; // Lowered to ensure uniqueness with a pool of 30
