@@ -193,6 +193,7 @@ export const joinPool = createServerFn({ method: "POST" })
       .maybeSingle();
     
     if (poolError) throw poolError;
+    if (!pool) throw new Error("Bolão não encontrado");
 
     const { error: memberError } = await supabase
       .from("pool_members")
