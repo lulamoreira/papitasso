@@ -805,11 +805,11 @@ export const getCollectedCards = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("collected_cards")
-      .select("*, player:players(*, team:teams!players_team_id_fkey(*))")
+      .select("*")
       .eq("user_id", userId);
     
     if (error) throw error;
-    return data;
+    return data || [];
   });
 
 export const getUserStats = createServerFn({ method: "GET" })
