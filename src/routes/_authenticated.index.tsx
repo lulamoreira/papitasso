@@ -110,27 +110,45 @@ function DashboardComponent() {
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2 space-y-6">
-            {nextMatch && nextMatch.home_team && nextMatch.away_team && (
+            {nextMatch && (
               <Card className="overflow-hidden border-none bg-primary text-primary-foreground shadow-lg">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium uppercase tracking-wider opacity-80">Próximo Jogo</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
-                    <div className="flex flex-col items-center gap-2 w-1/3">
-                      <img src={nextMatch.home_team.flag_url || ""} alt={nextMatch.home_team.name} className="h-12 w-16 rounded object-cover shadow-sm" />
-                      <span className="text-center text-sm font-bold">{nextMatch.home_team.name}</span>
-                    </div>
-                    <div className="flex flex-col items-center gap-1">
-                      <span className="text-2xl font-black">VS</span>
-                      <span className="text-[10px] opacity-80 uppercase font-medium">
-                        {nextMatch.kickoff_at ? format(new Date(nextMatch.kickoff_at), "dd MMM 'às' HH:mm", { locale: ptBR }) : "TBA"}
-                      </span>
-                    </div>
-                    <div className="flex flex-col items-center gap-2 w-1/3">
-                      <img src={nextMatch.away_team.flag_url || ""} alt={nextMatch.away_team.name} className="h-12 w-16 rounded object-cover shadow-sm" />
-                      <span className="text-center text-sm font-bold">{nextMatch.away_team.name}</span>
-                    </div>
+                    {!nextMatch.home_team || !nextMatch.away_team ? (
+                      <div className="flex-1 text-center py-2">
+                        <div className="text-lg font-black tracking-tight">
+                          {nextMatch.placeholder_label || 'A definir'}
+                        </div>
+                        <div className="text-[10px] opacity-80 uppercase font-medium mt-1">
+                          {nextMatch.phase === 'round_of_32' ? 'Oitavas (32)' :
+                           nextMatch.phase === 'round_of_16' ? 'Oitavas' :
+                           nextMatch.phase === 'quarter' ? 'Quartas' :
+                           nextMatch.phase === 'semi' ? 'Semifinal' :
+                           nextMatch.phase === 'third' ? 'Disputa 3º lugar' :
+                           nextMatch.phase === 'final' ? 'FINAL' : 'Mata-mata'}
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex flex-col items-center gap-2 w-1/3">
+                          <img src={nextMatch.home_team?.flag_url || ""} alt={nextMatch.home_team?.name} className="h-12 w-16 rounded object-cover shadow-sm" />
+                          <span className="text-center text-sm font-bold truncate w-full">{nextMatch.home_team?.name}</span>
+                        </div>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className="text-2xl font-black italic tracking-tighter">VS</span>
+                          <span className="text-[10px] opacity-80 uppercase font-medium">
+                            {nextMatch.kickoff_at ? format(new Date(nextMatch.kickoff_at), "dd MMM 'às' HH:mm", { locale: ptBR }) : "TBA"}
+                          </span>
+                        </div>
+                        <div className="flex flex-col items-center gap-2 w-1/3">
+                          <img src={nextMatch.away_team?.flag_url || ""} alt={nextMatch.away_team?.name} className="h-12 w-16 rounded object-cover shadow-sm" />
+                          <span className="text-center text-sm font-bold truncate w-full">{nextMatch.away_team?.name}</span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 </CardContent>
               </Card>

@@ -208,25 +208,43 @@ function PoolDetailComponent() {
                       <span>{match.phase}</span>
                     </div>
                     <div className="flex items-center justify-between gap-4">
-                      <div className="flex-1 flex flex-col items-center gap-1">
-                        <img src={match.home_team.flag_url} className="h-6 w-9 object-cover rounded shadow-sm" alt="" />
-                        <span className="text-[10px] font-bold truncate w-full text-center">{match.home_team.name}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {isFinished ? (
-                          <>
-                            <span className="text-xl font-black">{match.home_score ?? 0}</span>
-                            <span className="text-muted-foreground opacity-30">x</span>
-                            <span className="text-xl font-black">{match.away_score ?? 0}</span>
-                          </>
-                        ) : (
-                          <span className="text-sm font-black text-primary/40 italic tracking-tighter">VS</span>
-                        )}
-                      </div>
-                      <div className="flex-1 flex flex-col items-center gap-1">
-                        <img src={match.away_team.flag_url} className="h-6 w-9 object-cover rounded shadow-sm" alt="" />
-                        <span className="text-[10px] font-bold truncate w-full text-center">{match.away_team.name}</span>
-                      </div>
+                      {!match.home_team || !match.away_team ? (
+                        <div className="flex-1 text-center py-4">
+                          <div className="text-sm font-black text-muted-foreground tracking-tight">
+                            {match.placeholder_label || 'A definir'}
+                          </div>
+                          <div className="text-[10px] text-muted-foreground/60 uppercase mt-1">
+                            {match.phase === 'round_of_32' ? 'Oitavas (32)' :
+                             match.phase === 'round_of_16' ? 'Oitavas' :
+                             match.phase === 'quarter' ? 'Quartas' :
+                             match.phase === 'semi' ? 'Semifinal' :
+                             match.phase === 'third' ? 'Disputa 3º lugar' :
+                             match.phase === 'final' ? 'FINAL' : 'Mata-mata'}
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex-1 flex flex-col items-center gap-1">
+                            <img src={match.home_team?.flag_url} className="h-6 w-9 object-cover rounded shadow-sm" alt="" />
+                            <span className="text-[10px] font-bold truncate w-full text-center">{match.home_team?.name}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {isFinished ? (
+                              <>
+                                <span className="text-xl font-black">{match.home_score ?? 0}</span>
+                                <span className="text-muted-foreground opacity-30">x</span>
+                                <span className="text-xl font-black">{match.away_score ?? 0}</span>
+                              </>
+                            ) : (
+                              <span className="text-sm font-black text-primary/40 italic tracking-tighter">VS</span>
+                            )}
+                          </div>
+                          <div className="flex-1 flex flex-col items-center gap-1">
+                            <img src={match.away_team?.flag_url} className="h-6 w-9 object-cover rounded shadow-sm" alt="" />
+                            <span className="text-[10px] font-bold truncate w-full text-center">{match.away_team?.name}</span>
+                          </div>
+                        </>
+                      )}
                     </div>
                     {!pred && !isFinished && !isLocked && (
                       <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-primary animate-pulse">
