@@ -114,6 +114,18 @@ function DashboardComponent() {
               <Card className="overflow-hidden border-none bg-primary text-primary-foreground shadow-lg">
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium uppercase tracking-wider opacity-80">Próximo Jogo</CardTitle>
+                  <div className="text-[11px] opacity-90 font-medium mt-0.5">
+                    Copa do Mundo FIFA 2026 ·{" "}
+                    {nextMatch.phase === 'group'
+                      ? `Fase de Grupos${nextMatch.home_team?.group_letter ? ` — Grupo ${nextMatch.home_team.group_letter}` : ''}`
+                      : nextMatch.phase === 'round_of_32' ? 'Fase Eliminatória (32)'
+                      : nextMatch.phase === 'round_of_16' ? 'Oitavas de Final'
+                      : nextMatch.phase === 'quarter' ? 'Quartas de Final'
+                      : nextMatch.phase === 'semi' ? 'Semifinal'
+                      : nextMatch.phase === 'third' ? 'Disputa de 3º Lugar'
+                      : nextMatch.phase === 'final' ? 'FINAL'
+                      : 'Mata-mata'}
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
@@ -121,14 +133,6 @@ function DashboardComponent() {
                       <div className="flex-1 text-center py-2">
                         <div className="text-lg font-black tracking-tight">
                           {nextMatch.placeholder_label || 'A definir'}
-                        </div>
-                        <div className="text-[10px] opacity-80 uppercase font-medium mt-1">
-                          {nextMatch.phase === 'round_of_32' ? 'Oitavas (32)' :
-                           nextMatch.phase === 'round_of_16' ? 'Oitavas' :
-                           nextMatch.phase === 'quarter' ? 'Quartas' :
-                           nextMatch.phase === 'semi' ? 'Semifinal' :
-                           nextMatch.phase === 'third' ? 'Disputa 3º lugar' :
-                           nextMatch.phase === 'final' ? 'FINAL' : 'Mata-mata'}
                         </div>
                       </div>
                     ) : (
@@ -150,6 +154,13 @@ function DashboardComponent() {
                       </>
                     )}
                   </div>
+                  {(nextMatch.venue?.name || nextMatch.stadium || nextMatch.city || nextMatch.country) && (
+                    <div className="mt-4 pt-3 border-t border-white/20 text-[11px] opacity-90 text-center font-medium">
+                      📍 {nextMatch.venue?.name || nextMatch.stadium}
+                      {(nextMatch.venue?.city || nextMatch.city) && ` · ${nextMatch.venue?.city || nextMatch.city}`}
+                      {(nextMatch.venue?.country || nextMatch.country) && `, ${nextMatch.venue?.country || nextMatch.country}`}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
