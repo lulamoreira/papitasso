@@ -50,17 +50,40 @@ import ai45 from "@/assets/login-bg/ai-45.jpg";
 import ai46 from "@/assets/login-bg/ai-46.jpg";
 import ai47 from "@/assets/login-bg/ai-47.jpg";
 import ai48 from "@/assets/login-bg/ai-48.jpg";
+import ai49 from "@/assets/login-bg/ai-49.jpg";
+import ai50 from "@/assets/login-bg/ai-50.jpg";
+import ai51 from "@/assets/login-bg/ai-51.jpg";
+import ai52 from "@/assets/login-bg/ai-52.jpg";
+import ai53 from "@/assets/login-bg/ai-53.jpg";
+import ai54 from "@/assets/login-bg/ai-54.jpg";
+import ai55 from "@/assets/login-bg/ai-55.jpg";
+import ai56 from "@/assets/login-bg/ai-56.jpg";
+import ai57 from "@/assets/login-bg/ai-57.jpg";
+import ai58 from "@/assets/login-bg/ai-58.jpg";
+import ai59 from "@/assets/login-bg/ai-59.jpg";
+import ai60 from "@/assets/login-bg/ai-60.jpg";
+import ai61 from "@/assets/login-bg/ai-61.jpg";
+import ai62 from "@/assets/login-bg/ai-62.jpg";
+import ai63 from "@/assets/login-bg/ai-63.jpg";
+import ai64 from "@/assets/login-bg/ai-64.jpg";
 
-const ALL_IMAGES = [
+const FLAMENGO_IMAGES = [ai49, ai50, ai51, ai52, ai53, ai54];
+const BRAZIL_IMAGES = [ai55, ai56, ai57, ai58, ai59, ai60];
+const OTHER_IMAGES = [
   ai01, ai02, ai03, ai04, ai05, ai06, ai07, ai08, ai09, ai10,
   ai11, ai12, ai13, ai14, ai15, ai16, ai17, ai18, ai19, ai20,
   ai21, ai22, ai23, ai24, ai25, ai26, ai27, ai28, ai29, ai30,
   ai31, ai32, ai33, ai34, ai35, ai36, ai37, ai38, ai39, ai40,
-  ai41, ai42, ai43, ai44, ai45, ai46, ai47, ai48
+  ai41, ai42, ai43, ai44, ai45, ai46, ai47, ai48, ai61, ai62,
+  ai63, ai64
 ];
+
+const ALL_IMAGES = [...OTHER_IMAGES, ...FLAMENGO_IMAGES, ...BRAZIL_IMAGES];
 
 const GRID_SIZE = 12; // 2 lines x 6 columns
 const COOLDOWN_MS = 60000; // 1 minute minimum between showing the same image
+
+
 
 export function LoginBackground() {
   const [images, setImages] = useState<string[]>([]);
@@ -68,12 +91,16 @@ export function LoginBackground() {
   const lastExitTime = useRef<Map<string, number>>(new Map());
 
   useEffect(() => {
-    // Initial random selection
-    const shuffled = [...ALL_IMAGES].sort(() => Math.random() - 0.5);
-    const initial = shuffled.slice(0, GRID_SIZE);
+    // Initial selection: Ensure 1 Flamengo, 1 Brazil, and 10 random others
+    const initialFlamengo = FLAMENGO_IMAGES[Math.floor(Math.random() * FLAMENGO_IMAGES.length)];
+    const initialBrazil = BRAZIL_IMAGES[Math.floor(Math.random() * BRAZIL_IMAGES.length)];
     
-    setImages(initial);
-    // Images on screen don't have an exit time yet
+    const others = ALL_IMAGES.filter(img => img !== initialFlamengo && img !== initialBrazil);
+    const shuffledOthers = [...others].sort(() => Math.random() - 0.5);
+    const initial = [initialFlamengo, initialBrazil, ...shuffledOthers.slice(0, GRID_SIZE - 2)];
+    
+    // Shuffle the grid so Flamengo/Brazil aren't always in slots 0 and 1
+    setImages([...initial].sort(() => Math.random() - 0.5));
 
     const interval = setInterval(() => {
       setImages((prev) => {
@@ -86,29 +113,37 @@ export function LoginBackground() {
         const slotToChange = Math.floor(Math.random() * GRID_SIZE);
         const oldImg = next[slotToChange];
         
-        // Find available images that:
-        // 1. Are NOT currently displayed anywhere in the grid
-        // 2. Haven't EXITED the screen in the last 60 seconds
-        const available = ALL_IMAGES.filter(img => {
+        // Check if removing this image would leave us with 0 Flamengo or 0 Brazil images
+        const flamengoCount = next.filter(img => FLAMENGO_IMAGES.includes(img)).length;
+        const brazilCount = next.filter(img => BRAZIL_IMAGES.includes(img)).length;
+        
+        const isOldFlamengo = FLAMENGO_IMAGES.includes(oldImg);
+        const isOldBrazil = BRAZIL_IMAGES.includes(oldImg);
+
+        // Determine which pool to pick from
+        let pool = ALL_IMAGES;
+        if (isOldFlamengo && flamengoCount === 1) {
+          pool = FLAMENGO_IMAGES; // Must replace Flamengo with Flamengo
+        } else if (isOldBrazil && brazilCount === 1) {
+          pool = BRAZIL_IMAGES; // Must replace Brazil with Brazil
+        }
+
+        const available = pool.filter(img => {
           const isDisplayed = next.includes(img);
           const exitTime = lastExitTime.current.get(img) || 0;
           return !isDisplayed && (now - exitTime >= COOLDOWN_MS);
         });
 
         if (available.length > 0) {
-          // Record the exit time of the image being replaced
           lastExitTime.current.set(oldImg, now);
-          
-          // Replace slot with a fresh image from the pool
           const newImg = available[Math.floor(Math.random() * available.length)];
           next[slotToChange] = newImg;
         } 
-        // Note: No fallback swap. If no image is available due to cooldown, we just wait for the next interval.
-        // This ensures the 60s rule is NEVER broken.
         
         return next;
       });
-    }, 2000); // Attempt to change one image every 2 seconds
+    }, 2000);
+
 
     return () => clearInterval(interval);
   }, []);
