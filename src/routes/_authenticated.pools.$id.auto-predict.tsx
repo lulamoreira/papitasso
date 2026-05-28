@@ -115,7 +115,7 @@ function AutoPredictPage() {
   return (
     <div className="container max-w-2xl mx-auto p-4 pb-24 space-y-6">
       <header className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => window.history.back()}>
+        <Button variant="ghost" size="icon" onClick={() => window.history.back()} disabled={isSavingAll}>
           <ChevronLeft />
         </Button>
         <div>
