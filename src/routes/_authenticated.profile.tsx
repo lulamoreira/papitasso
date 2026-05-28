@@ -263,6 +263,31 @@ function ProfileComponent() {
             <TeamAlbum teams={teams || []} collectedCards={collectedCards} />
           </TabsContent>
         </Tabs>
+
+        {/* Admin Section */}
+        <div className="mt-8 p-4 border-2 border-dashed border-orange-300 rounded-lg">
+          <p className="text-xs text-muted-foreground mb-2">⚙️ Admin temporário — remover depois</p>
+          <Button 
+            variant="outline" 
+            className="w-full sm:w-auto"
+            onClick={async () => {
+              toast.loading("Importando times e jogos da API...");
+              try {
+                const { data, error } = await supabase.functions.invoke('seed-fixture-ids');
+                if (error) throw error;
+                toast.success(`Importado! Times: ${data.teamsUpserted}, Jogos: ${data.matchesUpserted}`);
+                if (data.unmapped?.length) {
+                  console.warn('Times sem tradução:', data.unmapped);
+                  toast.warning(`${data.unmapped.length} times sem tradução (ver console)`);
+                }
+              } catch (e: any) {
+                toast.error("Erro: " + e.message);
+              }
+            }}
+          >
+            🌎 Importar Copa 2026 (API)
+          </Button>
+        </div>
       </main>
 
       <UnlockOverlay achievement={newUnlock} onClose={() => setNewUnlock(null)} />
