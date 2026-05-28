@@ -130,7 +130,7 @@ export const getPoolById = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("pools")
-      .select("*, owner:profiles(*)")
+      .select("*, owner:profiles!pools_owner_id_fkey(*)")
       .eq("id", id)
       .single();
     
