@@ -636,7 +636,7 @@ export const submitQuizAnswer = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
 
     const { data, error } = await supabase
-      .from("user_quiz_answers")
+      .from("quiz_answers")
       .insert({
         user_id: userId,
         quiz_id: quizId,
@@ -646,11 +646,11 @@ export const submitQuizAnswer = createServerFn({ method: "POST" })
       .select()
       .maybeSingle();
 
-    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
     if (error) throw error;
     if (!data) throw new Error('Não foi possível salvar resposta do quiz');
 
     await supabase.rpc('increment_xp', { p_user_id: userId, p_amount: isCorrect ? 10 : 5 });
+    await supabase.rpc('update_quiz_streak', { p_user_id: userId });
 
     return data;
   });
