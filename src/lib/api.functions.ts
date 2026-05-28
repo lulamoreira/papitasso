@@ -1144,6 +1144,10 @@ export const getPoolMembers = createServerFn({ method: "GET" })
       .select("*, profile:profiles(*)")
       .eq("pool_id", poolId);
 
+    if (error) throw error;
+    return data;
+  });
+
 export const getQuizLeaderboard = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: poolId, context }: any) => {
@@ -1154,8 +1158,3 @@ export const getQuizLeaderboard = createServerFn({ method: "GET" })
     if (error) throw error;
     return data;
   });
-
-    if (error) throw error;
-    return data;
-  });
-
