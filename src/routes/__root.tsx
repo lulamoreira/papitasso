@@ -1,4 +1,11 @@
-import { createFileRoute, redirect, Outlet, useRouter } from "@tanstack/react-router";
+import {
+  createRootRouteWithContext,
+  HeadContent,
+  Outlet,
+  Scripts,
+  useNavigate,
+  useRouter,
+} from "@tanstack/react-router";
 import { useQueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useEffect, useState, useMemo } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -30,6 +37,7 @@ export const Route = createRootRouteWithContext<{ queryClient: any }>()({
   }),
   shellComponent: RootShell,
   component: RootComponent,
+  errorComponent: ErrorComponent,
   notFoundComponent: NotFoundComponent,
 });
 
@@ -73,9 +81,38 @@ function RootComponent() {
           <Outlet />
         </motion.div>
       </AnimatePresence>
-      <NotFoundComponent />
       <Toaster position="top-center" expand={false} richColors />
     </QueryClientProvider>
+  );
+}
+
+function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
+  const router = useRouter();
+
+  console.error(error);
+
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center space-y-6 bg-background">
+      <div className="text-7xl">⚽</div>
+      <div className="space-y-2 max-w-md">
+        <h1 className="text-3xl font-black text-primary uppercase italic tracking-tighter">Ops, o lance foi para o VAR</h1>
+        <p className="text-muted-foreground">Não conseguimos carregar esta tela agora.</p>
+      </div>
+      <div className="flex flex-col sm:flex-row gap-3">
+        <Button
+          className="font-bold"
+          onClick={() => {
+            router.invalidate();
+            reset();
+          }}
+        >
+          Tentar novamente
+        </Button>
+        <Button variant="outline" onClick={() => router.navigate({ to: "/" })}>
+          Voltar para a Home
+        </Button>
+      </div>
+    </div>
   );
 }
 
@@ -100,7 +137,4 @@ function NotFoundComponent() {
     </div>
   );
 }
-
-import { createRootRouteWithContext, HeadContent, Scripts, useNavigate } from "@tanstack/react-router";
-
 
