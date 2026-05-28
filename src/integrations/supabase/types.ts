@@ -1540,6 +1540,18 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      quiz_leaderboard: {
+        Args: { p_pool_id?: string }
+        Returns: {
+          avatar_url: string
+          leaderboard_position: number
+          name: string
+          streak: number
+          total_answered: number
+          total_correct: number
+          user_id: string
+        }[]
+      }
       refresh_leaderboard_view: { Args: never; Returns: undefined }
       toggle_chat_reaction: {
         Args: { p_emoji: string; p_message_id: string }
