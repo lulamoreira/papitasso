@@ -34,7 +34,12 @@ function AutoPredictPage() {
         throw err;
       }
     },
-    retry: false
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    refetchOnReconnect: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
+    retry: false,
   });
 
   const [matches, setMatches] = useState<any[]>([]);
@@ -42,6 +47,9 @@ function AutoPredictPage() {
 
   // Initialize matches when data is loaded
   useEffect(() => {
+    if (suggestions?.limit_reached) {
+      toast.info(suggestions.message || "Você já usou o Modo Preguiça hoje.");
+    }
     if (suggestions?.predictions) {
       setMatches(suggestions.predictions);
     }
