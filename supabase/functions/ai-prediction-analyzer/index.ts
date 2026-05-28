@@ -2,7 +2,7 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
 import { verifyUser } from '../_shared/auth.ts'
 
-const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+const GROQ_API_KEY = Deno.env.get("GROQ_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
 const SUPABASE_SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
@@ -56,18 +56,25 @@ serve(async (req) => {
     O consenso do grupo é ${group_consensus}. Popularidade do palpite: ${popularity_pct.toFixed(1)}%.
     Responda em JSON: { risk_level: 'safe'|'medium'|'bold', comment: string (máximo 15 palavras) }`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${LOVABLE_API_KEY}`,
+        "Authorization": `Bearer ${GROQ_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "llama-3.3-70b-versatile",
         messages: [{ role: "user", content: prompt }],
-        response_format: { type: "json_object" }
+        temperature: 0.8,
+        max_tokens: 500
       }),
     })
+
+    if (!response.ok) {
+      const err = await response.text();
+      console.error('[Groq] error:', err);
+      throw new Error(`Groq ${response.status}: ${err}`);
+    }
 
     const aiResult = await response.json()
     const analysis = JSON.parse(aiResult.choices[0].message.content)
