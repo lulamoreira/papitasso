@@ -358,6 +358,18 @@ export const upsertPickemPrediction = createServerFn({ method: "POST" })
     const { poolId, matchId, winner } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
+    // Security check: Verify match is not locked
+    const { data: match, error: matchError } = await supabase
+      .from("matches")
+      .select("kickoff_at")
+      .eq("id", matchId)
+      .single();
+    
+    if (matchError) throw matchError;
+    if (new Date(match.kickoff_at) <= new Date()) {
+      throw new Error("Match already started. Predictions are locked.");
+    }
+
     const { data, error } = await supabase
       .from("predictions_pickem")
       .upsert({
