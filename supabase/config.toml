@@ -1,1 +1,22 @@
 project_id = "oweqrxqawwbcwrwoqsef"
+
+[functions.check-achievements]
+verify_jwt = true
+
+[functions.award-card]
+verify_jwt = true
+
+[functions.ai-auto-predict]
+verify_jwt = true
+
+[functions.ai-share-card]
+verify_jwt = true
+
+[functions.ai-commentator]
+verify_jwt = true
+
+[functions.ai-prediction-analyzer]
+verify_jwt = true
+
+[functions.convert-fantasy-xp]
+verify_jwt = true

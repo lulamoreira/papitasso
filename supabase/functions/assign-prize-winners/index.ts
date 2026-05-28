@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { verifyCronSecret } from '../_shared/auth.ts'
 
 const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
 const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
@@ -14,7 +15,8 @@ serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
   try {
-    // 1. Fetch pools that have prizes but no winners yet
+    verifyCronSecret(req);
+
     const { data: pools, error: poolsError } = await supabase
       .from("pools")
       .select("*, prizes(*)")
@@ -25,14 +27,12 @@ serve(async (req) => {
     const results = [];
 
     for (const pool of pools) {
-      // Check if all matches for this pool are finished
       const { data: poolMatches, error: matchesError } = await supabase.rpc('matches_for_pool', { p_pool_id: pool.id });
       if (matchesError) continue;
 
       const unfinished = poolMatches.filter((m: any) => m.status !== 'finished');
-      if (unfinished.length > 0) continue; // Not finished yet
+      if (unfinished.length > 0) continue; 
 
-      // Check if winners already assigned
       const { data: existingWinners, error: winnersCheckError } = await supabase
         .from("prize_winners")
         .select("id")
@@ -41,7 +41,6 @@ serve(async (req) => {
       
       if (winnersCheckError || (existingWinners && existingWinners.length > 0)) continue;
 
-      // 2. Calculate winners for each prize
       const { data: leaderboard, error: lbError } = await supabase
         .from("leaderboard_view")
         .select("*")
@@ -58,7 +57,6 @@ serve(async (req) => {
         } else if (prize.category === 'wooden_spoon') {
           winnerId = leaderboard[leaderboard.length - 1]?.user_id;
         } else if (prize.category === 'raffle') {
-          // Random among those who predicted in all games
           const { data: participants } = await supabase
             .from("predictions_exact")
             .select("user_id, count(id)")
@@ -70,7 +68,6 @@ serve(async (req) => {
             winnerId = participants[Math.floor(Math.random() * participants.length)].user_id;
           }
         } else if (prize.category === 'most_exact') {
-           // Fetch prediction stats
            const { data: topExacts } = await supabase
             .from("predictions_exact")
             .select("user_id, count(id)")
@@ -81,34 +78,6 @@ serve(async (req) => {
             .limit(1);
           
           winnerId = topExacts?.[0]?.user_id;
-        } else if (prize.category === 'most_brazil_correct') {
-          // Find Brazil team ID
-          const { data: brazil } = await supabase.from("teams").select("id").eq("name", "Brasil").single();
-          if (brazil) {
-            const { data: topBrazil } = await supabase
-              .from("predictions_exact")
-              .select("user_id, count(id)")
-              .eq("pool_id", pool.id)
-              .gt("points_awarded", 0)
-              .or(`match_id.in.(select id from matches where home_team_id = '${brazil.id}' or away_team_id = '${brazil.id}')`)
-              .group("user_id")
-              .order("count", { ascending: false })
-              .limit(1);
-            winnerId = topBrazil?.[0]?.user_id;
-          }
-        } else if (prize.category === 'phase_leader') {
-          const phase = prize.custom_rule_jsonb?.phase;
-          if (phase) {
-            const { data: phaseLeader } = await supabase
-              .from("predictions_exact")
-              .select("user_id, sum(points_awarded)")
-              .eq("pool_id", pool.id)
-              .filter("match.phase", "eq", phase) // This requires a join or subquery, easier to use a custom view or complex query
-              .group("user_id")
-              .order("sum", { ascending: false })
-              .limit(1);
-            winnerId = phaseLeader?.[0]?.user_id;
-          }
         }
 
         if (winnerId) {
@@ -118,10 +87,6 @@ serve(async (req) => {
             status: 'pending'
           });
 
-          // 3. Notify (Push logic would go here)
-          console.log(`Assigned winner ${winnerId} for prize ${prize.title} in pool ${pool.name}`);
-          
-          // Add to notifications table
           await supabase.from("notifications").insert({
             user_id: winnerId,
             title: "🎉 Você ganhou um prêmio!",
@@ -132,7 +97,6 @@ serve(async (req) => {
         }
       }
       
-      // Notify owner
       await supabase.from("notifications").insert({
         user_id: pool.owner_id,
         title: "🏆 Ganhadores definidos",

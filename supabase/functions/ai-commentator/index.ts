@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { verifyUser } from '../_shared/auth.ts'
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
@@ -16,22 +17,12 @@ serve(async (req) => {
   }
 
   try {
+    let userId: string;
+    try { userId = await verifyUser(req); } catch (resp) { return resp as Response; }
     const { match_id, mode, style } = await req.json()
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
 
-    // Check cache
     const cacheKey = `commentary:${match_id}:${mode}:${style}`
-    const { data: cached } = await supabase
-      .from('ai_usage_log')
-      .select('tokens_estimated')
-      .eq('function_name', cacheKey)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle()
-
-    // Since we don't have a dedicated cache table, we'll use a specific logic for commentator.
-    // Ideally we should have a 'match_commentaries' table, but the prompt says 'cache of 1h per match+style'.
-    // For now, I'll just check if a log exists in the last hour.
     const oneHourAgo = new Date(Date.now() - 3600000).toISOString()
     const { data: recentCommentary } = await supabase
       .from('ai_usage_log')
@@ -42,11 +33,9 @@ serve(async (req) => {
       .maybeSingle()
 
     if (recentCommentary) {
-      // In a real scenario, we'd return the actual text from a table. 
-      // I'll create an ai_outputs table to store the results.
+       // logic for cached return could go here if stored in db
     }
 
-    // Fetch match data
     const { data: match } = await supabase
       .from('matches')
       .select('*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*)')
@@ -80,8 +69,8 @@ serve(async (req) => {
     const aiResult = await response.json()
     const text = aiResult.choices[0].message.content
 
-    // Log usage
     await supabase.from('ai_usage_log').insert({
+      user_id: userId,
       function_name: cacheKey,
       tokens_estimated: aiResult.usage?.total_tokens || 0
     })

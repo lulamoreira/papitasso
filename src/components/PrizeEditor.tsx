@@ -61,7 +61,8 @@ export function PrizeEditor({ prizes, onChange }: PrizeEditorProps) {
     try {
       const fileExt = file.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `temp/${fileName}`;
+      const { data: { user } } = await supabase.auth.getUser();
+      const filePath = `${user!.id}/${fileName}`;
 
       const { error: uploadError } = await supabase.storage
         .from('prize-photos')

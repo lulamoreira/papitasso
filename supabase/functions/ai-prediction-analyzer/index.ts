@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { verifyUser } from '../_shared/auth.ts'
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
@@ -16,10 +17,11 @@ serve(async (req) => {
   }
 
   try {
+    let userId: string;
+    try { userId = await verifyUser(req); } catch (resp) { return resp as Response; }
     const { pool_id, match_id, predicted_home, predicted_away } = await req.json()
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
 
-    // Fetch pool predictions for this match
     const { data: allPredictions } = await supabase
       .from('predictions_exact')
       .select('home_score, away_score')
@@ -30,7 +32,6 @@ serve(async (req) => {
     const same = allPredictions?.filter(p => p.home_score === predicted_home && p.away_score === predicted_away).length || 0;
     const popularity_pct = total > 0 ? (same / total) * 100 : 100;
 
-    // Determine consensus
     const scoreCounts: Record<string, number> = {};
     allPredictions?.forEach(p => {
       const key = `${p.home_score}-${p.away_score}`;

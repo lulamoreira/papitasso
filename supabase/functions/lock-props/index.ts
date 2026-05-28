@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { verifyCronSecret } from '../_shared/auth.ts'
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
@@ -7,6 +8,8 @@ const supabase = createClient(
 
 Deno.serve(async (req) => {
   try {
+    verifyCronSecret(req);
+    
     const wcStartDate = new Date('2026-06-11T00:00:00Z');
     
     if (new Date() < wcStartDate) {
@@ -15,7 +18,6 @@ Deno.serve(async (req) => {
       })
     }
 
-    // Lock all prediction props that aren't locked yet
     const { error } = await supabase
       .from('predictions_props')
       .update({ locked_at: new Date().toISOString() })

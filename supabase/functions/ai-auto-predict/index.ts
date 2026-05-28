@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import { verifyUser } from '../_shared/auth.ts'
 
 const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
@@ -16,7 +17,9 @@ serve(async (req) => {
   }
 
   try {
-    const { pool_id, user_id } = await req.json()
+    let userId: string;
+    try { userId = await verifyUser(req); } catch (resp) { return resp as Response; }
+    const { pool_id } = await req.json()
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
 
     // Fetch matches for pool
@@ -27,7 +30,7 @@ serve(async (req) => {
       .from('predictions_exact')
       .select('match_id')
       .eq('pool_id', pool_id)
-      .eq('user_id', user_id)
+      .eq('user_id', userId)
 
     const predictedIds = new Set(userPredictions?.map(p => p.match_id) || []);
     const unpredictedMatches = poolMatches.filter((m: any) => !predictedIds.has(m.id));
@@ -36,11 +39,11 @@ serve(async (req) => {
       return new Response(JSON.stringify({ predictions: [] }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
-    // Rate limit check (max 1x per round - we'll check last 24h for now as 'round' is complex)
+    // Rate limit check
     const { data: recentUsage } = await supabase
       .from('ai_usage_log')
       .select('*')
-      .eq('user_id', user_id)
+      .eq('user_id', userId)
       .eq('function_name', 'ai-auto-predict')
       .gt('created_at', new Date(Date.now() - 86400000).toISOString())
       .limit(1)
@@ -49,7 +52,7 @@ serve(async (req) => {
       throw new Error("Limite do Modo Preguiça atingido (1x por dia).");
     }
 
-    // Fetch team details for rankings
+    // Fetch team details
     const { data: matchesWithTeams } = await supabase
       .from('matches')
       .select('*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*)')
@@ -83,11 +86,10 @@ serve(async (req) => {
       })
     }
 
-    // Log usage
     await supabase.from('ai_usage_log').insert({
-      user_id,
+      user_id: userId,
       function_name: 'ai-auto-predict',
-      tokens_estimated: predictions.length * 100 // Estimate
+      tokens_estimated: predictions.length * 100
     })
 
     return new Response(JSON.stringify({ predictions }), {

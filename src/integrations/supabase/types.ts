@@ -1432,6 +1432,23 @@ export type Database = {
         Args: { p_prop_id: string; p_resolved_value: string }
         Returns: undefined
       }
+      create_pool_with_owner: {
+        Args: {
+          p_invite_code: string
+          p_modes_enabled: string[]
+          p_name: string
+          p_scope_config: Json
+          p_scope_type: string
+          p_scoring_config: Json
+          p_type: string
+        }
+        Returns: {
+          id: string
+          invite_code: string
+          name: string
+          owner_id: string
+        }[]
+      }
       increment_xp: {
         Args: { p_amount: number; p_user_id: string }
         Returns: undefined

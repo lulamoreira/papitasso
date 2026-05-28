@@ -1,4 +1,5 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+import { verifyCronSecret } from '../_shared/auth.ts'
 
 const supabase = createClient(
   Deno.env.get('SUPABASE_URL') ?? '',
@@ -6,6 +7,14 @@ const supabase = createClient(
 )
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: { 'Access-Control-Allow-Origin': '*' } })
+  
+  try {
+    verifyCronSecret(req);
+  } catch (resp) {
+    return resp as Response;
+  }
+
   const apiKey = Deno.env.get('SPORTS_API_KEY')
   if (!apiKey) return new Response(JSON.stringify({ error: 'Missing SPORTS_API_KEY' }), { status: 400 })
 
