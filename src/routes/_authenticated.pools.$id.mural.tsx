@@ -1,11 +1,11 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMuralPosts, createMuralPost, deleteMuralPost, getProfile } from "@/lib/api.functions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { User, Trash2, Megaphone, Trophy, MessageSquare, Flame } from "lucide-react";
+import { User, Trash2, Megaphone, Trophy, MessageSquare, Flame, ChevronLeft } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { useState, useEffect } from "react";
@@ -26,6 +26,7 @@ export const Route = createFileRoute("/_authenticated/pools/$id/mural")({
 
 function MuralComponent() {
   const { id } = useParams({ strict: false }) as any;
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [content, setContent] = useState("");
 
@@ -87,6 +88,19 @@ function MuralComponent() {
 
   return (
     <div className="container mx-auto p-4 space-y-6 pb-24">
+      <header className="flex items-center gap-2 pb-3 mb-3 border-b">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1"
+          onClick={() => navigate({ to: "/pools/$id", params: { id } })}
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Voltar ao Bolão
+        </Button>
+        <h1 className="text-lg font-bold ml-auto">Mural da Torcida</h1>
+      </header>
+
       <Card className="border-2 border-primary/20 shadow-xl shadow-primary/5">
         <CardContent className="p-4">
           <form onSubmit={handleSubmit} className="flex gap-3">

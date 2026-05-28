@@ -1,10 +1,10 @@
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute, useParams, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getPoolById, getMatchesForPool, getBracketPrediction, upsertBracketPrediction, getTeams } from "@/lib/api.functions";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { Lock, Save } from "lucide-react";
+import { Lock, Save, ChevronLeft } from "lucide-react";
 import { useState, useEffect } from "react";
 
 export const Route = createFileRoute("/_authenticated/pools/$id/bracket")({
@@ -21,6 +21,7 @@ export const Route = createFileRoute("/_authenticated/pools/$id/bracket")({
 
 function BracketComponent() {
   const { id } = useParams({ from: "/_authenticated/pools/$id/bracket" } as any);
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   const { data: pool } = useSuspenseQuery({ queryKey: ["pool", id], queryFn: () => getPoolById({ data: id } as any) });
@@ -63,15 +64,25 @@ function BracketComponent() {
 
   return (
     <div className="container mx-auto p-4 space-y-6 pb-24 overflow-x-auto">
-      <header className="mb-6 flex items-center justify-between min-w-[600px]">
-        <div>
-          <h1 className="text-2xl font-black">Bracket Challenge</h1>
-          <p className="text-muted-foreground text-sm">Monte sua chave do mata-mata até a final.</p>
+      <header className="flex items-center gap-2 pb-3 mb-6 border-b min-w-[600px]">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="gap-1"
+          onClick={() => navigate({ to: "/pools/$id", params: { id } })}
+        >
+          <ChevronLeft className="h-4 w-4" />
+          Voltar ao Bolão
+        </Button>
+        <div className="flex-1 px-4">
+          <h1 className="text-lg font-bold">Bracket Challenge</h1>
+          <p className="text-muted-foreground text-[10px] uppercase font-black">Monte sua chave</p>
         </div>
         <Button 
+          size="sm"
           disabled={isLocked || mutation.isPending} 
           onClick={handleSave}
-          className="gap-2 font-black"
+          className="gap-2 font-black h-9"
         >
           {isLocked ? <Lock className="h-4 w-4" /> : <Save className="h-4 w-4" />}
           {isLocked ? 'BLOQUEADO' : 'SALVAR CHAVE'}

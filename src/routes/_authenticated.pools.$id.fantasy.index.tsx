@@ -4,7 +4,7 @@ import { getFantasyLineup, getPoolById, getFantasyRanking } from "@/lib/api.func
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FantasyPitch } from "@/components/fantasy/FantasyPitch";
-import { Trophy, Users, TrendingUp, Clock, ChevronRight, Settings, ArrowRightLeft } from "lucide-react";
+import { Trophy, Users, TrendingUp, Clock, ChevronRight, Settings, ArrowRightLeft, ChevronLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 
@@ -58,14 +58,23 @@ function FantasyDashboardComponent() {
   return (
     <div className="min-h-screen bg-background pb-20">
       <header className="bg-primary text-white p-6 pb-20 rounded-b-[3rem] space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="text-white hover:bg-white/10 gap-1 px-2"
+              onClick={() => navigate({ to: "/pools/$id", params: { id } })}
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Voltar ao Bolão</span>
+            </Button>
+            <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md hidden xs:block">
               <Trophy className="h-6 w-6" />
             </div>
             <div>
               <p className="text-[10px] font-black uppercase tracking-widest opacity-60">Meu Desempenho</p>
-              <h1 className="text-2xl font-black uppercase italic tracking-tighter leading-none">Fantasy World Cup</h1>
+              <h1 className="text-xl font-black uppercase italic tracking-tighter leading-none">Fantasy World Cup</h1>
             </div>
           </div>
           <Link to={`/pools/${id}/fantasy/ranking`}>
