@@ -88,7 +88,7 @@ function DashboardComponent() {
             toast.success("🇧🇷 É HEXA! 🇧🇷", { icon: "⚽" });
           }}>
             <Trophy className="h-6 w-6 text-primary transition-transform active:scale-125" />
-            <span className="text-xl font-black text-primary tracking-tighter italic">GOLPALPITE</span>
+            <span className="text-xl font-black text-primary tracking-tighter italic">PAPITEAI</span>
           </div>
           <div className="flex items-center gap-3">
             <div className="text-right hidden sm:block">

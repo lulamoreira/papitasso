@@ -76,7 +76,7 @@ function NewPoolComponent() {
   };
 
   const shareWhatsApp = () => {
-    const text = encodeURIComponent(`Participe do meu bolão ${createdPool?.name} no GolPalpite! Use o código: ${createdPool?.invite_code} ou o link: ${shareUrl}`);
+    const text = encodeURIComponent(`Participe do meu bolão ${createdPool?.name} no PapiteAI! Use o código: ${createdPool?.invite_code} ou o link: ${shareUrl}`);
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
 
