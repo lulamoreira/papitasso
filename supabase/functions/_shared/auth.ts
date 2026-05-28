@@ -7,9 +7,19 @@ export async function verifyUser(req: Request): Promise<string> {
       status: 401, headers: { 'Content-Type': 'application/json' } 
     })
   }
+  const anonKey = Deno.env.get('SUPABASE_ANON_KEY') 
+    ?? Deno.env.get('SUPABASE_PUBLISHABLE_KEY')
+    ?? '';
+    
+  if (!anonKey) {
+    throw new Response(JSON.stringify({ error: 'Server misconfigured: missing anon key' }), { 
+      status: 500, headers: { 'Content-Type': 'application/json' } 
+    });
+  }
+
   const supabase = createClient(
     Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SUPABASE_PUBLISHABLE_KEY')!,
+    anonKey,
     { global: { headers: { Authorization: authHeader } } }
   )
   const { data: { user }, error } = await supabase.auth.getUser()
