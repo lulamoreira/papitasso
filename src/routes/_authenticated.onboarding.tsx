@@ -23,7 +23,7 @@ function OnboardingComponent() {
   const { data: teams } = useSuspenseQuery({ queryKey: ["teams"], queryFn: () => getTeams() });
   const { data: profile } = useSuspenseQuery({ queryKey: ["profile"], queryFn: () => getProfile() });
   
-  const [step, setStep] = useState(profile?.favorite_team_id ? 2 : 1);
+  const [step, setStep] = useState(profile && profile.favorite_team_id ? 2 : 1);
   const [searchTerm, setSearchTerm] = useState("");
   const [tourStep, setTourStep] = useState(0);
   
