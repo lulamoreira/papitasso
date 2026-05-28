@@ -91,6 +91,7 @@ export const createPool = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const invite_code = Math.random().toString(36).substring(2, 8).toUpperCase();
     
+    // Inserção usando o cliente autenticado (userId vem do token JWT)
     const { data: pool, error: poolError } = await supabase
       .from("pools")
       .insert({
