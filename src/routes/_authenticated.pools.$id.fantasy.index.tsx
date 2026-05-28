@@ -7,6 +7,7 @@ import { FantasyPitch } from "@/components/fantasy/FantasyPitch";
 import { Trophy, Users, TrendingUp, Clock, ChevronRight, Settings, ArrowRightLeft, ChevronLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
+import { PageHeader } from "@/components/PageHeader";
 
 
 export const Route = createFileRoute("/_authenticated/pools/$id/fantasy/")({
@@ -30,18 +31,21 @@ function FantasyDashboardComponent() {
 
   if (!lineup) {
     return (
-      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-8 space-y-6 text-center">
-        <div className="p-6 bg-primary/10 rounded-full">
-          <Trophy className="h-16 w-16 text-primary" />
+      <div className="min-h-screen bg-background flex flex-col">
+        <PageHeader title="Fantasy Mode" backTo="/pools/$id" backToParams={{ id }} />
+        <div className="flex-1 flex flex-col items-center justify-center p-8 space-y-6 text-center">
+          <div className="p-6 bg-primary/10 rounded-full">
+            <Trophy className="h-16 w-16 text-primary" />
+          </div>
+          <div className="space-y-2">
+            <h1 className="text-3xl font-black uppercase italic tracking-tighter">Fantasy Mode</h1>
+            <p className="text-muted-foreground">Você ainda não escalou seu time para este bolão.</p>
+          </div>
+          <Button size="lg" className="h-14 px-8 font-black uppercase italic gap-2" onClick={() => navigate({ to: `/pools/${id}/fantasy/build` })}>
+            Começar Escalada
+            <ChevronRight className="h-6 w-6" />
+          </Button>
         </div>
-        <div className="space-y-2">
-          <h1 className="text-3xl font-black uppercase italic tracking-tighter">Fantasy Mode</h1>
-          <p className="text-muted-foreground">Você ainda não escalou seu time para este bolão.</p>
-        </div>
-        <Button size="lg" className="h-14 px-8 font-black uppercase italic gap-2" onClick={() => navigate({ to: `/pools/${id}/fantasy/build` })}>
-          Começar Escalada
-          <ChevronRight className="h-6 w-6" />
-        </Button>
       </div>
     );
   }

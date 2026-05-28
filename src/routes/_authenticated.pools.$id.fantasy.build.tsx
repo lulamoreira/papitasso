@@ -12,6 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
+import { PageHeader } from "@/components/PageHeader";
 
 export const Route = createFileRoute("/_authenticated/pools/$id/fantasy/build")({
   loader: async ({ params, context }: any) => {
@@ -125,10 +126,10 @@ function FantasyBuildComponent() {
   const isComplete = slots.every(s => s.player) && captainId && viceCaptainId;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col md:flex-row">
+    <div className="min-h-screen bg-background flex flex-col">
+      <PageHeader title="Escalar Time" backTo="/pools/$id/fantasy" backToParams={{ id }} />
+      
       <main className="flex-1 p-4 md:p-8 space-y-8 overflow-y-auto pb-24">
-
-
         <div className="flex justify-end gap-2">
           <select 
             className="bg-muted border-none rounded-full px-4 py-2 text-xs font-black uppercase"
@@ -171,7 +172,40 @@ function FantasyBuildComponent() {
           {upsertMutation.isPending ? "Salvando..." : "Confirmar Time"}
           <ChevronRight className="ml-2 h-6 w-6" />
         </Button>
-      </div>
+
+        <div className="md:border-t mt-8 pt-8 space-y-6">
+          <h3 className="font-black uppercase text-xs tracking-widest text-muted-foreground">Capitães</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+             <div className="space-y-2">
+               <label className="text-[10px] font-black uppercase text-muted-foreground flex items-center gap-1">
+                 <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" /> Capitão (2x pts)
+               </label>
+               <select 
+                 className="w-full bg-background border rounded-lg p-2 text-xs"
+                 value={captainId || ""}
+                 onChange={(e) => setCaptainId(e.target.value)}
+               >
+                 <option value="">Selecionar...</option>
+                 {Object.values(selectedSlots).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+               </select>
+             </div>
+
+             <div className="space-y-2">
+               <label className="text-[10px] font-black uppercase text-muted-foreground flex items-center gap-1">
+                 <Star className="h-3 w-3 text-slate-400 fill-slate-400" /> Vice-Capitão
+               </label>
+               <select 
+                 className="w-full bg-background border rounded-lg p-2 text-xs"
+                 value={viceCaptainId || ""}
+                 onChange={(e) => setViceCaptainId(e.target.value)}
+               >
+                 <option value="">Selecionar...</option>
+                 {Object.values(selectedSlots).filter(p => p.id !== captainId).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+               </select>
+             </div>
+          </div>
+        </div>
+      </main>
 
       <AnimatePresence>
         {activeSlot && (
@@ -226,39 +260,6 @@ function FantasyBuildComponent() {
           </motion.div>
         )}
       </AnimatePresence>
-
-      <div className="p-4 md:border-l bg-muted/30 w-full md:w-64 space-y-6">
-        <h3 className="font-black uppercase text-xs tracking-widest text-muted-foreground">Capitães</h3>
-        <div className="space-y-4">
-           <div className="space-y-2">
-             <label className="text-[10px] font-black uppercase text-muted-foreground flex items-center gap-1">
-               <Star className="h-3 w-3 text-yellow-400 fill-yellow-400" /> Capitão (2x pts)
-             </label>
-             <select 
-               className="w-full bg-background border rounded-lg p-2 text-xs"
-               value={captainId || ""}
-               onChange={(e) => setCaptainId(e.target.value)}
-             >
-               <option value="">Selecionar...</option>
-               {Object.values(selectedSlots).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-             </select>
-           </div>
-
-           <div className="space-y-2">
-             <label className="text-[10px] font-black uppercase text-muted-foreground flex items-center gap-1">
-               <Star className="h-3 w-3 text-slate-400 fill-slate-400" /> Vice-Capitão
-             </label>
-             <select 
-               className="w-full bg-background border rounded-lg p-2 text-xs"
-               value={viceCaptainId || ""}
-               onChange={(e) => setViceCaptainId(e.target.value)}
-             >
-               <option value="">Selecionar...</option>
-               {Object.values(selectedSlots).filter(p => p.id !== captainId).map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-             </select>
-           </div>
-        </div>
-      </div>
     </div>
   );
 }
