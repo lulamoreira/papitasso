@@ -118,6 +118,21 @@ export const createPool = createServerFn({ method: "POST" })
 
     if (memberError) throw memberError;
 
+    if (validated.prizes && validated.prizes.length > 0) {
+      const prizesToInsert = validated.prizes.map((p, idx) => ({
+        ...p,
+        pool_id: pool.id,
+        position_order: p.position_order ?? idx,
+      }));
+      const { error: prizesError } = await supabase
+        .from('prizes')
+        .insert(prizesToInsert);
+      
+      if (prizesError) {
+        console.error('Falha ao inserir prêmios:', prizesError);
+      }
+    }
+
     return pool;
   });
 
