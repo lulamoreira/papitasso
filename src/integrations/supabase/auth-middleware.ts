@@ -41,22 +41,8 @@ export const requireSupabaseAuth = createMiddleware({ type: 'function' }).server
       throw new Error('AUTH_REQUIRED:/login');
     }
 
-    const supabase = createClient<Database>(
-      SUPABASE_URL!,
-      SUPABASE_PUBLISHABLE_KEY!,
-      {
-        global: {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-        auth: {
-          storage: undefined,
-          persistSession: false,
-          autoRefreshToken: false,
-        },
-      }
-    );
+    const { createServerClient } = await import('./client.server');
+    const supabase = createServerClient(request);
 
     const { data, error } = await supabase.auth.getClaims(token);
     if (error || !data?.claims) {

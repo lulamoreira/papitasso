@@ -12,14 +12,14 @@ import { toast } from "sonner";
 interface Prize {
   id?: string;
   rank?: number;
-  category?: string;
+  category: 'ranking' | 'most_exact' | 'most_brazil_correct' | 'phase_leader' | 'wooden_spoon' | 'raffle' | 'custom';
   title: string;
   description?: string;
   photo_url?: string;
   estimated_value_cents?: number;
   sponsor?: string;
   delivery_method?: string;
-  position_order: number;
+  position_order?: number;
 }
 
 interface PrizeEditorProps {
@@ -27,15 +27,27 @@ interface PrizeEditorProps {
   onChange: (prizes: Prize[]) => void;
 }
 
+const CATEGORIES = [
+  { value: 'ranking', label: 'Por posição no ranking' },
+  { value: 'most_exact', label: 'Mais placares exatos' },
+  { value: 'most_brazil_correct', label: 'Acertou tudo do Brasil' },
+  { value: 'phase_leader', label: 'Líder de fase' },
+  { value: 'wooden_spoon', label: 'Lanterna (Colher de Madeira)' },
+  { value: 'raffle', label: 'Sorteio' },
+  { value: 'custom', label: 'Customizado' },
+];
+
 export function PrizeEditor({ prizes, onChange }: PrizeEditorProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [uploading, setUploading] = useState(false);
   
+  const [prizeType, setPrizeType] = useState<'ranking' | 'special'>('ranking');
   const [currentPrize, setCurrentPrize] = useState<Partial<Prize>>({
     title: "",
     description: "",
-    category: "1º Lugar",
+    category: "ranking",
+    rank: 1,
     estimated_value_cents: 0,
     delivery_method: "A combinar",
     sponsor: "",
@@ -76,23 +88,21 @@ export function PrizeEditor({ prizes, onChange }: PrizeEditorProps) {
       return;
     }
 
+    const prizeToSave = { 
+      ...currentPrize, 
+      category: prizeType === 'ranking' ? 'ranking' : (currentPrize.category || 'custom')
+    } as Prize;
+
     const newPrizes = [...prizes];
     if (editingIndex !== null) {
-      newPrizes[editingIndex] = { ...newPrizes[editingIndex], ...currentPrize } as Prize;
+      newPrizes[editingIndex] = prizeToSave;
     } else {
-      newPrizes.push({ ...currentPrize, position_order: prizes.length } as Prize);
+      newPrizes.push({ ...prizeToSave, position_order: prizes.length });
     }
 
     onChange(newPrizes);
     setIsDialogOpen(false);
     setEditingIndex(null);
-    setCurrentPrize({
-      title: "",
-      description: "",
-      category: "Próximo Lugar",
-      estimated_value_cents: 0,
-      delivery_method: "A combinar",
-    });
   };
 
   const handleRemove = (index: number) => {
@@ -101,7 +111,9 @@ export function PrizeEditor({ prizes, onChange }: PrizeEditorProps) {
   };
 
   const handleEdit = (index: number) => {
-    setCurrentPrize(prizes[index]);
+    const p = prizes[index];
+    setCurrentPrize(p);
+    setPrizeType(p.category === 'ranking' ? 'ranking' : 'special');
     setEditingIndex(index);
     setIsDialogOpen(true);
   };
@@ -113,16 +125,18 @@ export function PrizeEditor({ prizes, onChange }: PrizeEditorProps) {
       <div className="flex items-center justify-between mb-2">
         <div className="text-left">
           <p className="text-sm font-medium">{prizes.length} prêmios definidos</p>
-          <p className="text-xs text-muted-foreground">Total estimado: R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
+          <p className="text-xs text-muted-foreground">Total: R$ {totalValue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button variant="outline" size="sm" onClick={() => {
               setEditingIndex(null);
+              setPrizeType('ranking');
               setCurrentPrize({
                 title: "",
                 description: "",
-                category: `${prizes.length + 1}º Lugar`,
+                category: "ranking",
+                rank: prizes.filter(p => p.category === 'ranking').length + 1,
                 estimated_value_cents: 0,
                 delivery_method: "A combinar",
               });
@@ -136,15 +150,55 @@ export function PrizeEditor({ prizes, onChange }: PrizeEditorProps) {
               <DialogTitle>{editingIndex !== null ? "Editar Prêmio" : "Novo Prêmio"}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Categoria / Posição</Label>
-                  <Input 
-                    placeholder="Ex: 1º Lugar" 
-                    value={currentPrize.category} 
-                    onChange={e => setCurrentPrize({...currentPrize, category: e.target.value})}
-                  />
+              <div className="space-y-3">
+                <Label>Tipo de Premiação</Label>
+                <div className="flex gap-4">
+                  <div className="flex items-center space-x-2">
+                    <input 
+                      type="radio" 
+                      id="type-ranking" 
+                      checked={prizeType === 'ranking'} 
+                      onChange={() => setPrizeType('ranking')} 
+                    />
+                    <Label htmlFor="type-ranking" className="font-normal cursor-pointer">Por ranking</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <input 
+                      type="radio" 
+                      id="type-special" 
+                      checked={prizeType === 'special'} 
+                      onChange={() => setPrizeType('special')} 
+                    />
+                    <Label htmlFor="type-special" className="font-normal cursor-pointer">Especial</Label>
+                  </div>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {prizeType === 'ranking' ? (
+                  <div className="space-y-2">
+                    <Label>Posição</Label>
+                    <Input 
+                      type="number" 
+                      value={currentPrize.rank} 
+                      onChange={e => setCurrentPrize({...currentPrize, rank: parseInt(e.target.value)})}
+                    />
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <Label>Categoria</Label>
+                    <select 
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                      value={currentPrize.category}
+                      onChange={e => setCurrentPrize({...currentPrize, category: e.target.value as any})}
+                    >
+                      {CATEGORIES.filter(c => c.value !== 'ranking').map(c => (
+                        <option key={c.value} value={c.value}>{c.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+                
                 <div className="space-y-2">
                   <Label>Valor Estimado (R$)</Label>
                   <Input 
@@ -245,7 +299,7 @@ export function PrizeEditor({ prizes, onChange }: PrizeEditorProps) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold px-1.5 py-0.5 bg-primary/10 text-primary rounded uppercase">
-                      {prize.category}
+                      {prize.category === 'ranking' ? `${prize.rank}º Lugar` : CATEGORIES.find(c => c.value === prize.category)?.label || prize.category}
                     </span>
                     {prize.estimated_value_cents && (
                       <span className="text-[10px] font-medium text-muted-foreground">

@@ -77,7 +77,7 @@ export const createPool = createServerFn({ method: "POST" })
       modes_enabled: z.array(z.string()).optional(),
       prizes: z.array(z.object({
         rank: z.number().optional(),
-        category: z.string().optional(),
+        category: z.enum(['ranking', 'most_exact', 'most_brazil_correct', 'phase_leader', 'wooden_spoon', 'raffle', 'custom']),
         title: z.string(),
         description: z.string().optional(),
         photo_url: z.string().optional(),
@@ -91,6 +91,7 @@ export const createPool = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const invite_code = Math.random().toString(36).substring(2, 8).toUpperCase();
     
+    // Inserção usando o cliente autenticado (userId vem do token JWT)
     const { data: pool, error: poolError } = await supabase
       .from("pools")
       .insert({
@@ -119,12 +120,15 @@ export const createPool = createServerFn({ method: "POST" })
     if (memberError) throw memberError;
 
     if (validated.prizes && validated.prizes.length > 0) {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      
       const prizesToInsert = validated.prizes.map((p, idx) => ({
         ...p,
         pool_id: pool.id,
         position_order: p.position_order ?? idx,
       }));
-      const { error: prizesError } = await supabase
+
+      const { error: prizesError } = await supabaseAdmin
         .from('prizes')
         .insert(prizesToInsert);
       
