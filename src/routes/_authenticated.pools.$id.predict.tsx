@@ -40,7 +40,7 @@ function PredictListComponent() {
     <div className="min-h-screen bg-background">
       <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
         <div className="container mx-auto flex h-16 items-center px-4 gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate({ to: `/pools/${id}` })}>
+          <Button variant="ghost" size="icon" onClick={() => navigate({ to: "/pools/$id", params: { id } })}>
             <ChevronLeft className="h-6 w-6" />
           </Button>
           <div className="flex-1">
@@ -51,7 +51,7 @@ function PredictListComponent() {
             variant="outline" 
             size="sm" 
             className="gap-2 text-xs border-primary/20 hover:border-primary hover:bg-primary/5"
-            onClick={() => navigate({ to: `/pools/${id}/auto-predict` })}
+            onClick={() => navigate({ to: "/pools/$id/auto-predict", params: { id } })}
           >
             <Sparkles className="w-3.5 h-3.5 text-yellow-500" />
             <span className="hidden sm:inline">Palpita pra mim</span>
@@ -77,7 +77,10 @@ function PredictListComponent() {
             >
               <Card 
                 className={`overflow-hidden transition-all relative ${locked ? 'opacity-70' : 'cursor-pointer hover:border-primary border-2 border-transparent shadow-sm'}`}
-                onClick={() => !locked && navigate({ to: `/pools/${id}/predict/${match.id}` })}
+                onClick={() => !locked && navigate({ 
+                  to: "/pools/$id/predict/$matchId", 
+                  params: { id, matchId: match.id } 
+                })}
               >
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">

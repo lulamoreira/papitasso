@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/pools/$id/predict/$matchId
 });
 
 function PredictionDetailComponent() {
-  const { id, matchId } = useParams({ from: "/_authenticated/pools/$id/predict/$matchId" as any });
+  const { id, matchId } = useParams({ from: "/_authenticated/pools/$id/predict/$matchId" });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   
@@ -90,9 +90,12 @@ function PredictionDetailComponent() {
     });
 
     if (nextPending) {
-      navigate({ to: `/pools/${id}/predict/${nextPending.id}` });
+      navigate({ 
+        to: "/pools/$id/predict/$matchId", 
+        params: { id, matchId: nextPending.id } 
+      });
     } else {
-      navigate({ to: `/pools/${id}/predict` });
+      navigate({ to: "/pools/$id/predict", params: { id } });
     }
   };
 
@@ -116,7 +119,7 @@ function PredictionDetailComponent() {
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
         <div className="container mx-auto flex h-16 items-center px-4 gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate({ to: `/pools/${id}/predict` })}>
+          <Button variant="ghost" size="icon" onClick={() => navigate({ to: "/pools/$id/predict", params: { id } })}>
             <ChevronLeft className="h-6 w-6" />
           </Button>
           <div className="flex-1">
