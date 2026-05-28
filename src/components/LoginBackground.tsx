@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Import AI-generated football images
+// Import all AI-generated football images
 import ai01 from "@/assets/login-bg/ai-01.jpg";
 import ai02 from "@/assets/login-bg/ai-02.jpg";
 import ai03 from "@/assets/login-bg/ai-03.jpg";
@@ -26,11 +26,37 @@ import ai21 from "@/assets/login-bg/ai-21.jpg";
 import ai22 from "@/assets/login-bg/ai-22.jpg";
 import ai23 from "@/assets/login-bg/ai-23.jpg";
 import ai24 from "@/assets/login-bg/ai-24.jpg";
+import ai25 from "@/assets/login-bg/ai-25.jpg";
+import ai26 from "@/assets/login-bg/ai-26.jpg";
+import ai27 from "@/assets/login-bg/ai-27.jpg";
+import ai28 from "@/assets/login-bg/ai-28.jpg";
+import ai29 from "@/assets/login-bg/ai-29.jpg";
+import ai30 from "@/assets/login-bg/ai-30.jpg";
+import ai31 from "@/assets/login-bg/ai-31.jpg";
+import ai32 from "@/assets/login-bg/ai-32.jpg";
+import ai33 from "@/assets/login-bg/ai-33.jpg";
+import ai34 from "@/assets/login-bg/ai-34.jpg";
+import ai35 from "@/assets/login-bg/ai-35.jpg";
+import ai36 from "@/assets/login-bg/ai-36.jpg";
+import ai37 from "@/assets/login-bg/ai-37.jpg";
+import ai38 from "@/assets/login-bg/ai-38.jpg";
+import ai39 from "@/assets/login-bg/ai-39.jpg";
+import ai40 from "@/assets/login-bg/ai-40.jpg";
+import ai41 from "@/assets/login-bg/ai-41.jpg";
+import ai42 from "@/assets/login-bg/ai-42.jpg";
+import ai43 from "@/assets/login-bg/ai-43.jpg";
+import ai44 from "@/assets/login-bg/ai-44.jpg";
+import ai45 from "@/assets/login-bg/ai-45.jpg";
+import ai46 from "@/assets/login-bg/ai-46.jpg";
+import ai47 from "@/assets/login-bg/ai-47.jpg";
+import ai48 from "@/assets/login-bg/ai-48.jpg";
 
 const ALL_IMAGES = [
   ai01, ai02, ai03, ai04, ai05, ai06, ai07, ai08, ai09, ai10,
   ai11, ai12, ai13, ai14, ai15, ai16, ai17, ai18, ai19, ai20,
-  ai21, ai22, ai23, ai24
+  ai21, ai22, ai23, ai24, ai25, ai26, ai27, ai28, ai29, ai30,
+  ai31, ai32, ai33, ai34, ai35, ai36, ai37, ai38, ai39, ai40,
+  ai41, ai42, ai43, ai44, ai45, ai46, ai47, ai48
 ];
 
 const GRID_SIZE = 12; // 2 lines x 6 columns
@@ -38,8 +64,8 @@ const COOLDOWN_MS = 60000; // 1 minute minimum between showing the same image
 
 export function LoginBackground() {
   const [images, setImages] = useState<string[]>([]);
-  // Use a ref to track when each image was last "entered" into the display
-  const lastShownAt = useRef<Map<string, number>>(new Map());
+  // Records the timestamp when an image was LAST removed from the grid
+  const lastExitTime = useRef<Map<string, number>>(new Map());
 
   useEffect(() => {
     // Initial random selection
@@ -47,8 +73,7 @@ export function LoginBackground() {
     const initial = shuffled.slice(0, GRID_SIZE);
     
     setImages(initial);
-    const now = Date.now();
-    initial.forEach(img => lastShownAt.current.set(img, now));
+    // Images on screen don't have an exit time yet
 
     const interval = setInterval(() => {
       setImages((prev) => {
@@ -59,33 +84,31 @@ export function LoginBackground() {
         
         // Pick 1 random slot to change
         const slotToChange = Math.floor(Math.random() * GRID_SIZE);
+        const oldImg = next[slotToChange];
         
         // Find available images that:
-        // 1. Are NOT currently displayed
-        // 2. Haven't been shown in the last 60 seconds
+        // 1. Are NOT currently displayed anywhere in the grid
+        // 2. Haven't EXITED the screen in the last 60 seconds
         const available = ALL_IMAGES.filter(img => {
           const isDisplayed = next.includes(img);
-          const lastTime = lastShownAt.current.get(img) || 0;
-          return !isDisplayed && (now - lastTime >= COOLDOWN_MS);
+          const exitTime = lastExitTime.current.get(img) || 0;
+          return !isDisplayed && (now - exitTime >= COOLDOWN_MS);
         });
 
         if (available.length > 0) {
-          // Replace slot with a fresh image
+          // Record the exit time of the image being replaced
+          lastExitTime.current.set(oldImg, now);
+          
+          // Replace slot with a fresh image from the pool
           const newImg = available[Math.floor(Math.random() * available.length)];
           next[slotToChange] = newImg;
-          lastShownAt.current.set(newImg, now);
-        } else {
-          // Fallback: if pool is exhausted by cooldown (too many slots vs total images),
-          // just swap two existing tiles to keep visual interest
-          const a = Math.floor(Math.random() * next.length);
-          let b = Math.floor(Math.random() * next.length);
-          while (b === a) b = Math.floor(Math.random() * next.length);
-          [next[a], next[b]] = [next[b], next[a]];
-        }
+        } 
+        // Note: No fallback swap. If no image is available due to cooldown, we just wait for the next interval.
+        // This ensures the 60s rule is NEVER broken.
         
         return next;
       });
-    }, 2000); // Change one image every 2 seconds
+    }, 2000); // Attempt to change one image every 2 seconds
 
     return () => clearInterval(interval);
   }, []);
