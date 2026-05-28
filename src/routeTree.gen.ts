@@ -16,6 +16,7 @@ import { Route as JoinCodeRouteImport } from './routes/join.$code'
 import { Route as AuthenticatedQuizRouteImport } from './routes/_authenticated.quiz'
 import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated.profile'
 import { Route as AuthenticatedOnboardingRouteImport } from './routes/_authenticated.onboarding'
+import { Route as AuthenticatedProfileIndexRouteImport } from './routes/_authenticated.profile.index'
 import { Route as AuthenticatedPoolsIndexRouteImport } from './routes/_authenticated.pools.index'
 import { Route as AuthenticatedPoolsNewRouteImport } from './routes/_authenticated.pools.new'
 import { Route as AuthenticatedPoolsIdRouteImport } from './routes/_authenticated.pools.$id'
@@ -73,6 +74,12 @@ const AuthenticatedOnboardingRoute = AuthenticatedOnboardingRouteImport.update({
   path: '/onboarding',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedProfileIndexRoute =
+  AuthenticatedProfileIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedProfileRoute,
+  } as any)
 const AuthenticatedPoolsIndexRoute = AuthenticatedPoolsIndexRouteImport.update({
   id: '/pools/',
   path: '/pools/',
@@ -213,6 +220,7 @@ export interface FileRoutesByFullPath {
   '/pools/$id': typeof AuthenticatedPoolsIdRouteWithChildren
   '/pools/new': typeof AuthenticatedPoolsNewRoute
   '/pools/': typeof AuthenticatedPoolsIndexRoute
+  '/profile/': typeof AuthenticatedProfileIndexRoute
   '/pools/$id/auto-predict': typeof AuthenticatedPoolsIdAutoPredictRoute
   '/pools/$id/bracket': typeof AuthenticatedPoolsIdBracketRoute
   '/pools/$id/chat': typeof AuthenticatedPoolsIdChatRoute
@@ -236,12 +244,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/onboarding': typeof AuthenticatedOnboardingRoute
-  '/profile': typeof AuthenticatedProfileRouteWithChildren
   '/quiz': typeof AuthenticatedQuizRoute
   '/join/$code': typeof JoinCodeRoute
   '/': typeof AuthenticatedIndexRoute
   '/pools/new': typeof AuthenticatedPoolsNewRoute
   '/pools': typeof AuthenticatedPoolsIndexRoute
+  '/profile': typeof AuthenticatedProfileIndexRoute
   '/pools/$id/auto-predict': typeof AuthenticatedPoolsIdAutoPredictRoute
   '/pools/$id/bracket': typeof AuthenticatedPoolsIdBracketRoute
   '/pools/$id/chat': typeof AuthenticatedPoolsIdChatRoute
@@ -272,6 +280,7 @@ export interface FileRoutesById {
   '/_authenticated/pools/$id': typeof AuthenticatedPoolsIdRouteWithChildren
   '/_authenticated/pools/new': typeof AuthenticatedPoolsNewRoute
   '/_authenticated/pools/': typeof AuthenticatedPoolsIndexRoute
+  '/_authenticated/profile/': typeof AuthenticatedProfileIndexRoute
   '/_authenticated/pools/$id/auto-predict': typeof AuthenticatedPoolsIdAutoPredictRoute
   '/_authenticated/pools/$id/bracket': typeof AuthenticatedPoolsIdBracketRoute
   '/_authenticated/pools/$id/chat': typeof AuthenticatedPoolsIdChatRoute
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/pools/$id'
     | '/pools/new'
     | '/pools/'
+    | '/profile/'
     | '/pools/$id/auto-predict'
     | '/pools/$id/bracket'
     | '/pools/$id/chat'
@@ -327,12 +337,12 @@ export interface FileRouteTypes {
   to:
     | '/login'
     | '/onboarding'
-    | '/profile'
     | '/quiz'
     | '/join/$code'
     | '/'
     | '/pools/new'
     | '/pools'
+    | '/profile'
     | '/pools/$id/auto-predict'
     | '/pools/$id/bracket'
     | '/pools/$id/chat'
@@ -362,6 +372,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pools/$id'
     | '/_authenticated/pools/new'
     | '/_authenticated/pools/'
+    | '/_authenticated/profile/'
     | '/_authenticated/pools/$id/auto-predict'
     | '/_authenticated/pools/$id/bracket'
     | '/_authenticated/pools/$id/chat'
@@ -439,6 +450,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/onboarding'
       preLoaderRoute: typeof AuthenticatedOnboardingRouteImport
       parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/profile/': {
+      id: '/_authenticated/profile/'
+      path: '/'
+      fullPath: '/profile/'
+      preLoaderRoute: typeof AuthenticatedProfileIndexRouteImport
+      parentRoute: typeof AuthenticatedProfileRoute
     }
     '/_authenticated/pools/': {
       id: '/_authenticated/pools/'
@@ -598,10 +616,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedProfileRouteChildren {
+  AuthenticatedProfileIndexRoute: typeof AuthenticatedProfileIndexRoute
   AuthenticatedProfileCardsTeamIdRoute: typeof AuthenticatedProfileCardsTeamIdRoute
 }
 
 const AuthenticatedProfileRouteChildren: AuthenticatedProfileRouteChildren = {
+  AuthenticatedProfileIndexRoute: AuthenticatedProfileIndexRoute,
   AuthenticatedProfileCardsTeamIdRoute: AuthenticatedProfileCardsTeamIdRoute,
 }
 
