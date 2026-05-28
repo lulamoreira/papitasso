@@ -280,7 +280,7 @@ function ProfileComponent() {
                   console.warn('Times sem tradução:', data.unmapped);
                   toast.warning(`${data.unmapped.length} times sem tradução (ver console)`);
                 }
-              } catch (e: any)) {
+              } catch (e: any) {
                 toast.error("Erro: " + e.message);
               }
             }}
