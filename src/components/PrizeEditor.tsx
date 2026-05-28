@@ -174,7 +174,7 @@ export function PrizeEditor({ prizes, onChange }: PrizeEditorProps) {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {prizeType === 'ranking' ? (
                   <div className="space-y-2">
                     <Label>Posição</Label>
@@ -198,6 +198,17 @@ export function PrizeEditor({ prizes, onChange }: PrizeEditorProps) {
                     </select>
                   </div>
                 )}
+                
+                <div className="space-y-2">
+                  <Label>Valor Estimado (R$)</Label>
+                  <Input 
+                    type="number" 
+                    placeholder="0.00" 
+                    onChange={e => setCurrentPrize({...currentPrize, estimated_value_cents: Math.round(parseFloat(e.target.value) * 100)})}
+                    value={currentPrize.estimated_value_cents ? (currentPrize.estimated_value_cents / 100).toString() : ""}
+                  />
+                </div>
+              </div>
               
               <div className="space-y-2">
                 <Label>Título do Prêmio</Label>
@@ -288,7 +299,7 @@ export function PrizeEditor({ prizes, onChange }: PrizeEditorProps) {
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2">
                     <span className="text-[10px] font-bold px-1.5 py-0.5 bg-primary/10 text-primary rounded uppercase">
-                      {prize.category}
+                      {prize.category === 'ranking' ? `${prize.rank}º Lugar` : CATEGORIES.find(c => c.value === prize.category)?.label || prize.category}
                     </span>
                     {prize.estimated_value_cents && (
                       <span className="text-[10px] font-medium text-muted-foreground">
