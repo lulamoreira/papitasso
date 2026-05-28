@@ -989,7 +989,7 @@ export const getFantasyRanking = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("fantasy_lineups")
-      .select("user_id, total_points, profile:profiles(*)")
+      .select("user_id, total_points, profile:profiles!fantasy_lineups_user_id_fkey(*)")
       .eq("pool_id", poolId)
       .order("total_points", { ascending: false });
 
