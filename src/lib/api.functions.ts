@@ -672,6 +672,18 @@ export const upsertPredictionProp = createServerFn({ method: "POST" })
     const { poolId, propId, answer } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
+    // Security check: Verify prop is not locked
+    const { data: prop, error: propError } = await supabase
+      .from("props")
+      .select("is_locked")
+      .eq("id", propId)
+      .single();
+    
+    if (propError) throw propError;
+    if (prop.is_locked) {
+      throw new Error("Predictions for this prop are locked.");
+    }
+
     const { data, error } = await supabase
       .from("predictions_props")
       .upsert({
