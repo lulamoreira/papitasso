@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useSuspenseQuery, useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { getDailyQuiz, submitQuizAnswer, getQuizUserStatus, getProfile } from "@/lib/api.functions";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,6 +14,7 @@ export const Route = createFileRoute("/_authenticated/quiz")({
 });
 
 function QuizPage() {
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { data: profile } = useSuspenseQuery({
     queryKey: ["profile"],
@@ -154,7 +155,7 @@ function QuizPage() {
             <Button 
               variant="outline" 
               className="w-full"
-              onClick={() => window.history.back()}
+              onClick={() => navigate({ to: "/" })}
             >
               Voltar para o Dashboard
             </Button>
