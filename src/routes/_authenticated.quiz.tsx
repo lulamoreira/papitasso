@@ -38,6 +38,7 @@ function QuizPage() {
     onSuccess: (data: any) => {
       queryClient.invalidateQueries({ queryKey: ["quiz-status"] });
       queryClient.invalidateQueries({ queryKey: ["profile"] });
+      queryClient.invalidateQueries({ queryKey: ["daily-quiz"] });
       if (data.is_correct) {
         confetti({
           particleCount: 150,
@@ -55,7 +56,11 @@ function QuizPage() {
   const handleAnswer = (index: number) => {
     if (userStatus || submitMutation.isPending) return;
     setSelectedOption(index);
-    submitMutation.mutate({ quizId: quiz.id, answerIndex: index });
+    submitMutation.mutate({ 
+      quizId: quiz.id, 
+      answerIndex: index, 
+      isCorrect: index === quiz.correct_index 
+    });
   };
 
   if (!quiz) return <div className="p-8 text-center">Carregando quiz do dia...</div>;
