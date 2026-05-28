@@ -106,10 +106,10 @@ function BracketComponent() {
           {[...Array(4)].map((_, i) => (
             <div key={`qf-${i}`} className="space-y-1">
               <div 
-                className={`p-3 border rounded font-black text-sm cursor-pointer transition-all ${bracket.quarter_finals[i] === bracket.semi_finals[Math.floor(i/2)] && bracket.quarter_finals[i] ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
-                onClick={() => handlePickWinner('semi_finals', Math.floor(i/2), bracket.quarter_finals[i])}
+                className={`p-3 border rounded font-black text-sm cursor-pointer transition-all ${bracket.qf?.[i] === bracket.sf?.[Math.floor(i/2)] && bracket.qf?.[i] ? 'bg-primary text-primary-foreground border-primary' : 'hover:border-primary'}`}
+                onClick={() => handlePickWinner('sf', Math.floor(i/2), bracket.qf?.[i])}
               >
-                {bracket.quarter_finals[i] ? teams.find((t: any) => t.id === bracket.quarter_finals[i])?.name : 'Vencedor QF'}
+                {bracket.qf?.[i] ? teams?.find((t: any) => t.id === bracket.qf[i])?.name : 'Vencedor QF'}
               </div>
             </div>
           ))}
