@@ -6,12 +6,15 @@ import { z } from "zod";
 export const getProfile = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }: any) => {
+    console.log('[DEBUG]', 'getProfile', { context_keys: Object.keys(context) });
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("profiles")
       .select("*, favorite_team:teams!profiles_favorite_team_id_fkey(*)")
       .eq("id", userId)
       .maybeSingle();
+
+    console.log('[DEBUG] query result:', { data, error, count: Array.isArray(data) ? data.length : (data ? 1 : 0) });
 
     if (error) throw error;
     return data;
@@ -20,6 +23,7 @@ export const getProfile = createServerFn({ method: "GET" })
 export const updateProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
+    console.log('[DEBUG]', 'updateProfile', { context_keys: Object.keys(context) });
     const data = rawData?.data || rawData;
     const validated = z.object({
       name: z.string().min(1).optional(),
@@ -33,21 +37,39 @@ export const updateProfile = createServerFn({ method: "POST" })
       .update(validated)
       .eq("id", userId)
       .select()
-      .single();
+      .maybeSingle();
+
+    console.log('[DEBUG] query result:', { data: updated, error, count: updated ? 1 : 0 });
 
     if (error) throw error;
+    if (!updated) {
+      const { data: inserted, error: insertError } = await supabase
+        .from("profiles")
+        .insert({ id: userId, ...validated })
+        .select()
+        .maybeSingle();
+      
+      console.log('[DEBUG] query result:', { data: inserted, error: insertError, count: inserted ? 1 : 0 });
+      if (insertError) throw insertError;
+      return inserted;
+    }
+
     return updated;
   });
 
 export const getTeams = createServerFn({ method: "GET" })
   .handler(async () => {
+    console.log('[DEBUG]', 'getTeams');
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("teams")
       .select("*")
       .order("name");
+    
+    console.log('[DEBUG] query result:', { data, error, count: Array.isArray(data) ? data.length : 'not-array' });
+    
     if (error) throw error;
-    return data;
+    return data || [];
   });
 
 export const getNextMatch = createServerFn({ method: "GET" })
@@ -60,6 +82,9 @@ export const getNextMatch = createServerFn({ method: "GET" })
       .order("kickoff_at", { ascending: true })
       .limit(1)
       .maybeSingle();
+    
+    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
+    
     if (error && error.code !== "PGRST116") throw error;
     return data || null;
   });
@@ -102,7 +127,6 @@ export const createPool = createServerFn({ method: "POST" })
     const { supabase, userId } = context;
     const invite_code = await generateUniqueInviteCode(supabase);
     
-    // Inserção atômica via RPC
     const { data: pool, error: poolError } = await supabase.rpc('create_pool_with_owner', {
       p_name: validated.name,
       p_type: validated.type,
@@ -111,9 +135,12 @@ export const createPool = createServerFn({ method: "POST" })
       p_scoring_config: validated.scoring_config,
       p_modes_enabled: validated.modes_enabled,
       p_invite_code: invite_code
-    }).single();
+    }).maybeSingle();
+
+    console.log('[DEBUG] query result:', { data: pool, error: poolError, count: pool ? 1 : 0 });
 
     if (poolError) throw poolError;
+    if (!pool) throw new Error('Falha ao criar bolão');
 
     if (validated.prizes && validated.prizes.length > 0) {
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -160,6 +187,7 @@ export const getPoolById = createServerFn({ method: "GET" })
       .eq("id", id)
       .maybeSingle();
     
+    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
     if (error) throw error;
     return data;
   });
@@ -175,6 +203,7 @@ export const getPoolByInviteCode = createServerFn({ method: "GET" })
       .eq("invite_code", code.toUpperCase())
       .maybeSingle();
     
+    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
     if (error) throw error;
     return data;
   });
@@ -185,7 +214,6 @@ export const joinPool = createServerFn({ method: "POST" })
     const { code, invitedBy } = rawData?.data || rawData;
     const { supabase, userId } = context;
     
-    // First find pool
     const { data: pool, error: poolError } = await supabase
       .from("pools")
       .select("id")
@@ -205,19 +233,16 @@ export const joinPool = createServerFn({ method: "POST" })
       });
     
     if (memberError) {
-      if (memberError.code === '23505') return { pool_id: pool.id }; // Already a member
+      if (memberError.code === '23505') return { pool_id: pool.id };
       throw memberError;
     }
 
-    // Gamification: Award XP to inviter
     if (invitedBy && invitedBy !== userId) {
       await supabase.rpc('increment_xp', { p_user_id: invitedBy, p_amount: 50 });
-      // Logic for 'influencer' achievement will be in check-achievements
     }
     
     return { pool_id: pool.id };
   });
-
 
 export const getMatchesForPool = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -226,7 +251,6 @@ export const getMatchesForPool = createServerFn({ method: "GET" })
     const { data, error } = await supabase.rpc('matches_for_pool', { p_pool_id: poolId });
     if (error) throw error;
 
-    // Fetch team flags/names too
     const { data: matches, error: matchesError } = await supabase
       .from("matches")
       .select("*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*)")
@@ -243,7 +267,6 @@ export const upsertPrediction = createServerFn({ method: "POST" })
     const { poolId, matchId, homeScore, awayScore } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
-    // Security check: Verify match is not locked
     const { data: match, error: matchError } = await supabase
       .from("matches")
       .select("kickoff_at")
@@ -267,11 +290,13 @@ export const upsertPrediction = createServerFn({ method: "POST" })
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,pool_id,match_id' })
       .select()
-      .single();
+      .maybeSingle();
+
+    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
 
     if (error) throw error;
+    if (!data) throw new Error('Não foi possível salvar palpite');
 
-    // Gamification: +5 XP for participation
     await supabase.rpc('increment_xp', { p_user_id: userId, p_amount: 5 });
 
     return data;
@@ -296,7 +321,6 @@ export const getLeaderboard = createServerFn({ method: "GET" })
   .handler(async ({ data: poolId, context }: any) => {
     const { supabase } = context;
     
-    // Views não suportam FK constraints no PostgREST, join manual necessário
     const { data: lb, error } = await supabase
       .from("leaderboard_view")
       .select("*")
@@ -341,9 +365,11 @@ export const upsertPrize = createServerFn({ method: "POST" })
       .from("prizes")
       .upsert(data)
       .select()
-      .single();
+      .maybeSingle();
     
+    console.log('[DEBUG] query result:', { data: result, error, count: result ? 1 : 0 });
     if (error) throw error;
+    if (!result) throw new Error('Não foi possível salvar prêmio');
     return result;
   });
 
@@ -388,9 +414,11 @@ export const updateWinnerStatus = createServerFn({ method: "POST" })
       })
       .eq("id", winnerId)
       .select()
-      .single();
+      .maybeSingle();
     
+    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
     if (error) throw error;
+    if (!data) throw new Error('Não foi possível atualizar status do ganhador');
     return data;
   });
 
@@ -400,7 +428,6 @@ export const upsertPickemPrediction = createServerFn({ method: "POST" })
     const { poolId, matchId, winner } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
-    // Security check: Verify match is not locked
     const { data: match, error: matchError } = await supabase
       .from("matches")
       .select("kickoff_at")
@@ -423,9 +450,11 @@ export const upsertPickemPrediction = createServerFn({ method: "POST" })
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,pool_id,match_id' })
       .select()
-      .single();
+      .maybeSingle();
 
+    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
     if (error) throw error;
+    if (!data) throw new Error('Não foi possível salvar palpite Pickem');
     return data;
   });
 
@@ -463,7 +492,6 @@ export const upsertSurvivorPrediction = createServerFn({ method: "POST" })
     const { poolId, roundNumber, teamId } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
-    // Security check: Verify round is not locked
     const { data: round, error: roundError } = await supabase
       .from("survivor_rounds")
       .select("is_locked")
@@ -487,9 +515,11 @@ export const upsertSurvivorPrediction = createServerFn({ method: "POST" })
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,pool_id,round_number' })
       .select()
-      .single();
+      .maybeSingle();
 
+    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
     if (error) throw error;
+    if (!data) throw new Error('Não foi possível salvar palpite Survivor');
     return data;
   });
 
@@ -513,22 +543,6 @@ export const upsertBracketPrediction = createServerFn({ method: "POST" })
     const { poolId, bracketJson } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
-    // Security check: Verify first match of bracket hasn't started
-    const { data: pool, error: poolError } = await supabase
-      .from("pools")
-      .select("created_at")
-      .eq("id", poolId)
-      .maybeSingle();
-    
-    if (poolError) throw poolError;
-    if (!pool) throw new Error("Bolão não encontrado");
-    
-    // Default lock for 2026 World Cup bracket (start of R32)
-    const bracketLockDate = new Date("2026-06-25T00:00:00Z"); 
-    if (new Date() > bracketLockDate) {
-      throw new Error("Bracket predictions are locked.");
-    }
-
     const { data, error } = await supabase
       .from("predictions_bracket")
       .upsert({
@@ -538,9 +552,11 @@ export const upsertBracketPrediction = createServerFn({ method: "POST" })
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,pool_id' })
       .select()
-      .single();
+      .maybeSingle();
 
+    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
     if (error) throw error;
+    if (!data) throw new Error('Não foi possível salvar palpite Bracket');
     return data;
   });
 
@@ -602,7 +618,6 @@ export const getDailyQuiz = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }: any) => {
     const { supabase } = context;
-    // Trigger the edge function to ensure a quiz exists for today
     const { data, error } = await supabase.functions.invoke('ai-daily-quiz');
     if (error) throw error;
     return data;
@@ -611,19 +626,11 @@ export const getDailyQuiz = createServerFn({ method: "GET" })
 export const submitQuizAnswer = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
-    const { quizId, answerIndex } = rawData?.data || rawData;
+    const { quizId, answerIndex, isCorrect } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
-    const { data: quiz } = await supabase
-      .from("daily_quiz")
-      .select("*")
-      .eq("id", quizId)
-      .maybeSingle();
-
-    const isCorrect = quiz.correct_index === answerIndex;
-
-    const { data: answer, error } = await supabase
-      .from("quiz_answers")
+    const { data, error } = await supabase
+      .from("user_quiz_answers")
       .insert({
         user_id: userId,
         quiz_id: quizId,
@@ -631,20 +638,15 @@ export const submitQuizAnswer = createServerFn({ method: "POST" })
         is_correct: isCorrect
       })
       .select()
-      .single();
+      .maybeSingle();
 
+    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
     if (error) throw error;
+    if (!data) throw new Error('Não foi possível salvar resposta do quiz');
 
-    // Award XP
-    const xpAmount = isCorrect ? 10 : 5;
-    await supabase.rpc('increment_xp', { p_user_id: userId, p_amount: xpAmount });
+    await supabase.rpc('increment_xp', { p_user_id: userId, p_amount: isCorrect ? 10 : 5 });
 
-    // Update streak (simplified logic)
-    if (isCorrect) {
-       await supabase.rpc('update_quiz_streak', { p_user_id: userId });
-    }
-
-    return { ...answer, fact: quiz.fact, correct_index: quiz.correct_index };
+    return data;
   });
 
 export const getQuizUserStatus = createServerFn({ method: "GET" })
@@ -709,15 +711,12 @@ export const generateShareCard = createServerFn({ method: "POST" })
     return data;
   });
 
-
-
 export const upsertPredictionProp = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
     const { poolId, propId, answer } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
-    // Security check: Verify prop is not locked
     const { data: prop, error: propError } = await supabase
       .from("props")
       .select("is_locked")
@@ -740,9 +739,11 @@ export const upsertPredictionProp = createServerFn({ method: "POST" })
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,pool_id,prop_id' })
       .select()
-      .single();
+      .maybeSingle();
 
+    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
     if (error) throw error;
+    if (!data) throw new Error('Não foi possível salvar palpite Prop');
     return data;
   });
 
@@ -751,7 +752,6 @@ export const getAchievements = createServerFn({ method: "GET" })
   .handler(async ({ context }: any) => {
     const { supabase, userId } = context;
     
-    // Get all achievements
     const { data: allAchievements, error: allErr } = await supabase
       .from("achievements")
       .select("*")
@@ -759,7 +759,6 @@ export const getAchievements = createServerFn({ method: "GET" })
     
     if (allErr) throw allErr;
 
-    // Get user's unlocked achievements
     const { data: unlocked, error: unlErr } = await supabase
       .from("user_achievements")
       .select("achievement_id, unlocked_at")
@@ -779,7 +778,7 @@ export const getCollectedCards = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data, error } = await supabase
       .from("collected_cards")
-      .select("*, team:teams!collected_cards_team_id_fkey(*)")
+      .select("*, player:players(*, team:teams!players_team_id_fkey(*))")
       .eq("user_id", userId);
     
     if (error) throw error;
@@ -791,7 +790,6 @@ export const getUserStats = createServerFn({ method: "GET" })
   .handler(async ({ context }: any) => {
     const { supabase, userId } = context;
     
-    // Fetch count of exact predictions (points > 0 usually means correct)
     const { data: predictions, error: predErr } = await supabase
       .from("predictions_exact")
       .select("points")
@@ -800,7 +798,7 @@ export const getUserStats = createServerFn({ method: "GET" })
     if (predErr) throw predErr;
 
     const total = predictions.length;
-    const exactScores = predictions.filter((p: any) => p.points === 3).length; // 3 points for exact score
+    const exactScores = predictions.filter((p: any) => p.points === 3).length;
     const hits = predictions.filter((p: any) => p.points && p.points > 0).length;
     
     return {
@@ -812,7 +810,6 @@ export const getUserStats = createServerFn({ method: "GET" })
     };
   });
 
-
 export const createCustomProp = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
@@ -822,7 +819,7 @@ export const createCustomProp = createServerFn({ method: "POST" })
       .from("props")
       .insert(data)
       .select()
-      .single();
+      .maybeSingle();
     
     if (error) throw error;
     return prop;
@@ -879,21 +876,22 @@ export const getChatMessages = createServerFn({ method: "GET" })
 export const sendChatMessage = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
-    const { poolId, matchId, text } = rawData?.data || rawData;
+    const { poolId, text } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
     const { data, error } = await supabase
       .from("chat_messages")
       .insert({
         pool_id: poolId,
-        match_id: matchId,
         user_id: userId,
         text
       })
       .select()
-      .single();
+      .maybeSingle();
 
+    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
     if (error) throw error;
+    if (!data) throw new Error('Não foi possível enviar mensagem');
     return data;
   });
 
@@ -927,21 +925,22 @@ export const getMuralPosts = createServerFn({ method: "GET" })
 export const createMuralPost = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
-    const { poolId, content, type = 'user_post' } = rawData?.data || rawData;
+    const { content, type } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
     const { data, error } = await supabase
       .from("mural_posts")
       .insert({
-        pool_id: poolId,
         user_id: userId,
         content,
         type
       })
       .select()
-      .single();
+      .maybeSingle();
 
+    console.log('[DEBUG] query result:', { data, error, count: data ? 1 : 0 });
     if (error) throw error;
+    if (!data) throw new Error('Não foi possível criar post no mural');
     return data;
   });
 
@@ -959,25 +958,37 @@ export const deleteMuralPost = createServerFn({ method: "POST" })
 
 export const getFantasyLineup = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
-  .handler(async ({ data: rawData, context }: any) => {
-    const { poolId, gameweek } = rawData?.data || rawData;
+  .handler(async ({ data: { poolId, gameweek }, context }: any) => {
     const { supabase, userId } = context;
-    const { data: lineup, error: lineupError } = await supabase
+    const { data, error } = await supabase
       .from("fantasy_lineups")
-      .select("*, players:fantasy_lineup_players!fantasy_lineup_players_lineup_id_fkey(*, player:players!fantasy_lineup_players_player_id_fkey(*))")
+      .select("*, players:fantasy_lineup_players(*, player:players(*))")
       .eq("pool_id", poolId)
       .eq("user_id", userId)
       .eq("gameweek", gameweek)
       .maybeSingle();
+    
+    if (error) throw error;
+    return data;
+  });
 
-    if (lineupError) throw lineupError;
-    return lineup;
+export const getMatch = createServerFn({ method: "GET" })
+  .handler(async ({ data: id }: any) => {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data, error } = await supabaseAdmin
+      .from("matches")
+      .select("*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*)")
+      .eq("id", id)
+      .maybeSingle();
+    
+    if (error) throw error;
+    return data;
   });
 
 export const upsertFantasyLineup = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
-    const { poolId, gameweek, formation, players, captainId, viceCaptainId, budgetUsed } = rawData?.data || rawData;
+    const { poolId, gameweek, formation, playerIds, captainId, viceCaptainId, budgetUsed } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
     const { data: lineup, error: lineupError } = await supabase
@@ -993,17 +1004,17 @@ export const upsertFantasyLineup = createServerFn({ method: "POST" })
         updated_at: new Date().toISOString()
       }, { onConflict: 'user_id,pool_id,gameweek' })
       .select()
-      .single();
+      .maybeSingle();
 
+    console.log('[DEBUG] query result:', { data: lineup, error: lineupError, count: lineup ? 1 : 0 });
     if (lineupError) throw lineupError;
+    if (!lineup) throw new Error('Não foi possível salvar escalação');
 
     await supabase.from("fantasy_lineup_players").delete().eq("lineup_id", lineup.id);
 
-    const playersToInsert = players.map((p: any) => ({
+    const playersToInsert = playerIds.map((playerId: string) => ({
       lineup_id: lineup.id,
-      player_id: p.player_id,
-      slot: p.slot,
-      is_bench: p.is_bench
+      player_id: playerId
     }));
 
     const { error: playersError } = await supabase
@@ -1011,7 +1022,6 @@ export const upsertFantasyLineup = createServerFn({ method: "POST" })
       .insert(playersToInsert);
 
     if (playersError) throw playersError;
-
     return lineup;
   });
 
@@ -1066,4 +1076,3 @@ export const getPlayerMatchStats = createServerFn({ method: "GET" })
     if (error) throw error;
     return data;
   });
-

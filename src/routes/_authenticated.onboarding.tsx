@@ -23,7 +23,7 @@ function OnboardingComponent() {
   const { data: teams } = useSuspenseQuery({ queryKey: ["teams"], queryFn: () => getTeams() });
   const { data: profile } = useSuspenseQuery({ queryKey: ["profile"], queryFn: () => getProfile() });
   
-  const [step, setStep] = useState(profile?.favorite_team_id ? 2 : 1);
+  const [step, setStep] = useState(profile && profile.favorite_team_id ? 2 : 1);
   const [searchTerm, setSearchTerm] = useState("");
   const [tourStep, setTourStep] = useState(0);
   
@@ -41,7 +41,7 @@ function OnboardingComponent() {
     }
   });
 
-  const filteredTeams = teams.filter(t => 
+  const filteredTeams = (teams || []).filter(t => 
     t.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -118,7 +118,14 @@ function OnboardingComponent() {
             </div>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 max-h-[60vh] overflow-y-auto p-1 custom-scrollbar">
-              {filteredTeams.map((team) => (
+              {(!teams || teams.length === 0) ? (
+                <div className="col-span-full flex flex-col items-center justify-center py-12 space-y-4">
+                  <p className="text-muted-foreground">Carregando seleções...</p>
+                  <Button variant="outline" onClick={() => queryClient.invalidateQueries({ queryKey: ["teams"] })}>
+                    Tentar Novamente
+                  </Button>
+                </div>
+              ) : filteredTeams.map((team) => (
                 <Card 
                   key={team.id}
                   className="cursor-pointer hover:border-primary transition-all active:scale-95 overflow-hidden"
