@@ -30,7 +30,7 @@ export function ShareModal({ title, description, colors = "#16a34a", isOpen, onC
   };
 
   const shareWhatsApp = () => {
-    const text = `Olha só o que eu conquistei no GolPalpite! 🏆\n\n${title}: ${description}\n\nConfira meu desempenho: ${cardData?.url || window.location.href}`;
+    const text = `Olha só o que eu conquistei no PapiteAI! 🏆\n\n${title}: ${description}\n\nConfira meu desempenho: ${cardData?.url || window.location.href}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   };
 
@@ -67,7 +67,7 @@ export function ShareModal({ title, description, colors = "#16a34a", isOpen, onC
                 </div>
                 <div className="space-y-2 relative z-10">
                   <div className="bg-white/20 backdrop-blur-md w-fit px-3 py-1 rounded-full text-[10px] font-bold tracking-widest uppercase">
-                    GolPalpite 2026
+                    PapiteAI 2026
                   </div>
                   <h2 className="text-3xl font-black leading-tight tracking-tighter uppercase">{cardData.design.title}</h2>
                 </div>

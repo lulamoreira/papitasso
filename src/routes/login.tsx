@@ -93,7 +93,7 @@ function LoginComponent() {
             </AnimatePresence>
           </div>
           <CardTitle className="text-4xl font-black tracking-tighter text-primary uppercase italic drop-shadow-sm">
-            GolPalpite
+            PapiteAI
           </CardTitle>
           <AnimatePresence mode="wait">
             <motion.p

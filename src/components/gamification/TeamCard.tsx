@@ -83,7 +83,7 @@ export function TeamCard({ team, level, onShare }: TeamCardProps) {
         {/* Footer info */}
         <div className="absolute bottom-4 left-0 right-0 px-4 flex justify-between items-center">
           <div className="text-[10px] text-white/50 font-bold uppercase tracking-widest">
-            GolPalpite Copa '26
+            PapiteAI Copa '26
           </div>
           <div className="h-6 w-6 rounded-full bg-white/20 flex items-center justify-center">
             <Info className="h-3 w-3 text-white" />
