@@ -1,11 +1,12 @@
 import requests
 import urllib.parse
+import time
 
 files = [
     "Brazil_national_team_1970.jpg",
     "Brazil_vs_Belgium_2018_World_Cup_02.jpg",
     "20180610_FIFA_Friendly_Match_Austria_vs._Brazil_Gruppenfoto_Brasilien_850_0016.jpg",
-    "Argentina_3-3_Francia_-_Copa_Mundial_2022_-_Montiel_patea_el_penal_de_la_victoria.jpg",
+    "Argentina_3-3_Francia_-_Copa_Mundial_2022_-_Montiel_patea_el_penal_de_la_victory.jpg",
     "Argentina_vs_Nigeria_(2018_football_World_cup).jpg",
     "Hinchas_argentinos_durante_el_partido_Argentina-México.jpg",
     "Spain_national_football_team_Euro_2012_final.jpg",
@@ -34,16 +35,30 @@ files = [
     "Palmeiras_x_Flamengo_-_Libertadores_-_Final_-_Torcida.jpg"
 ]
 
+headers = {
+    'User-Agent': 'SoccerImageResearcher/1.0 (contact: your-email@example.com)'
+}
+
 def get_direct_url(filename):
     url = f"https://commons.wikimedia.org/w/api.php?action=query&titles=File:{urllib.parse.quote(filename)}&prop=imageinfo&iiprop=url|size&format=json"
-    r = requests.get(url)
-    data = r.json()
-    pages = data.get("query", {}).get("pages", {})
-    for p in pages.values():
-        info = p.get("imageinfo", [{}])[0]
-        return info.get("url"), info.get("width")
+    try:
+        r = requests.get(url, headers=headers)
+        r.raise_for_status()
+        data = r.json()
+        pages = data.get("query", {}).get("pages", {})
+        for p in pages.values():
+            if "imageinfo" in p:
+                info = p["imageinfo"][0]
+                return info.get("url"), info.get("width")
+    except Exception as e:
+        pass
     return None, None
 
 for f in files:
     direct_url, width = get_direct_url(f)
-    print(f"{direct_url}")
+    if direct_url:
+        print(f"{direct_url}")
+    else:
+        # Fallback to a search result name if one fails
+        print(f"FAILED: {f}")
+    time.sleep(0.1)
