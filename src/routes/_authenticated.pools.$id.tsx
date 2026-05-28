@@ -220,6 +220,21 @@ function PoolDetailComponent() {
                         )}
                       </div>
                     )}
+                    {match.venue && (
+                      <div className="mt-2 flex items-center gap-2 rounded-lg bg-muted/40 p-2">
+                        {match.venue.image_url && (
+                          <img src={match.venue.image_url} alt={match.venue.name}
+                            className="h-10 w-14 rounded object-cover" loading="lazy"
+                            onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                        )}
+                        <div className="text-[10px] leading-tight">
+                          <div className="font-semibold">{match.venue.name}</div>
+                          <div className="text-muted-foreground">
+                            {match.venue.city}{match.venue.state ? `, ${match.venue.state}` : ''} · {match.venue.country}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               );
