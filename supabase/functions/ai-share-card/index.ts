@@ -18,7 +18,12 @@ serve(async (req) => {
 
   try {
     let userId: string;
-    try { userId = await verifyUser(req); } catch (resp) { return resp as Response; }
+    try { 
+      userId = await verifyUser(req); 
+    } catch (resp) { 
+      if (resp instanceof Response) return resp;
+      return new Response(JSON.stringify({ error: 'Auth failed' }), { status: 401, headers: corsHeaders });
+    }
     const { title, description, team_colors } = await req.json()
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE_KEY!)
 

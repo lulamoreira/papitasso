@@ -9,7 +9,12 @@ Deno.serve(async (req) => {
 
   try {
     let userId: string;
-    try { userId = await verifyUser(req); } catch (resp) { return resp as Response; }
+    try { 
+      userId = await verifyUser(req); 
+    } catch (resp) { 
+      if (resp instanceof Response) return resp;
+      return new Response(JSON.stringify({ error: 'Auth failed' }), { status: 401, headers: { 'Content-Type': 'application/json' } });
+    }
     const { pool_id, gameweek } = await req.json();
 
     const { data: lineup } = await supabase
