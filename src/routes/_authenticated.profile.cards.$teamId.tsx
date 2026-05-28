@@ -6,7 +6,7 @@ import { ChevronLeft } from "lucide-react";
 import { TeamCard } from "@/components/gamification/TeamCard";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/_authenticated/profile/cards/$teamId" as any)({
+export const Route = createFileRoute("/_authenticated/profile/cards/$teamId")({
   loader: async ({ context }: any) => {
 
     await Promise.all([

@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import { Badge } from "@/components/ui/badge";
 
 
-export const Route = createFileRoute("/_authenticated/pools/$id/fantasy" as any)({
+export const Route = createFileRoute("/_authenticated/pools/$id/fantasy")({
   loader: async ({ params, context }: any) => {
     await Promise.all([
       context.queryClient.ensureQueryData({ queryKey: ["fantasyLineup", params.id, 1], queryFn: () => getFantasyLineup({ data: { poolId: params.id, gameweek: 1 } } as any) }),

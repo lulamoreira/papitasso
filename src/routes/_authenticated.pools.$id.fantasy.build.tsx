@@ -13,7 +13,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/pools/$id/fantasy/build" as any)({
+export const Route = createFileRoute("/_authenticated/pools/$id/fantasy/build")({
   loader: async ({ params, context }: any) => {
     await Promise.all([
       context.queryClient.ensureQueryData({ queryKey: ["fantasyPlayers"], queryFn: () => getFantasyPlayers() }),

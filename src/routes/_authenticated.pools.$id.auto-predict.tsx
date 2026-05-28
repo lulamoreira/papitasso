@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Sparkles, Brain, Check, ChevronLeft, Save } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/pools/$id/auto-predict" as any)({
+export const Route = createFileRoute("/_authenticated/pools/$id/auto-predict")({
   component: AutoPredictPage,
 });
 

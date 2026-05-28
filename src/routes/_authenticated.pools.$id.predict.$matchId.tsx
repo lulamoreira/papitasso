@@ -13,7 +13,7 @@ import { PoolChat } from "@/components/PoolChat";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { MessageSquare } from "lucide-react";
 
-export const Route = createFileRoute("/_authenticated/pools/$id/predict/$matchId" as any)({
+export const Route = createFileRoute("/_authenticated/pools/$id/predict/$matchId")({
   loader: async ({ params, context }: any) => {
     await Promise.all([
       context.queryClient.ensureQueryData({ queryKey: ["poolMatches", params.id], queryFn: () => getMatchesForPool({ data: params.id } as any) }),

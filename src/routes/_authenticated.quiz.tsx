@@ -9,7 +9,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, CheckCircle2, XCircle, Zap, Info } from "lucide-react";
 import confetti from "canvas-confetti";
 
-export const Route = createFileRoute("/_authenticated/quiz" as any)({
+export const Route = createFileRoute("/_authenticated/quiz")({
   component: QuizPage,
 });
 

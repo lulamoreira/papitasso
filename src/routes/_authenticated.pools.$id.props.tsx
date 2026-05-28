@@ -17,7 +17,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Check, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/pools/$id/props" as any)({
+export const Route = createFileRoute("/_authenticated/pools/$id/props")({
   loader: async ({ params, context }: any) => {
     await Promise.all([
       context.queryClient.ensureQueryData({ queryKey: ["props"], queryFn: () => getProps() }),

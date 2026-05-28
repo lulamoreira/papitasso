@@ -14,7 +14,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
-export const Route = createFileRoute("/_authenticated/pools/$id/mural" as any)({
+export const Route = createFileRoute("/_authenticated/pools/$id/mural")({
   loader: async ({ params, context }: any) => {
     await context.queryClient.ensureQueryData({ 
       queryKey: ["mural", params.id], 

@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { Lock, Save } from "lucide-react";
 import { useState, useEffect } from "react";
 
-export const Route = createFileRoute("/_authenticated/pools/$id/bracket" as any)({
+export const Route = createFileRoute("/_authenticated/pools/$id/bracket")({
   loader: async ({ params, context }: any) => {
     await Promise.all([
       context.queryClient.ensureQueryData({ queryKey: ["pool", params.id], queryFn: () => getPoolById({ data: params.id } as any) }),
