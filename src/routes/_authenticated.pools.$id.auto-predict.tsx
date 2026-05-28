@@ -81,6 +81,7 @@ function AutoPredictPage() {
     }
     toast.success("Todos os palpites foram salvos!");
     queryClient.invalidateQueries({ queryKey: ["predictions", id] });
+    navigate({ to: "/pools/$id", params: { id } });
   };
 
   const updateScore = (matchId: string, side: 'home' | 'away', val: number) => {
