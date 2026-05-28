@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// Import all 48 high-quality images
+// Import all 53 high-quality images
 import img01 from "@/assets/login-bg/01.jpg";
 import img02 from "@/assets/login-bg/02.jpg";
 import img03 from "@/assets/login-bg/03.jpg";
@@ -50,13 +50,19 @@ import img45 from "@/assets/login-bg/45.jpg";
 import img46 from "@/assets/login-bg/46.jpg";
 import img47 from "@/assets/login-bg/47.jpg";
 import img48 from "@/assets/login-bg/48.jpg";
+import img49 from "@/assets/login-bg/49.jpg";
+import img50 from "@/assets/login-bg/50.jpg";
+import img51 from "@/assets/login-bg/51.jpg";
+import img52 from "@/assets/login-bg/52.jpg";
+import img53 from "@/assets/login-bg/53.jpg";
 
 const ALL_IMAGES = [
   img01, img02, img03, img04, img05, img06, img07, img08, img09, img10,
   img11, img12, img13, img14, img15, img16, img17, img18, img19, img20,
   img21, img22, img23, img24, img25, img26, img27, img28, img29, img30,
   img31, img32, img33, img34, img35, img36, img37, img38, img39, img40,
-  img41, img42, img43, img44, img45, img46, img47, img48,
+  img41, img42, img43, img44, img45, img46, img47, img48, img49, img50,
+  img51, img52, img53,
 ];
 
 const GRID_SIZE = 12; // 2 lines x 6 columns
