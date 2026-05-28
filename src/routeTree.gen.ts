@@ -32,6 +32,7 @@ import { Route as AuthenticatedPoolsIdFantasyRouteImport } from './routes/_authe
 import { Route as AuthenticatedPoolsIdChatRouteImport } from './routes/_authenticated.pools.$id.chat'
 import { Route as AuthenticatedPoolsIdBracketRouteImport } from './routes/_authenticated.pools.$id.bracket'
 import { Route as AuthenticatedPoolsIdAutoPredictRouteImport } from './routes/_authenticated.pools.$id.auto-predict'
+import { Route as AuthenticatedPoolsIdPropsIndexRouteImport } from './routes/_authenticated.pools.$id.props.index'
 import { Route as AuthenticatedPoolsIdPredictIndexRouteImport } from './routes/_authenticated.pools.$id.predict.index'
 import { Route as AuthenticatedPoolsIdFantasyIndexRouteImport } from './routes/_authenticated.pools.$id.fantasy.index'
 import { Route as AuthenticatedPoolsIdPropsEditRouteImport } from './routes/_authenticated.pools.$id.props.edit'
@@ -167,6 +168,12 @@ const AuthenticatedPoolsIdAutoPredictRoute =
     path: '/auto-predict',
     getParentRoute: () => AuthenticatedPoolsIdRoute,
   } as any)
+const AuthenticatedPoolsIdPropsIndexRoute =
+  AuthenticatedPoolsIdPropsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedPoolsIdPropsRoute,
+  } as any)
 const AuthenticatedPoolsIdPredictIndexRoute =
   AuthenticatedPoolsIdPredictIndexRouteImport.update({
     id: '/',
@@ -240,6 +247,7 @@ export interface FileRoutesByFullPath {
   '/pools/$id/props/edit': typeof AuthenticatedPoolsIdPropsEditRoute
   '/pools/$id/fantasy/': typeof AuthenticatedPoolsIdFantasyIndexRoute
   '/pools/$id/predict/': typeof AuthenticatedPoolsIdPredictIndexRoute
+  '/pools/$id/props/': typeof AuthenticatedPoolsIdPropsIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -255,7 +263,6 @@ export interface FileRoutesByTo {
   '/pools/$id/chat': typeof AuthenticatedPoolsIdChatRoute
   '/pools/$id/mural': typeof AuthenticatedPoolsIdMuralRoute
   '/pools/$id/pickem': typeof AuthenticatedPoolsIdPickemRoute
-  '/pools/$id/props': typeof AuthenticatedPoolsIdPropsRouteWithChildren
   '/pools/$id/survivor': typeof AuthenticatedPoolsIdSurvivorRoute
   '/pools/$id/winners': typeof AuthenticatedPoolsIdWinnersRoute
   '/profile/cards/$teamId': typeof AuthenticatedProfileCardsTeamIdRoute
@@ -267,6 +274,7 @@ export interface FileRoutesByTo {
   '/pools/$id/props/edit': typeof AuthenticatedPoolsIdPropsEditRoute
   '/pools/$id/fantasy': typeof AuthenticatedPoolsIdFantasyIndexRoute
   '/pools/$id/predict': typeof AuthenticatedPoolsIdPredictIndexRoute
+  '/pools/$id/props': typeof AuthenticatedPoolsIdPropsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -300,6 +308,7 @@ export interface FileRoutesById {
   '/_authenticated/pools/$id/props/edit': typeof AuthenticatedPoolsIdPropsEditRoute
   '/_authenticated/pools/$id/fantasy/': typeof AuthenticatedPoolsIdFantasyIndexRoute
   '/_authenticated/pools/$id/predict/': typeof AuthenticatedPoolsIdPredictIndexRoute
+  '/_authenticated/pools/$id/props/': typeof AuthenticatedPoolsIdPropsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -333,6 +342,7 @@ export interface FileRouteTypes {
     | '/pools/$id/props/edit'
     | '/pools/$id/fantasy/'
     | '/pools/$id/predict/'
+    | '/pools/$id/props/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -348,7 +358,6 @@ export interface FileRouteTypes {
     | '/pools/$id/chat'
     | '/pools/$id/mural'
     | '/pools/$id/pickem'
-    | '/pools/$id/props'
     | '/pools/$id/survivor'
     | '/pools/$id/winners'
     | '/profile/cards/$teamId'
@@ -360,6 +369,7 @@ export interface FileRouteTypes {
     | '/pools/$id/props/edit'
     | '/pools/$id/fantasy'
     | '/pools/$id/predict'
+    | '/pools/$id/props'
   id:
     | '__root__'
     | '/_authenticated'
@@ -392,6 +402,7 @@ export interface FileRouteTypes {
     | '/_authenticated/pools/$id/props/edit'
     | '/_authenticated/pools/$id/fantasy/'
     | '/_authenticated/pools/$id/predict/'
+    | '/_authenticated/pools/$id/props/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -563,6 +574,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPoolsIdAutoPredictRouteImport
       parentRoute: typeof AuthenticatedPoolsIdRoute
     }
+    '/_authenticated/pools/$id/props/': {
+      id: '/_authenticated/pools/$id/props/'
+      path: '/'
+      fullPath: '/pools/$id/props/'
+      preLoaderRoute: typeof AuthenticatedPoolsIdPropsIndexRouteImport
+      parentRoute: typeof AuthenticatedPoolsIdPropsRoute
+    }
     '/_authenticated/pools/$id/predict/': {
       id: '/_authenticated/pools/$id/predict/'
       path: '/'
@@ -669,11 +687,13 @@ const AuthenticatedPoolsIdPredictRouteWithChildren =
 
 interface AuthenticatedPoolsIdPropsRouteChildren {
   AuthenticatedPoolsIdPropsEditRoute: typeof AuthenticatedPoolsIdPropsEditRoute
+  AuthenticatedPoolsIdPropsIndexRoute: typeof AuthenticatedPoolsIdPropsIndexRoute
 }
 
 const AuthenticatedPoolsIdPropsRouteChildren: AuthenticatedPoolsIdPropsRouteChildren =
   {
     AuthenticatedPoolsIdPropsEditRoute: AuthenticatedPoolsIdPropsEditRoute,
+    AuthenticatedPoolsIdPropsIndexRoute: AuthenticatedPoolsIdPropsIndexRoute,
   }
 
 const AuthenticatedPoolsIdPropsRouteWithChildren =
@@ -748,3 +768,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
