@@ -76,11 +76,22 @@ function QuizPage() {
             <Trophy className="w-8 h-8 text-yellow-500" />
             Quiz do Dia
           </h1>
-          <p className="text-muted-foreground">Teste seus conhecimentos da Copa!</p>
+          <p className="text-muted-foreground">Ganhe XP e concorra a prêmios do seu Bolão!</p>
         </div>
-        <div className="bg-primary/10 px-4 py-2 rounded-full flex items-center gap-2 border border-primary/20">
-          <Zap className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-          <span className="font-bold text-primary">{profile?.quiz_streak || 0} dias</span>
+        <div className="flex flex-col items-end gap-2">
+          <div className="bg-primary/10 px-4 py-2 rounded-full flex items-center gap-2 border border-primary/20">
+            <Zap className="w-5 h-5 text-yellow-500 fill-yellow-500" />
+            <span className="font-bold text-primary">{profile?.quiz_streak || 0} dias</span>
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            className="text-xs font-bold text-primary flex items-center gap-1 h-7"
+            onClick={() => navigate({ to: "/quiz/ranking" })}
+          >
+            <Trophy className="w-3 h-3" />
+            Ranking do Quiz
+          </Button>
         </div>
       </header>
 

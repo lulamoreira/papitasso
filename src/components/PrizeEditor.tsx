@@ -12,7 +12,7 @@ import { toast } from "sonner";
 interface Prize {
   id?: string;
   rank?: number;
-  category: 'ranking' | 'most_exact' | 'most_brazil_correct' | 'phase_leader' | 'wooden_spoon' | 'raffle' | 'custom';
+  category: 'ranking' | 'most_exact' | 'most_brazil_correct' | 'phase_leader' | 'wooden_spoon' | 'raffle' | 'custom' | 'quiz_champion';
   title: string;
   description?: string;
   photo_url?: string;
@@ -34,6 +34,7 @@ const CATEGORIES = [
   { value: 'phase_leader', label: 'Líder de fase' },
   { value: 'wooden_spoon', label: 'Lanterna (Colher de Madeira)' },
   { value: 'raffle', label: 'Sorteio' },
+  { value: 'quiz_champion', label: 'Campeão do Quiz' },
   { value: 'custom', label: 'Customizado' },
 ];
 
