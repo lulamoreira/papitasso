@@ -31,14 +31,14 @@ serve(async (req) => {
     Título: ${title}. Descrição: ${description}. Cores: ${team_colors}.
     Responda em JSON: { "slogan": string, "bg_gradient": string, "icon": string }`;
 
-    const response = await fetch("https://api.lovable.ai/v1/chat/completions", {
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${LOVABLE_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "gemini-1.5-flash",
+        model: "google/gemini-2.0-flash",
         messages: [{ role: "user", content: prompt }],
         response_format: { type: "json_object" }
       }),
