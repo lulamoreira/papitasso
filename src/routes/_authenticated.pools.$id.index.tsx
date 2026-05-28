@@ -19,6 +19,7 @@ import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { 
   Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetDescription 
 } from "@/components/ui/sheet";
