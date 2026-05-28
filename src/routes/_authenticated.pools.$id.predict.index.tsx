@@ -37,22 +37,12 @@ function PredictListComponent() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="container mx-auto flex h-16 items-center px-4 gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-1"
-            onClick={() => navigate({ to: "/pools/$id", params: { id } })}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Voltar ao Bolão
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-lg font-bold">Palpitar</h1>
-            <p className="text-xs text-muted-foreground truncate">{pool.name}</p>
-          </div>
+    <div className="min-h-screen bg-background pb-24">
+      <PageHeader 
+        title="Palpitar" 
+        backTo="/pools/$id" 
+        backToParams={{ id }}
+        rightElement={
           <Button 
             variant="outline" 
             size="sm" 
@@ -62,9 +52,9 @@ function PredictListComponent() {
             <Sparkles className="w-3.5 h-3.5 text-yellow-500" />
             <span className="hidden sm:inline">Palpita pra mim</span>
           </Button>
-        </div>
+        }
+      />
 
-      </header>
 
       <main className="container mx-auto p-4 space-y-4 pb-24">
         {matches.map((match: any, index: any) => {

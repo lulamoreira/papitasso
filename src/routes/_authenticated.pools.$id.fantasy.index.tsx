@@ -56,10 +56,10 @@ function FantasyDashboardComponent() {
   }));
 
   return (
-    <div className="min-h-screen bg-background pb-20">
+    <div className="min-h-screen bg-background pb-24">
       <header className="bg-primary text-white p-6 pb-20 rounded-b-[3rem] space-y-4">
         <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1">
             <Button
               variant="ghost"
               size="sm"
@@ -67,8 +67,9 @@ function FantasyDashboardComponent() {
               onClick={() => navigate({ to: "/pools/$id", params: { id } })}
             >
               <ChevronLeft className="h-4 w-4" />
-              <span className="hidden sm:inline">Voltar ao Bolão</span>
+              <span className="hidden sm:inline">Bolão</span>
             </Button>
+
             <div className="bg-white/20 p-2 rounded-xl backdrop-blur-md hidden xs:block">
               <Trophy className="h-6 w-6" />
             </div>

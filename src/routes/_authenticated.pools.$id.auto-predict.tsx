@@ -114,27 +114,8 @@ function AutoPredictPage() {
 
   return (
     <div className="container max-w-2xl mx-auto p-4 pb-24 space-y-6">
-      <header className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-1"
-          onClick={() => navigate({ to: "/pools/$id", params: { id } })}
-          disabled={isSavingAll}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Voltar ao Bolão
-        </Button>
-        <div>
-          <h1 className="text-2xl font-bold flex items-center gap-2">
-            <Sparkles className="text-yellow-500 w-6 h-6" />
-            Modo Preguiça (IA)
-          </h1>
-          <p className="text-muted-foreground text-sm">
-            A IA sugeriu estes placares baseados no Ranking FIFA e contexto.
-          </p>
-        </div>
-      </header>
+      <PageHeader title="Modo Preguiça (IA)" backTo="/pools/$id/predict" backToParams={{ id }} />
+
 
       {isLoading ? (
         <Card className="animate-pulse">

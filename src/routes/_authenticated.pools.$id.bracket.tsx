@@ -63,31 +63,25 @@ function BracketComponent() {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-6 pb-24 overflow-x-auto">
-      <header className="flex items-center gap-2 pb-3 mb-6 border-b min-w-[600px]">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-1"
-          onClick={() => navigate({ to: "/pools/$id", params: { id } })}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Voltar ao Bolão
-        </Button>
-        <div className="flex-1 px-4">
-          <h1 className="text-lg font-bold">Bracket Challenge</h1>
-          <p className="text-muted-foreground text-[10px] uppercase font-black">Monte sua chave</p>
-        </div>
-        <Button 
-          size="sm"
-          disabled={isLocked || mutation.isPending} 
-          onClick={handleSave}
-          className="gap-2 font-black h-9"
-        >
-          {isLocked ? <Lock className="h-4 w-4" /> : <Save className="h-4 w-4" />}
-          {isLocked ? 'BLOQUEADO' : 'SALVAR CHAVE'}
-        </Button>
-      </header>
+    <div className="min-h-screen bg-background">
+      <PageHeader 
+        title="Bracket Challenge" 
+        backTo="/pools/$id" 
+        backToParams={{ id }}
+        rightElement={
+          <Button 
+            size="sm"
+            disabled={isLocked || mutation.isPending} 
+            onClick={handleSave}
+            className="gap-2 font-black h-9"
+          >
+            {isLocked ? <Lock className="h-4 w-4" /> : <Save className="h-4 w-4" />}
+            {isLocked ? 'BLOQUEADO' : 'SALVAR CHAVE'}
+          </Button>
+        }
+      />
+      <main className="container mx-auto p-4 space-y-6 pb-24 overflow-x-auto">
+
 
       <div className="flex gap-8 min-w-[1000px] pb-8">
         {/* Round of 16 (Simplified for 2026 example) */}

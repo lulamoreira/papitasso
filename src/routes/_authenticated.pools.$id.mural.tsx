@@ -87,19 +87,10 @@ function MuralComponent() {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-6 pb-24">
-      <header className="flex items-center gap-2 pb-3 mb-3 border-b">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-1"
-          onClick={() => navigate({ to: "/pools/$id", params: { id } })}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Voltar ao Bolão
-        </Button>
-        <h1 className="text-lg font-bold ml-auto">Mural da Torcida</h1>
-      </header>
+    <div className="min-h-screen bg-background">
+      <PageHeader title="Mural da Torcida" backTo="/pools/$id" backToParams={{ id }} />
+      <main className="container mx-auto p-4 space-y-6 pb-24">
+
 
       <Card className="border-2 border-primary/20 shadow-xl shadow-primary/5">
         <CardContent className="p-4">

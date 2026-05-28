@@ -62,27 +62,20 @@ function SurvivorComponent() {
   };
 
   return (
-    <div className="container mx-auto p-4 space-y-6 pb-24">
-      <header className="flex items-center gap-2 pb-3 mb-3 border-b">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="gap-1"
-          onClick={() => navigate({ to: "/pools/$id", params: { id } })}
-        >
-          <ChevronLeft className="h-4 w-4" />
-          Voltar ao Bolão
-        </Button>
-        <div className="ml-auto flex items-center gap-3">
-          <div className="text-right">
-            <h1 className="text-lg font-bold">Survivor Mode</h1>
-          </div>
+    <div className="min-h-screen bg-background">
+      <PageHeader 
+        title="Survivor Mode" 
+        backTo="/pools/$id" 
+        backToParams={{ id }}
+        rightElement={
           <div className={`px-3 py-1 rounded-full font-black text-[10px] flex items-center gap-1 ${isAlive ? 'bg-green-500/10 text-green-600' : 'bg-red-500/10 text-red-600'}`}>
             {isAlive ? <Trophy className="h-3 w-3" /> : <Skull className="h-3 w-3" />}
             {isAlive ? 'VIVO' : `RD ${lastEliminatedRound}`}
           </div>
-        </div>
-      </header>
+        }
+      />
+      <main className="container mx-auto p-4 space-y-6 pb-24">
+
 
       {!isAlive && (
         <Alert variant="destructive">

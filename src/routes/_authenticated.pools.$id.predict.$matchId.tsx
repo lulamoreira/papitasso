@@ -121,25 +121,8 @@ function PredictionDetailComponent() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <header className="border-b bg-background/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="container mx-auto flex h-16 items-center px-4 gap-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="gap-1"
-            onClick={() => navigate({ to: "/pools/$id/predict", params: { id } })}
-          >
-            <ChevronLeft className="h-4 w-4" />
-            Voltar aos Jogos
-          </Button>
-          <div className="flex-1">
-            <h1 className="text-lg font-bold">Seu Palpite</h1>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-black">
-              Copa do Mundo 2026 • {match.phase}
-            </p>
-          </div>
-        </div>
-      </header>
+      <PageHeader title="Seu Palpite" backTo="/pools/$id/predict" backToParams={{ id }} />
+
 
       <main className="flex-1 container mx-auto p-4 flex flex-col items-center justify-center space-y-8">
         <div className="text-center space-y-1">

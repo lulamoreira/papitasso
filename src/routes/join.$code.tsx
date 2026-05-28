@@ -51,7 +51,7 @@ function JoinPoolComponent() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4 pb-20">
       <Card className="w-full max-w-md border-none shadow-2xl">
         <CardHeader className="text-center space-y-4">
           <div className="mx-auto h-16 w-16 bg-primary rounded-full flex items-center justify-center text-primary-foreground shadow-lg">
