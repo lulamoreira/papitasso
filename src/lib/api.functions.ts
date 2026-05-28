@@ -325,7 +325,7 @@ export const getPrizeWinners = createServerFn({ method: "GET" })
     const { supabase } = context;
     const { data, error } = await supabase
       .from("prize_winners")
-      .select("*, prize:prizes(*), profile:profiles(*)")
+      .select("*, prize:prizes!prize_winners_prize_id_fkey(*), profile:profiles!prize_winners_user_id_fkey(*)")
       .filter("prize.pool_id", "eq", poolId);
     
     if (error) throw error;
