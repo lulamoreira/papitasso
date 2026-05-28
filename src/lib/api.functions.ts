@@ -819,7 +819,7 @@ export const createCustomProp = createServerFn({ method: "POST" })
       .from("props")
       .insert(data)
       .select()
-      .single();
+      .maybeSingle();
     
     if (error) throw error;
     return prop;
@@ -985,7 +985,7 @@ export const getMatch = createServerFn({ method: "GET" })
     return data;
   });
 
-export const saveFantasyLineup = createServerFn({ method: "POST" })
+export const upsertFantasyLineup = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
     const { poolId, gameweek, formation, playerIds, captainId, viceCaptainId, budgetUsed } = rawData?.data || rawData;
