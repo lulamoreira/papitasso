@@ -189,8 +189,13 @@ function PoolDetailComponent() {
             {matches.map((match: any) => {
               const pred = predictions?.find((p: any) => p.match_id === match.id);
               const isFinished = match.status === 'finished';
+              const isLocked = new Date(match.kickoff_at) <= new Date();
               return (
-                <Card key={match.id} className="overflow-hidden">
+                <Card 
+                  key={match.id} 
+                  className={`overflow-hidden transition-all ${isLocked ? 'opacity-70' : 'cursor-pointer hover:border-primary border-2 border-transparent'}`}
+                  onClick={() => !isLocked && navigate({ to: `/pools/${id}/predict/${match.id}` })}
+                >
                   <CardContent className="p-3 space-y-3">
                     <div className="flex justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
                       <span>{format(new Date(match.kickoff_at), "dd/MM - HH:mm", { locale: ptBR })}</span>
@@ -202,15 +207,26 @@ function PoolDetailComponent() {
                         <span className="text-[10px] font-bold truncate w-full text-center">{match.home_team.name}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-xl font-black">{match.home_score ?? 0}</span>
-                        <span className="text-muted-foreground opacity-30">x</span>
-                        <span className="text-xl font-black">{match.away_score ?? 0}</span>
+                        {isFinished ? (
+                          <>
+                            <span className="text-xl font-black">{match.home_score ?? 0}</span>
+                            <span className="text-muted-foreground opacity-30">x</span>
+                            <span className="text-xl font-black">{match.away_score ?? 0}</span>
+                          </>
+                        ) : (
+                          <span className="text-sm font-black text-primary/40 italic tracking-tighter">VS</span>
+                        )}
                       </div>
                       <div className="flex-1 flex flex-col items-center gap-1">
                         <img src={match.away_team.flag_url} className="h-6 w-9 object-cover rounded shadow-sm" alt="" />
                         <span className="text-[10px] font-bold truncate w-full text-center">{match.away_team.name}</span>
                       </div>
                     </div>
+                    {!pred && !isFinished && !isLocked && (
+                      <div className="flex items-center justify-center gap-1 text-[10px] font-bold text-primary animate-pulse">
+                        <PencilLine className="h-3 w-3" /> Toque para palpitar
+                      </div>
+                    )}
                     {pred && (
                       <div className="bg-muted/50 rounded-lg p-2 flex items-center justify-between">
                         <span className="text-[10px] font-bold uppercase text-muted-foreground">Seu palpite:</span>
