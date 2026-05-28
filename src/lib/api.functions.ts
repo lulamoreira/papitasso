@@ -919,7 +919,7 @@ export const getFantasyLineup = createServerFn({ method: "GET" })
     const { supabase, userId } = context;
     const { data: lineup, error: lineupError } = await supabase
       .from("fantasy_lineups")
-      .select("*, players:fantasy_lineup_players(*, player:players(*))")
+      .select("*, players:fantasy_lineup_players!fantasy_lineup_players_lineup_id_fkey(*, player:players!fantasy_lineup_players_player_id_fkey(*))")
       .eq("pool_id", poolId)
       .eq("user_id", userId)
       .eq("gameweek", gameweek)
