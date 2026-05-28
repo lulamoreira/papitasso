@@ -166,10 +166,12 @@ function BracketComponent() {
                 </div>
              </CardContent>
            </Card>
+          </div>
         </div>
       </main>
     </div>
   );
 }
+
 
 
