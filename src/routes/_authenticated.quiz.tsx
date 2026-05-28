@@ -18,7 +18,7 @@ function QuizPage() {
   const queryClient = useQueryClient();
   const { data: profile } = useSuspenseQuery({
     queryKey: ["profile"],
-    queryFn: () => getProfile(),
+    queryFn: () => getProfile(undefined),
   });
 
   const { data: quiz } = useSuspenseQuery({

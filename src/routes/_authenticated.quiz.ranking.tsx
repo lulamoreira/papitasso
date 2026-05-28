@@ -13,7 +13,7 @@ export const Route = createFileRoute("/_authenticated/quiz/ranking")({
 function QuizRankingPage() {
   const { data: profile } = useSuspenseQuery({
     queryKey: ["profile"],
-    queryFn: () => getProfile(),
+    queryFn: () => getProfile(undefined),
   });
 
   const { data: leaderboard } = useSuspenseQuery({
