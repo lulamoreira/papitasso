@@ -4,7 +4,7 @@ import { getAiAutoPredictions, getPoolById, upsertPrediction } from "@/lib/api.f
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Sparkles, Brain, Check, ChevronLeft, Save } from "lucide-react";
