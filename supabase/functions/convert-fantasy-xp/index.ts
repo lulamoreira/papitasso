@@ -1,12 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { verifyUser } from '../_shared/auth.ts'
 
-Deno.serve(async (req) => {
-  const supabase = createClient(
-    Deno.env.get('SUPABASE_URL')!,
-    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-  );
-
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -40,7 +34,7 @@ Deno.serve(async (req) => {
       .eq("gameweek", gameweek)
       .single();
 
-    if (!lineup) return new Response("No lineup found", { status: 404 });
+    if (!lineup) return new Response("No lineup found", { status: 404, headers: corsHeaders });
 
     const xpGain = Math.floor(lineup.total_points / 10);
     if (xpGain > 0) {
@@ -51,12 +45,12 @@ Deno.serve(async (req) => {
     }
 
     return new Response(JSON.stringify({ success: true, xp_gained: xpGain }), {
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     })
   }
 });
