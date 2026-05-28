@@ -514,7 +514,7 @@ export const upsertBracketPrediction = createServerFn({ method: "POST" })
       .from("pools")
       .select("created_at")
       .eq("id", poolId)
-      .single();
+      .maybeSingle();
     
     if (poolError) throw poolError;
     
@@ -588,7 +588,7 @@ export const getAchievementById = createServerFn({ method: "GET" })
     const { data, error } = await supabase
       .from("achievements")
       .eq("id", id)
-      .single();
+      .maybeSingle();
     if (error) throw error;
     return data;
   });
@@ -613,7 +613,7 @@ export const submitQuizAnswer = createServerFn({ method: "POST" })
       .from("daily_quiz")
       .select("*")
       .eq("id", quizId)
-      .single();
+      .maybeSingle();
 
     const isCorrect = quiz.correct_index === answerIndex;
 
@@ -717,7 +717,7 @@ export const upsertPredictionProp = createServerFn({ method: "POST" })
       .from("props")
       .select("is_locked")
       .eq("id", propId)
-      .single();
+      .maybeSingle();
     
     if (propError) throw propError;
     if (prop.is_locked) {
