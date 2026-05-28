@@ -272,25 +272,25 @@ function NewPoolComponent() {
             )}
 
             {step === 5 && (
-              <div className="space-y-6 text-center">
-                <div className="h-16 w-16 rounded-full bg-yellow-500/10 flex items-center justify-center mx-auto">
-                  <Trophy className="h-8 w-8 text-yellow-600" />
-                </div>
-                <div className="space-y-2">
-                  <h2 className="text-xl font-bold">Quer oferecer prêmios?</h2>
-                  <p className="text-sm text-muted-foreground">Você pode adicionar prêmios físicos (camisas, eletrônicos, etc) agora ou depois.</p>
+              <div className="space-y-6">
+                <div className="text-center space-y-2">
+                  <div className="h-16 w-16 rounded-full bg-yellow-500/10 flex items-center justify-center mx-auto mb-4">
+                    <Trophy className="h-8 w-8 text-yellow-600" />
+                  </div>
+                  <h2 className="text-xl font-bold">Definir Prêmios</h2>
+                  <p className="text-sm text-muted-foreground">Recompense os melhores colocados do seu bolão.</p>
                 </div>
                 
-                <Card className="p-6 border-dashed border-2">
-                  <p className="text-sm text-muted-foreground mb-4">Adicione prêmios para engajar mais os participantes!</p>
-                  <Button variant="outline" onClick={() => toast.info("Você poderá adicionar prêmios detalhados após criar o bolão.")}>
-                    + Definir Prêmios
-                  </Button>
-                </Card>
+                <PrizeEditor 
+                  prizes={formData.prizes} 
+                  onChange={(prizes) => setFormData({ ...formData, prizes })} 
+                />
 
-                <Button variant="link" className="text-muted-foreground" onClick={handleCreate}>
-                  Pular — adicionar depois
-                </Button>
+                <div className="pt-4">
+                  <Button variant="link" className="w-full text-muted-foreground" onClick={handleCreate}>
+                    Pular — adicionar depois
+                  </Button>
+                </div>
               </div>
             )}
 
