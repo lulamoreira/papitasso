@@ -1419,6 +1419,10 @@ export type Database = {
         Args: { p_pool_id: string }
         Returns: undefined
       }
+      lock_predictions_for_match: {
+        Args: { p_match_id: string }
+        Returns: undefined
+      }
       matches_for_pool: {
         Args: { p_pool_id: string }
         Returns: {

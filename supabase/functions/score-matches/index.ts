@@ -88,6 +88,17 @@ Deno.serve(async (req) => {
                   },
                   body: JSON.stringify({ user_id: p.user_id })
                 }).catch(err => console.error('Error calling check-achievements:', err))
+                
+                // Also trigger fantasy points calculation
+                const fantasyUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/compute-fantasy-points`
+                fetch(fantasyUrl, {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({ match_id: match.id })
+                }).catch(err => console.error('Error calling compute-fantasy-points:', err))
               }
             }
 

@@ -36,9 +36,18 @@ export function PoolChat({ poolId, matchId, className }: ChatProps) {
 
   const sendMutation = useMutation({
     mutationFn: (text: string) => sendChatMessage({ data: { poolId, matchId, text } } as any),
-    onSuccess: () => {
+    onSuccess: (newMessage) => {
       setMessageText("");
-      queryClient.invalidateQueries({ queryKey: ["chat", poolId, matchId] });
+      // Optimistic update already handled by Realtime, but we can update cache locally too
+      queryClient.setQueryData(["chat", poolId, matchId], (old: any) => {
+        if (!old) return [newMessage];
+        // Ensure no duplicates if Realtime is very fast
+        if (old.some((m: any) => m.id === newMessage.id)) return old;
+        return [...old, newMessage];
+      });
+    },
+    onError: (err: any) => {
+      toast.error(err.message || "Erro ao enviar mensagem");
     }
   });
 

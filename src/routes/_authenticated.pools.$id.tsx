@@ -64,8 +64,18 @@ function PoolDetailComponent() {
         queryClient.invalidateQueries({ queryKey: ["leaderboard", id] });
         queryClient.invalidateQueries({ queryKey: ["predictions", id] });
       })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'predictions_pickem', filter: `pool_id=eq.${id}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["leaderboard", id] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'predictions_bracket', filter: `pool_id=eq.${id}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["leaderboard", id] });
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'predictions_props', filter: `pool_id=eq.${id}` }, () => {
+        queryClient.invalidateQueries({ queryKey: ["leaderboard", id] });
+      })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'matches' }, () => {
         queryClient.invalidateQueries({ queryKey: ["poolMatches", id] });
+        queryClient.invalidateQueries({ queryKey: ["leaderboard", id] });
       })
       .subscribe();
 

@@ -212,11 +212,20 @@ export const getMatchesForPool = createServerFn({ method: "GET" })
 export const upsertPrediction = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ data: rawData, context }: any) => {
-
-
-
     const { poolId, matchId, homeScore, awayScore } = rawData?.data || rawData;
     const { supabase, userId } = context;
+
+    // Security check: Verify match is not locked
+    const { data: match, error: matchError } = await supabase
+      .from("matches")
+      .select("kickoff_at")
+      .eq("id", matchId)
+      .single();
+    
+    if (matchError) throw matchError;
+    if (new Date(match.kickoff_at) <= new Date()) {
+      throw new Error("Match already started. Predictions are locked.");
+    }
 
     const { data, error } = await supabase
       .from("predictions_exact")
@@ -233,13 +242,10 @@ export const upsertPrediction = createServerFn({ method: "POST" })
 
     if (error) throw error;
 
-    // Gamification: +5 XP for participation (only if it's the first time for this match/pool/user)
-    // For simplicity, we'll just add it if it was an insert or just add it anyway (capped by some logic if needed)
-    // Actually, let's just add it.
+    // Gamification: +5 XP for participation
     await supabase.rpc('increment_xp', { p_user_id: userId, p_amount: 5 });
 
     return data;
-
   });
 
 export const getPredictions = createServerFn({ method: "GET" })
@@ -352,6 +358,18 @@ export const upsertPickemPrediction = createServerFn({ method: "POST" })
     const { poolId, matchId, winner } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
+    // Security check: Verify match is not locked
+    const { data: match, error: matchError } = await supabase
+      .from("matches")
+      .select("kickoff_at")
+      .eq("id", matchId)
+      .single();
+    
+    if (matchError) throw matchError;
+    if (new Date(match.kickoff_at) <= new Date()) {
+      throw new Error("Match already started. Predictions are locked.");
+    }
+
     const { data, error } = await supabase
       .from("predictions_pickem")
       .upsert({
@@ -402,6 +420,19 @@ export const upsertSurvivorPrediction = createServerFn({ method: "POST" })
     const { poolId, roundNumber, teamId } = rawData?.data || rawData;
     const { supabase, userId } = context;
 
+    // Security check: Verify round is not locked
+    const { data: round, error: roundError } = await supabase
+      .from("survivor_rounds")
+      .select("is_locked")
+      .eq("pool_id", poolId)
+      .eq("round_number", roundNumber)
+      .single();
+    
+    if (roundError) throw roundError;
+    if (round.is_locked) {
+      throw new Error("Round is locked.");
+    }
+
     const { data, error } = await supabase
       .from("predictions_survivor")
       .upsert({
@@ -437,6 +468,21 @@ export const upsertBracketPrediction = createServerFn({ method: "POST" })
   .handler(async ({ data: rawData, context }: any) => {
     const { poolId, bracketJson } = rawData?.data || rawData;
     const { supabase, userId } = context;
+
+    // Security check: Verify first match of bracket hasn't started
+    const { data: pool, error: poolError } = await supabase
+      .from("pools")
+      .select("created_at")
+      .eq("id", poolId)
+      .single();
+    
+    if (poolError) throw poolError;
+    
+    // Default lock for 2026 World Cup bracket (start of R32)
+    const bracketLockDate = new Date("2026-06-25T00:00:00Z"); 
+    if (new Date() > bracketLockDate) {
+      throw new Error("Bracket predictions are locked.");
+    }
 
     const { data, error } = await supabase
       .from("predictions_bracket")
@@ -625,6 +671,18 @@ export const upsertPredictionProp = createServerFn({ method: "POST" })
   .handler(async ({ data: rawData, context }: any) => {
     const { poolId, propId, answer } = rawData?.data || rawData;
     const { supabase, userId } = context;
+
+    // Security check: Verify prop is not locked
+    const { data: prop, error: propError } = await supabase
+      .from("props")
+      .select("is_locked")
+      .eq("id", propId)
+      .single();
+    
+    if (propError) throw propError;
+    if (prop.is_locked) {
+      throw new Error("Predictions for this prop are locked.");
+    }
 
     const { data, error } = await supabase
       .from("predictions_props")
