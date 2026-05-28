@@ -77,7 +77,7 @@ export const createPool = createServerFn({ method: "POST" })
       modes_enabled: z.array(z.string()).optional(),
       prizes: z.array(z.object({
         rank: z.number().optional(),
-        category: z.string(),
+        category: z.enum(['ranking', 'most_exact', 'most_brazil_correct', 'phase_leader', 'wooden_spoon', 'raffle', 'custom']),
         title: z.string(),
         description: z.string().optional(),
         photo_url: z.string().optional(),
