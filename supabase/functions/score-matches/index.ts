@@ -7,113 +7,55 @@ const supabase = createClient(
 
 Deno.serve(async (req) => {
   const apiKey = Deno.env.get('SPORTS_API_KEY')
-  
-  if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'Missing SPORTS_API_KEY' }), {
-      status: 400,
-      headers: { 'Content-Type': 'application/json' },
-    })
-  }
+  if (!apiKey) return new Response(JSON.stringify({ error: 'Missing SPORTS_API_KEY' }), { status: 400 })
 
   try {
-    // 1. Get live or recently started matches
-    const { data: matches, error: matchesError } = await supabase
-      .from('matches')
-      .select('*')
-      .neq('status', 'finished')
-      .lte('kickoff_at', new Date().toISOString())
-
-    if (matchesError) throw matchesError
-
-    if (!matches || matches.length === 0) {
-      return new Response(JSON.stringify({ message: 'No active matches to update' }), {
-        headers: { 'Content-Type': 'application/json' },
-      })
-    }
-
-    // 2. Fetch updates from API (Example for API-Football)
-    // Note: In a real app, you'd filter by league/fixture ID
-    const response = await fetch('https://v3.football.api-sports.io/fixtures?live=all', {
-      headers: {
-        'x-rapidapi-key': apiKey,
-        'x-rapidapi-host': 'v3.football.api-sports.io'
-      }
-    })
+    const now = new Date()
+    const threeHoursAgo = new Date(now.getTime() - 3 * 3600 * 1000).toISOString()
+    const threeHoursFromNow = new Date(now.getTime() + 3 * 3600 * 1000).toISOString()
     
+    const { data: matches, error } = await supabase
+      .from('matches')
+      .select('id, external_api_id, status')
+      .neq('status', 'finished')
+      .not('external_api_id', 'is', null)
+      .gte('kickoff_at', threeHoursAgo)
+      .lte('kickoff_at', threeHoursFromNow)
+
+    if (error) throw error
+    if (!matches?.length) return new Response(JSON.stringify({ message: 'No active matches' }))
+
+    const fixtureIds = matches.map(m => m.external_api_id).join('-')
+    const response = await fetch(
+      `https://v3.football.api-sports.io/fixtures?ids=${fixtureIds}`,
+      { headers: { 'x-rapidapi-key': apiKey, 'x-rapidapi-host': 'v3.football.api-sports.io' } }
+    )
     const apiData = await response.json()
-    const updatedMatches = []
+    const updated = []
 
     for (const match of matches) {
-      // Find match in API response (logic depends on how you store external IDs)
-      // For this implementation, we'll simulate an update if found
-      const apiMatch = apiData.response?.find((f: any) => 
-        f.teams.home.name.includes(match.home_team_id) || // This is just a placeholder logic
-        f.teams.away.name.includes(match.away_team_id)
-      )
+      const apiMatch = apiData.response?.find((f: any) => String(f.fixture.id) === match.external_api_id)
+      if (!apiMatch) continue
 
-      if (apiMatch) {
-        const home_score = apiMatch.goals.home
-        const away_score = apiMatch.goals.away
-        const status = apiMatch.fixture.status.short === 'FT' ? 'finished' : 'live'
+      const home_score = apiMatch.goals.home
+      const away_score = apiMatch.goals.away
+      const status = apiMatch.fixture.status.short === 'FT' ? 'finished' : 'live'
 
-        const { error: updateError } = await supabase
-          .from('matches')
-          .update({ home_score, away_score, status })
-          .eq('id', match.id)
+      const { error: updateError } = await supabase
+        .from('matches')
+        .update({ home_score, away_score, status })
+        .eq('id', match.id)
 
-        if (!updateError) {
-          updatedMatches.push(match.id)
-          
-          if (status === 'finished') {
-            // Trigger point awarding
-            await supabase.rpc('award_points_for_match', { p_match_id: match.id })
-
-            // Trigger achievement checks for all participants in this match
-            const { data: participants } = await supabase
-              .from('predictions_exact')
-              .select('user_id')
-              .eq('match_id', match.id)
-
-            if (participants) {
-              for (const p of participants) {
-                // Call check-achievements for each user
-                // Using fetch to call the local/deployed edge function
-                // Note: In production use the external URL or use internal function call if possible
-                const functionUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/check-achievements`
-                fetch(functionUrl, {
-                  method: 'POST',
-                  headers: {
-                    'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({ user_id: p.user_id })
-                }).catch(err => console.error('Error calling check-achievements:', err))
-                
-                // Also trigger fantasy points calculation
-                const fantasyUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/compute-fantasy-points`
-                fetch(fantasyUrl, {
-                  method: 'POST',
-                  headers: {
-                    'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({ match_id: match.id })
-                }).catch(err => console.error('Error calling compute-fantasy-points:', err))
-              }
-            }
-
-          }
+      if (!updateError) {
+        updated.push(match.id)
+        if (status === 'finished') {
+          await supabase.rpc('award_points_for_match', { p_match_id: match.id })
         }
       }
     }
 
-    return new Response(JSON.stringify({ updated: updatedMatches }), {
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return new Response(JSON.stringify({ updated }))
   } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    })
+    return new Response(JSON.stringify({ error: err.message }), { status: 500 })
   }
 })

@@ -367,6 +367,7 @@ export type Database = {
           away_team_id: string | null
           city: string | null
           country: string | null
+          external_api_id: string | null
           home_score: number | null
           home_team_id: string | null
           id: string
@@ -381,6 +382,7 @@ export type Database = {
           away_team_id?: string | null
           city?: string | null
           country?: string | null
+          external_api_id?: string | null
           home_score?: number | null
           home_team_id?: string | null
           id?: string
@@ -395,6 +397,7 @@ export type Database = {
           away_team_id?: string | null
           city?: string | null
           country?: string | null
+          external_api_id?: string | null
           home_score?: number | null
           home_team_id?: string | null
           id?: string
@@ -1313,6 +1316,7 @@ export type Database = {
       teams: {
         Row: {
           code: string
+          external_api_id: string | null
           fifa_ranking: number | null
           flag_url: string
           group_letter: string | null
@@ -1321,6 +1325,7 @@ export type Database = {
         }
         Insert: {
           code: string
+          external_api_id?: string | null
           fifa_ranking?: number | null
           flag_url: string
           group_letter?: string | null
@@ -1329,6 +1334,7 @@ export type Database = {
         }
         Update: {
           code?: string
+          external_api_id?: string | null
           fifa_ranking?: number | null
           flag_url?: string
           group_letter?: string | null
@@ -1445,6 +1451,7 @@ export type Database = {
           away_team_id: string | null
           city: string | null
           country: string | null
+          external_api_id: string | null
           home_score: number | null
           home_team_id: string | null
           id: string
