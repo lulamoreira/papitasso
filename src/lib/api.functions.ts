@@ -145,7 +145,7 @@ export const getPoolByInviteCode = createServerFn({ method: "GET" })
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { data, error } = await supabaseAdmin
       .from("pools")
-      .select("*, owner:profiles(*)")
+      .select("*, owner:profiles!pools_owner_id_fkey(*)")
       .eq("invite_code", code.toUpperCase())
       .single();
     
