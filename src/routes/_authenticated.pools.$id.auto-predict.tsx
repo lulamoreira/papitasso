@@ -48,6 +48,7 @@ function AutoPredictPage() {
   const [confirmed, setConfirmed] = useState<Set<string>>(new Set());
   const [isSavingAll, setIsSavingAll] = useState(false);
   const [saveProgress, setSaveProgress] = useState(0);
+  const [totalToSave, setTotalToSave] = useState(0);
 
   // Initialize matches when data is loaded
   useEffect(() => {
