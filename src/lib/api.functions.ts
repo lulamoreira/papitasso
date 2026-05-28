@@ -1101,5 +1101,48 @@ export const getPlayerMatchStats = createServerFn({ method: "GET" })
       .eq("match_id", matchId);
     
     if (error) throw error;
+
+export const deletePool = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase } = context;
+    const { error } = await supabase.rpc('delete_pool', { p_pool_id: poolId });
+    if (error) throw error;
+    return { success: true };
+  });
+
+export const transferOwnership = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: rawData, context }: any) => {
+    const { poolId, newOwnerId } = rawData?.data || rawData;
+    const { supabase } = context;
+    const { error } = await supabase.rpc('transfer_pool_ownership', { 
+      p_pool_id: poolId, 
+      p_new_owner: newOwnerId 
+    });
+    if (error) throw error;
+    return { success: true };
+  });
+
+export const leavePool = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase } = context;
+    const { error } = await supabase.rpc('leave_pool', { p_pool_id: poolId });
+    if (error) throw error;
+    return { success: true };
+  });
+
+export const getPoolMembers = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data: poolId, context }: any) => {
+    const { supabase } = context;
+    const { data, error } = await supabase
+      .from("pool_members")
+      .select("*, profile:profiles(*)")
+      .eq("pool_id", poolId);
+    
+    if (error) throw error;
     return data;
   });
+
