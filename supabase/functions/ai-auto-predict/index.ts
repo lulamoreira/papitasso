@@ -42,6 +42,7 @@ serve(async (req) => {
       return new Response(JSON.stringify({ predictions: [] }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
 
+    /*
     const { data: recentUsage } = await supabase
       .from('ai_usage_log')
       .select('*')
@@ -51,8 +52,13 @@ serve(async (req) => {
       .limit(1)
 
     if (recentUsage && recentUsage.length > 0) {
-      throw new Error("Limite do Modo Preguiça atingido (1x por dia).");
+      return new Response(JSON.stringify({ 
+        predictions: [], 
+        limit_reached: true,
+        message: "Você já usou o Modo Preguiça hoje. Volte amanhã!" 
+      }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' } })
     }
+    */
 
     // Só prevê jogos com AMBOS os times definidos (pula mata-mata placeholder)
     const { data: matchesWithTeams } = await supabase
