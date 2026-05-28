@@ -25,7 +25,7 @@ export const Route = createFileRoute("/_authenticated/pools/$id/predict/$matchId
 });
 
 function PredictionDetailComponent() {
-  const { id, matchId } = useParams({ from: "/_authenticated/pools/$id/predict/$matchId" as any });
+  const { id, matchId } = useParams({ from: "/_authenticated/pools/$id/predict/$matchId" });
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   

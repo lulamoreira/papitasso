@@ -145,7 +145,7 @@ function PoolDetailComponent() {
 
         <Button 
           className="w-full h-14 text-lg font-black gap-2 shadow-xl shadow-primary/20"
-          onClick={() => navigate({ to: `/pools/${id}/predict` })}
+          onClick={() => navigate({ to: "/pools/$id/predict", params: { id } })}
         >
           <PencilLine className="h-5 w-5" />
           Dar Meus Palpites
@@ -194,7 +194,10 @@ function PoolDetailComponent() {
                 <Card 
                   key={match.id} 
                   className={`overflow-hidden transition-all ${isLocked ? 'opacity-70' : 'cursor-pointer hover:border-primary border-2 border-transparent'}`}
-                  onClick={() => !isLocked && navigate({ to: `/pools/${id}/predict/${match.id}` })}
+                  onClick={() => !isLocked && navigate({ 
+                    to: "/pools/$id/predict/$matchId", 
+                    params: { id, matchId: match.id } 
+                  })}
                 >
                   <CardContent className="p-3 space-y-3">
                     <div className="flex justify-between text-[10px] font-bold text-muted-foreground uppercase tracking-widest">

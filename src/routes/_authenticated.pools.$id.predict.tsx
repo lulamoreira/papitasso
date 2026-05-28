@@ -77,7 +77,10 @@ function PredictListComponent() {
             >
               <Card 
                 className={`overflow-hidden transition-all relative ${locked ? 'opacity-70' : 'cursor-pointer hover:border-primary border-2 border-transparent shadow-sm'}`}
-                onClick={() => !locked && navigate({ to: `/pools/${id}/predict/${match.id}` })}
+                onClick={() => !locked && navigate({ 
+                  to: "/pools/$id/predict/$matchId", 
+                  params: { id, matchId: match.id } 
+                })}
               >
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-3 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
