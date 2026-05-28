@@ -408,6 +408,7 @@ export const upsertPickemPrediction = createServerFn({ method: "POST" })
       .maybeSingle();
     
     if (matchError) throw matchError;
+    if (!match) throw new Error("Partida não encontrada");
     if (new Date(match.kickoff_at) <= new Date()) {
       throw new Error("Match already started. Predictions are locked.");
     }
@@ -471,6 +472,7 @@ export const upsertSurvivorPrediction = createServerFn({ method: "POST" })
       .maybeSingle();
     
     if (roundError) throw roundError;
+    if (!round) throw new Error("Rodada não encontrada");
     if (round.is_locked) {
       throw new Error("Round is locked.");
     }
@@ -519,6 +521,7 @@ export const upsertBracketPrediction = createServerFn({ method: "POST" })
       .maybeSingle();
     
     if (poolError) throw poolError;
+    if (!pool) throw new Error("Bolão não encontrado");
     
     // Default lock for 2026 World Cup bracket (start of R32)
     const bracketLockDate = new Date("2026-06-25T00:00:00Z"); 
@@ -722,6 +725,7 @@ export const upsertPredictionProp = createServerFn({ method: "POST" })
       .maybeSingle();
     
     if (propError) throw propError;
+    if (!prop) throw new Error("Prop não encontrada");
     if (prop.is_locked) {
       throw new Error("Predictions for this prop are locked.");
     }
